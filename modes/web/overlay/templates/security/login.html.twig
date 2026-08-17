@@ -45,7 +45,9 @@
 
             <div class="mt-6 flex flex-wrap justify-between gap-2 text-sm">
                 <a href="{{ path('app_forgot_password_request') }}" class="text-indigo-600 hover:underline">Mot de passe oublié ?</a>
-                <a href="{{ path('app_register') }}" class="text-indigo-600 hover:underline">Créer un compte</a>
+                {% if registration_enabled %}
+                    <a href="{{ path('app_register') }}" class="text-indigo-600 hover:underline">Créer un compte</a>
+                {% endif %}
             </div>
         </div>
     </div>

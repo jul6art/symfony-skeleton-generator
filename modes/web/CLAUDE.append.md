@@ -42,6 +42,11 @@
 - La déconnexion est en **POST + CSRF** (`enable_csrf`, route `app_logout`
   limitée à POST) : le lien GET historique se déclenchait sur un préchargement
   ou une image tierce. Toujours utiliser `logout_path()` dans un formulaire.
+- L'inscription publique est pilotée par `APP_REGISTRATION_ENABLED` (`.env`) :
+  à 0, `/register` répond 404 et les liens « Créer un compte » disparaissent
+  (variable Twig globale `registration_enabled`, paramètre
+  `app.registration_enabled`). Le projet peut être généré fermé d'entrée avec
+  `./bin/new-project <projet> --web --no-registration`.
 - Le premier administrateur se crée en console :
   `make user-create ARGS="moi@exemple.com --admin"`.
 - Les e-mails partent par Messenger (`SendEmailMessage` routé sur `async`) : sans

@@ -1,0 +1,9 @@
+parameters:
+    # Inscription publique. APP_REGISTRATION_ENABLED=0 dans .env / .env.local la
+    # ferme : la route /register répond 404 et les liens disparaissent.
+    app.registration_enabled_default: true
+    app.registration_enabled: '%env(bool:default:app.registration_enabled_default:APP_REGISTRATION_ENABLED)%'
+
+twig:
+    globals:
+        registration_enabled: '%app.registration_enabled%'

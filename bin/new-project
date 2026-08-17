@@ -68,6 +68,7 @@ usage() {
   --php=<x.y>       force la version de PHP passée à symfony new
   --docker          ajoute le support Docker (symfony new --docker)
   --no-extras       n'installe pas les paquets du skeleton (squelette nu)
+  --no-registration ferme l'inscription publique (modes qui la gèrent : web)
   --no-git          ne pas initialiser le dépôt git
   --dry-run         affiche les commandes sans rien exécuter
   -l, --list        liste les modes
@@ -80,6 +81,8 @@ TARGET=''
 MODE=''
 NO_GIT=0
 NO_EXTRAS=0
+# Lu par les hooks post-install des modes qui exposent une inscription publique.
+REGISTRATION=1
 DOCKER_FLAG=''
 PHP_VERSION=''
 PHP_EXPLICIT=0
@@ -96,6 +99,7 @@ while [ $# -gt 0 ]; do
         --php=*)     PHP_VERSION="${1#*=}"; PHP_EXPLICIT=1; PHP_FLAG="--php=${1#*=}" ;;
         --docker)    DOCKER_FLAG='--docker' ;;
         --no-extras) NO_EXTRAS=1 ;;
+        --no-registration) REGISTRATION=0 ;;
         --no-git)    NO_GIT=1 ;;
         --dry-run)   DRY_RUN=1 ;;
         --*)
@@ -299,6 +303,7 @@ for hook in "$COMMON_DIR/post-install.sh" "$MODES_DIR/$MODE/post-install.sh"; do
     if [ "$DRY_RUN" = 0 ]; then
         PROJECT_DIR="$PROJECT_DIR" PROJECT_NAME="$PROJECT_NAME" MODE="$MODE" \
         SKELETON_DIR="$SKELETON_DIR" MODE_DIR="$MODES_DIR/$MODE" PHP_VERSION="$PHP_VERSION" \
+        REGISTRATION="$REGISTRATION" \
             bash "$hook"
     fi
 done

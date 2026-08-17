@@ -52,9 +52,11 @@
                     <a href="{{ path('app_login') }}" class="nav-link">
                         <i class="fa-solid fa-right-to-bracket"></i> Connexion
                     </a>
-                    <a href="{{ path('app_register') }}" class="btn btn-primary">
-                        <i class="fa-solid fa-user-plus"></i> Créer un compte
-                    </a>
+                    {% if registration_enabled %}
+                        <a href="{{ path('app_register') }}" class="btn btn-primary">
+                            <i class="fa-solid fa-user-plus"></i> Créer un compte
+                        </a>
+                    {% endif %}
                 {% endif %}
             </nav>
         </header>

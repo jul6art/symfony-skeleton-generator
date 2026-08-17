@@ -17,6 +17,11 @@ final class SmokeTest extends WebTestCase
     public function testPublicPageIsReachable(string $url): void
     {
         $client = static::createClient();
+
+        if ('/register' === $url && false === static::getContainer()->getParameter('app.registration_enabled')) {
+            self::markTestSkipped("L'inscription publique est désactivée (APP_REGISTRATION_ENABLED).");
+        }
+
         $client->request('GET', $url);
 
         self::assertResponseIsSuccessful();

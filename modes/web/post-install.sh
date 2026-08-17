@@ -11,6 +11,18 @@ set -uo pipefail
 
 cd "${PROJECT_DIR:?}" || exit 1
 
+# Inscription publique : pilotée par .env, fermée d'entrée avec --no-registration.
+if [ -f .env ] && ! grep -q '^APP_REGISTRATION_ENABLED=' .env; then
+    printf '    .env → APP_REGISTRATION_ENABLED=%s\n' "${REGISTRATION:-1}"
+    cat >> .env <<EOF
+
+###> app ###
+# Inscription publique : 0 pour la fermer (/register en 404, liens masqués).
+APP_REGISTRATION_ENABLED=${REGISTRATION:-1}
+###< app ###
+EOF
+fi
+
 printf '    Font Awesome (local)…\n'
 if ! make fontawesome >/dev/null 2>&1; then
     printf '/!\\ téléchargement de Font Awesome impossible — relancer « make fontawesome ».\n' >&2

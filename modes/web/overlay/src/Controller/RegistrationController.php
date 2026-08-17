@@ -9,6 +9,7 @@ use App\Form\RegistrationFormType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -16,6 +17,12 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class RegistrationController extends AbstractController
 {
+    public function __construct(
+        #[Autowire('%app.registration_enabled%')]
+        private readonly bool $registrationEnabled,
+    ) {
+    }
+
     #[Route('/register', name: 'app_register', methods: ['GET', 'POST'])]
     public function __invoke(
         Request $request,
@@ -23,6 +30,12 @@ final class RegistrationController extends AbstractController
         EntityManagerInterface $entityManager,
         Security $security,
     ): Response {
+        // Inscription fermée : la route n'existe pas, plutôt qu'un 403 qui
+        // confirmerait qu'il y a quelque chose derrière.
+        if (!$this->registrationEnabled) {
+            throw $this->createNotFoundException('L\'inscription publique est désactivée.');
+        }
+
         if (null !== $this->getUser()) {
             return $this->redirectToRoute('app_home');
         }

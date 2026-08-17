@@ -36,7 +36,11 @@ then applies its own packages and files on top.
   runtime — no remote `src` anywhere in the layout.
 - Ready-made account flow: `/register`, `/login` (CSRF, remember me, throttling),
   `/reset-password` (`symfonycasts/reset-password-bundle`, e-mail + one-shot
-  token), `/profile/password`.
+  token), `/profile/password`. Logout is a POST form with a CSRF token, and
+  every sensitive action (delete, logout) asks for confirmation in a modal.
+- Public sign-up is a switch: `APP_REGISTRATION_ENABLED=0` in `.env` makes
+  `/register` answer 404 and hides the "create an account" links. Generate the
+  project already closed with `--no-registration`.
 - User CRUD under `/admin/users`, restricted to `ROLE_ADMIN`.
 - A `User` entity, a Tailwind form theme, flash messages and a responsive
   layout, all ready to build on.
@@ -75,8 +79,9 @@ green on a freshly generated project.
 ```
 
 Options: `--mode=<name>`, `--version=`, `--php=`, `--docker`, `--no-extras`
-(bare skeleton, without the skeleton's packages), `--no-git`, `--dry-run`,
-`--list`, `--help`.
+(bare skeleton, without the skeleton's packages), `--no-registration` (closes
+public sign-up — honored by the modes that expose one, i.e. `web`), `--no-git`,
+`--dry-run`, `--list`, `--help`.
 
 To have it at hand everywhere, add this to `~/.zshrc`:
 
