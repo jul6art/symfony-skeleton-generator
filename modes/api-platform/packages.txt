@@ -9,11 +9,12 @@
 
 symfony/http-client
 symfony/uid
+lexik/jwt-authentication-bundle       # authentification par jeton
+symfony/rate-limiter                  # login_throttling sur /api/login
 
 # Suggestions :
 # api-platform/graphql                # ajoute /graphql + GraphiQL
-# lexik/jwt-authentication-bundle     # auth JWT
+# gesdinet/jwt-refresh-token-bundle   # refresh tokens
 # symfony/messenger                   # bus de messages / async
 # symfony/mercure-bundle              # mises à jour temps réel
-# symfony/rate-limiter
 # symfony/mailer

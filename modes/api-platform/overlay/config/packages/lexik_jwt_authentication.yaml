@@ -1,0 +1,7 @@
+lexik_jwt_authentication:
+    secret_key: '%env(resolve:JWT_SECRET_KEY)%'
+    public_key: '%env(resolve:JWT_PUBLIC_KEY)%'
+    pass_phrase: '%env(JWT_PASSPHRASE)%'
+    # Durée de vie du jeton (en secondes) : court par défaut, à compléter par un
+    # refresh token si le client en a besoin.
+    token_ttl: 3600

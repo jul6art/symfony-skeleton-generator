@@ -20,7 +20,7 @@ A Symfony project generator with three modes to choose from:
 | --- | --- | --- |
 | `web` | `symfony new --webapp` | Twig + local Tailwind & Font Awesome, full account flow (register / login / forgot password / change password), user CRUD |
 | `api` | `symfony new` (bare skeleton) | Doctrine, Serializer, Validator, JWT authentication, CORS |
-| `api-platform` | `symfony new --api` | API Platform (REST + JSON-LD/Hydra, OpenAPI docs, optional GraphQL) |
+| `api-platform` | `symfony new --api` | API Platform (REST + JSON-LD/Hydra, OpenAPI docs, JWT authentication, optional GraphQL) |
 
 This repository **is not a versioned Symfony project**: `symfony new` is what
 creates the project (so Flex recipes always stay up to date), and the skeleton
@@ -62,6 +62,15 @@ then applies its own packages and files on top.
 `symfony new --api` plus house rules: pagination bounds, JSON-LD + JSON formats,
 `stateless` operations, and make targets for the OpenAPI export and the
 interactive docs.
+
+- Same **JWT authentication** as the `api` mode: `POST /api/login` returns a
+  token, `/api` expects `Authorization: Bearer <token>`, key pair generated at
+  install time. The login endpoint is documented in the OpenAPI spec and
+  Swagger UI gets its "Authorize" button.
+- The `User` entity is exposed as a resource: `/api/users` for `ROLE_ADMIN`
+  only, an account reads its own record, and `/api/me` returns the account
+  behind the token through a state provider. The password belongs to no
+  serialization group, so it cannot leak.
 
 Every mode also ships a smoke test — public pages and probes answer, protected
 areas stay closed — so `make qa` (php-cs-fixer, PHPStan level 8, PHPUnit) is

@@ -23,6 +23,14 @@ api_platform:
         pagination_client_items_per_page: true
         pagination_maximum_items_per_page: 100
 
+    swagger:
+        # Bouton « Authorize » de Swagger UI : on y colle le JWT obtenu sur
+        # POST /api/login (documenté par App\OpenApi\JwtDecorator).
+        http_auth:
+            JWT:
+                scheme: bearer
+                bearerFormat: JWT
+
     # Décommenter pour exposer la doc dans d'autres formats :
     # docs_formats:
     #     jsonld: ['application/ld+json']

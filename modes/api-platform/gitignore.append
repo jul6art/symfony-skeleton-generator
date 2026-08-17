@@ -1,0 +1,4 @@
+###> clés JWT ###
+# Les clés sont générées par `make jwt-keypair` : jamais dans le dépôt.
+/config/jwt/*.pem
+###< clés JWT ###
