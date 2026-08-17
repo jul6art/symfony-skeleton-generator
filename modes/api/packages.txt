@@ -10,12 +10,13 @@ symfony/expression-language
 symfony/http-client
 symfony/uid
 nelmio/cors-bundle
+lexik/jwt-authentication-bundle
+symfony/rate-limiter
 
 # Suggestions :
-# lexik/jwt-authentication-bundle     # auth JWT
-# symfony/messenger                   # bus de messages / async
+# gesdinet/jwt-refresh-token-bundle    # refresh tokens
+# symfony/messenger                    # bus de messages / async
 # symfony/mailer
-# symfony/rate-limiter
 #
 # Pour une API déclarative (REST + JSON-LD + doc OpenAPI), utiliser plutôt le
 # mode dédié : ./bin/new-project <projet> --api-platform

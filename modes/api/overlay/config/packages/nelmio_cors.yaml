@@ -1,0 +1,12 @@
+nelmio_cors:
+    defaults:
+        origin_regex: true
+        # CORS_ALLOW_ORIGIN vit dans .env / .env.local (regex, ex. ^https?://localhost:\d+$).
+        allow_origin: ['%env(CORS_ALLOW_ORIGIN)%']
+        allow_methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
+        allow_headers: ['Content-Type', 'Authorization']
+        # Nécessaire pour lire la pagination ou un Location côté navigateur.
+        expose_headers: ['Link', 'Location', 'X-Total-Count']
+        max_age: 3600
+    paths:
+        '^/': null
