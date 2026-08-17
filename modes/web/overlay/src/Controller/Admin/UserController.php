@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
-use App\Entity\User;
+use App\Event\UserEvent;
 use App\Form\UserType;
-use App\Repository\UserRepository;
-use Doctrine\ORM\EntityManagerInterface;
+use Jul6Art\AuthBundle\Entity\User;
+use Jul6Art\AuthBundle\Factory\UserFactory;
+use Jul6Art\AuthBundle\Manager\Interfaces\UserManagerInterface;
+use Jul6Art\AuthBundle\Repository\Interfaces\UserRepositoryInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -19,13 +22,14 @@ use function is_string;
 use function sprintf;
 
 #[Route('/admin/users')]
-#[IsGranted(User::ROLE_ADMIN)]
+#[IsGranted('ROLE_ADMIN')]
 final class UserController extends AbstractController
 {
     public function __construct(
-        private readonly UserRepository $users,
-        private readonly EntityManagerInterface $entityManager,
+        private readonly UserRepositoryInterface $users,
+        private readonly UserManagerInterface $userManager,
         private readonly UserPasswordHasherInterface $passwordHasher,
+        private readonly EventDispatcherInterface $eventDispatcher,
     ) {
     }
 
@@ -33,14 +37,14 @@ final class UserController extends AbstractController
     public function index(): Response
     {
         return $this->render('admin/user/index.html.twig', [
-            'users' => $this->users->findAllOrderedByEmail(),
+            'users' => $this->users->findBy([], ['email' => 'ASC']),
         ]);
     }
 
     #[Route('/new', name: 'app_admin_user_new', methods: ['GET', 'POST'])]
     public function new(Request $request): Response
     {
-        $user = new User();
+        $user = UserFactory::create();
         $form = $this->createForm(UserType::class, $user, ['is_new' => true]);
         $form->handleRequest($request);
 
@@ -49,8 +53,8 @@ final class UserController extends AbstractController
             $plainPassword = $form->get('plainPassword')->getData();
             $user->setPassword($this->passwordHasher->hashPassword($user, $plainPassword));
 
-            $this->entityManager->persist($user);
-            $this->entityManager->flush();
+            $this->userManager->save($user);
+            $this->eventDispatcher->dispatch(new UserEvent($user), UserEvent::CREATED);
 
             $this->addFlash('success', sprintf('Compte « %s » créé.', (string) $user->getEmail()));
 
@@ -82,7 +86,8 @@ final class UserController extends AbstractController
                 $user->setPassword($this->passwordHasher->hashPassword($user, $plainPassword));
             }
 
-            $this->entityManager->flush();
+            $this->userManager->save($user);
+            $this->eventDispatcher->dispatch(new UserEvent($user), UserEvent::EDITED);
 
             $this->addFlash('success', sprintf('Compte « %s » mis à jour.', (string) $user->getEmail()));
 
@@ -111,8 +116,8 @@ final class UserController extends AbstractController
             return $this->redirectToRoute('app_admin_user_index');
         }
 
-        $this->entityManager->remove($user);
-        $this->entityManager->flush();
+        $this->eventDispatcher->dispatch(new UserEvent($user), UserEvent::DELETED);
+        $this->userManager->delete($user);
 
         $this->addFlash('success', 'Compte supprimé.');
 

@@ -12,6 +12,9 @@
 - Séparer l'exposition du modèle : entités Doctrine dans `src/Entity/`,
   DTO d'API dans `src/ApiResource/` dès que la forme exposée diverge du
   schéma de la base.
+- Une classe de `vendor/` ne peut pas porter d'attributs : elle s'expose en
+  YAML dans `config/api_platform/` (c'est le cas du `User` du auth-bundle).
+  Les trois chemins scannés sont déclarés dans `api_platform.mapping.paths`.
 - Sérialisation : toujours des groupes explicites
   (`normalizationContext` / `denormalizationContext`), jamais l'entité nue.
 - Validation par contraintes Symfony ; API Platform renvoie alors
@@ -24,6 +27,17 @@
 - Tests fonctionnels avec `ApiTestCase` (`static::createClient()` +
   `assertMatchesResourceItemJsonSchema()`), pas avec `WebTestCase`.
 - `GET /health` est le smoke test : il doit rester sans dépendance à la base.
+
+### Comptes
+
+- Le compte est `Jul6Art\AuthBundle\Entity\User` (auth-bundle) : pas d'entité
+  `App\Entity\User`. Injecter `UserManagerInterface` / `UserRepositoryInterface`,
+  créer les comptes avec `UserFactory::create()`.
+- L'entité vendor ne porte aucune règle applicative : contraintes dans
+  `config/validator/user.yaml`, groupes de sérialisation dans
+  `config/serializer/user.yaml`. Le mot de passe n'est dans aucun groupe, il ne
+  sort donc jamais de l'API.
+- Rôles : `User::ROLE_USER` et `User::ROLE_ADMIN`, jamais de chaîne littérale.
 
 ### Authentification (JWT)
 

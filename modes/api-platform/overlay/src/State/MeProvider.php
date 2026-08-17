@@ -6,12 +6,13 @@ namespace App\State;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
-use App\Entity\User;
+use Jul6Art\AuthBundle\Entity\User;
 use Symfony\Bundle\SecurityBundle\Security;
 
 /**
  * Alimente GET /api/me : le compte porté par le jeton, sans identifiant dans
- * l'URL.
+ * l'URL. L'opération est déclarée dans config/api_platform/resources.yaml,
+ * l'entité venant du auth-bundle.
  *
  * @implements ProviderInterface<User>
  */

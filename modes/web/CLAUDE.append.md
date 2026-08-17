@@ -31,8 +31,18 @@
 
 ### Comptes et sécurité
 
-- Entité `App\Entity\User` (e-mail + rôles + mot de passe haché). `ROLE_USER` est
-  implicite : `getRoles()` l'ajoute, `setRoles()` le retire du stockage.
+- Le compte est `Jul6Art\AuthBundle\Entity\User` (auth-bundle) : pas d'entité
+  `App\Entity\User`. Les contrôleurs passent par `UserManagerInterface` et
+  `UserRepositoryInterface`, et créent les comptes avec `UserFactory::create()`.
+- Contraintes de validation dans `config/validator/user.yaml` (le mot de passe
+  n'y est pas validé : il est haché *après* la validation du formulaire, ses
+  règles de robustesse vivent dans `App\Form\PlainPasswordType`).
+- `App\Entity\ResetPasswordRequest` montre le patron attendu pour une entité
+  maison : `IdTrait` du core-bundle, et son dépôt hérite d'`AbstractRepository`.
+- Les mouvements de comptes passent par `App\Event\UserEvent` (héritant
+  d'`AbstractEvent`) et `App\EventListener\UserEventListener` (héritant
+  d'`AbstractEventListener`) : y brancher toute nouvelle réaction plutôt que
+  d'alourdir les contrôleurs.
 - Parcours livrés : inscription (`/register`), connexion (`/login`), mot de passe
   oublié (`/reset-password`, `symfonycasts/reset-password-bundle`), changement de
   mot de passe (`/profile/password`), administration des comptes (`/admin/users`).

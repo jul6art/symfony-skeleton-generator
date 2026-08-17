@@ -1,0 +1,10 @@
+# jul6art/core-bundle — briques communes (abstractions manager/repository,
+# événements, traits de service). Chaque option est aussi exposée en paramètre
+# de conteneur préfixé « core. ».
+core:
+    # Envoi des logs critiques par e-mail (Monolog + Mailer) : à activer en prod
+    # en renseignant les trois options suivantes.
+    email_debug: false
+    email_debug_from: ~
+    email_debug_to: ~
+    email_debug_title: 'Erreur sur {{PROJECT_TITLE}}'

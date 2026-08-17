@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Entity\User;
+use App\Event\UserEvent;
 use App\Form\RegistrationFormType;
-use Doctrine\ORM\EntityManagerInterface;
+use Jul6Art\AuthBundle\Factory\UserFactory;
+use Jul6Art\AuthBundle\Manager\Interfaces\UserManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -20,6 +22,8 @@ final class RegistrationController extends AbstractController
     public function __construct(
         #[Autowire('%app.registration_enabled%')]
         private readonly bool $registrationEnabled,
+        private readonly UserManagerInterface $userManager,
+        private readonly EventDispatcherInterface $eventDispatcher,
     ) {
     }
 
@@ -27,7 +31,6 @@ final class RegistrationController extends AbstractController
     public function __invoke(
         Request $request,
         UserPasswordHasherInterface $passwordHasher,
-        EntityManagerInterface $entityManager,
         Security $security,
     ): Response {
         // Inscription fermée : la route n'existe pas, plutôt qu'un 403 qui
@@ -40,7 +43,8 @@ final class RegistrationController extends AbstractController
             return $this->redirectToRoute('app_home');
         }
 
-        $user = new User();
+        // Les comptes se créent par la fabrique du auth-bundle, jamais avec new.
+        $user = UserFactory::create();
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
 
@@ -49,8 +53,8 @@ final class RegistrationController extends AbstractController
             $plainPassword = $form->get('plainPassword')->getData();
             $user->setPassword($passwordHasher->hashPassword($user, $plainPassword));
 
-            $entityManager->persist($user);
-            $entityManager->flush();
+            $this->userManager->save($user);
+            $this->eventDispatcher->dispatch(new UserEvent($user), UserEvent::CREATED);
 
             $this->addFlash('success', 'Bienvenue ! Votre compte est créé.');
 

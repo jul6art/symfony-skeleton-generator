@@ -13,6 +13,17 @@
   d'erreur homogène.
 - `GET /health` est le smoke test : il doit rester sans dépendance à la base.
 
+### Comptes
+
+- Le compte est `Jul6Art\AuthBundle\Entity\User` (auth-bundle) : pas d'entité
+  `App\Entity\User`. Injecter `UserManagerInterface` / `UserRepositoryInterface`,
+  créer les comptes avec `UserFactory::create()`.
+- L'entité vendor ne porte aucune règle applicative : contraintes dans
+  `config/validator/user.yaml`, groupes de sérialisation dans
+  `config/serializer/user.yaml`. Le mot de passe n'est dans aucun groupe, il ne
+  sort donc jamais de l'API.
+- Rôles : `User::ROLE_USER` et `User::ROLE_ADMIN`, jamais de chaîne littérale.
+
 ### Authentification (JWT)
 
 - `lexik/jwt-authentication-bundle` : `POST /api/login` avec

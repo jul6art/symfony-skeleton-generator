@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Entity\User;
+use App\Event\UserEvent;
 use App\Form\ChangePasswordFormType;
-use Doctrine\ORM\EntityManagerInterface;
+use Jul6Art\AuthBundle\Entity\User;
+use Jul6Art\AuthBundle\Manager\Interfaces\UserManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -16,9 +18,15 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/profile')]
-#[IsGranted(User::ROLE_USER)]
+#[IsGranted('ROLE_USER')]
 final class ProfileController extends AbstractController
 {
+    public function __construct(
+        private readonly UserManagerInterface $userManager,
+        private readonly EventDispatcherInterface $eventDispatcher,
+    ) {
+    }
+
     #[Route('', name: 'app_profile', methods: ['GET'])]
     public function show(): Response
     {
@@ -29,7 +37,6 @@ final class ProfileController extends AbstractController
     public function changePassword(
         Request $request,
         UserPasswordHasherInterface $passwordHasher,
-        EntityManagerInterface $entityManager,
         Security $security,
     ): Response {
         /** @var User $user */
@@ -42,7 +49,9 @@ final class ProfileController extends AbstractController
             /** @var string $plainPassword */
             $plainPassword = $form->get('plainPassword')->getData();
             $user->setPassword($passwordHasher->hashPassword($user, $plainPassword));
-            $entityManager->flush();
+
+            $this->userManager->save($user);
+            $this->eventDispatcher->dispatch(new UserEvent($user), UserEvent::EDITED);
 
             $this->addFlash('success', 'Votre mot de passe a été modifié.');
 

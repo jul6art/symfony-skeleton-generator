@@ -8,6 +8,8 @@ symfonycasts/tailwind-bundle        # binaire Tailwind local, aucun build Node
 symfonycasts/reset-password-bundle  # jetons de réinitialisation de mot de passe
 symfony/rate-limiter                # login_throttling sur le formulaire de login
 
+jul6art/auth-bundle                 # entité User, dépôt et manager
+
 # Suggestions :
 # symfony/ux-live-component
 # symfony/ux-icons

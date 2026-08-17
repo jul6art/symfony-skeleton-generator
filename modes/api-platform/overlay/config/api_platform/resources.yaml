@@ -1,0 +1,25 @@
+# L'entité User vient du auth-bundle : elle ne peut pas porter d'attributs
+# #[ApiResource], sa configuration d'exposition se déclare donc ici.
+#
+# Le mot de passe n'appartient à aucun groupe de sérialisation
+# (config/serializer/user.yaml) : il ne peut pas sortir.
+resources:
+    Jul6Art\AuthBundle\Entity\User:
+        shortName: User
+        description: 'Comptes de l''application.'
+        normalizationContext:
+            groups: ['user:read']
+        operations:
+            # L'opération d'item canonique vient en premier : c'est elle qui
+            # sert de gabarit aux IRI (@id) de la ressource.
+            ApiPlatform\Metadata\Get:
+                security: "is_granted('ROLE_ADMIN') or object == user"
+            ApiPlatform\Metadata\GetCollection:
+                security: "is_granted('ROLE_ADMIN')"
+            me:
+                class: ApiPlatform\Metadata\Get
+                uriTemplate: /me
+                description: 'Compte associé au jeton présenté.'
+                security: "is_granted('ROLE_USER')"
+                provider: App\State\MeProvider
+                read: true

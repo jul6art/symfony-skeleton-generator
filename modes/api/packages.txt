@@ -13,6 +13,8 @@ nelmio/cors-bundle
 lexik/jwt-authentication-bundle
 symfony/rate-limiter
 
+jul6art/auth-bundle                 # entité User, dépôt et manager
+
 # Suggestions :
 # gesdinet/jwt-refresh-token-bundle    # refresh tokens
 # symfony/messenger                    # bus de messages / async

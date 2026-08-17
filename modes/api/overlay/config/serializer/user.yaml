@@ -1,0 +1,11 @@
+# L'entité User vient du auth-bundle : ses groupes de sérialisation se
+# déclarent ici. Le mot de passe n'appartient à aucun groupe, il ne sort donc
+# jamais de l'API.
+Jul6Art\AuthBundle\Entity\User:
+    attributes:
+        id:
+            groups: ['user:read']
+        email:
+            groups: ['user:read']
+        roles:
+            groups: ['user:read']

@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Entity\User;
 use App\Form\NewPasswordFormType;
 use App\Form\ResetPasswordRequestFormType;
-use App\Repository\UserRepository;
-use Doctrine\ORM\EntityManagerInterface;
+use Jul6Art\AuthBundle\Entity\User;
+use Jul6Art\AuthBundle\Manager\Interfaces\UserManagerInterface;
+use Jul6Art\AuthBundle\Repository\Interfaces\UserRepositoryInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -36,8 +36,8 @@ final class ResetPasswordController extends AbstractController
 
     public function __construct(
         private readonly ResetPasswordHelperInterface $resetPasswordHelper,
-        private readonly UserRepository $users,
-        private readonly EntityManagerInterface $entityManager,
+        private readonly UserRepositoryInterface $users,
+        private readonly UserManagerInterface $userManager,
     ) {
     }
 
@@ -106,7 +106,7 @@ final class ResetPasswordController extends AbstractController
             /** @var string $plainPassword */
             $plainPassword = $form->get('plainPassword')->getData();
             $user->setPassword($passwordHasher->hashPassword($user, $plainPassword));
-            $this->entityManager->flush();
+            $this->userManager->save($user);
 
             $this->cleanSessionAfterReset();
             $this->addFlash('success', 'Mot de passe modifié : vous pouvez vous connecter.');

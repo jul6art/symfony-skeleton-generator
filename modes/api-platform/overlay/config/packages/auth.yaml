@@ -1,0 +1,13 @@
+# jul6art/auth-bundle — entité User, son dépôt et son manager.
+auth:
+    enabled: true
+
+# L'entité du bundle vit dans vendor/ : son mapping doit être déclaré ici.
+doctrine:
+    orm:
+        mappings:
+            AuthBundle:
+                type: attribute
+                dir: '%kernel.project_dir%/vendor/jul6art/auth-bundle/Entity'
+                prefix: 'Jul6Art\AuthBundle\Entity'
+                is_bundle: false

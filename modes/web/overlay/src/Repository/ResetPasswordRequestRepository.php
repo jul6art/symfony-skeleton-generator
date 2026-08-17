@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Entity\ResetPasswordRequest;
-use App\Entity\User;
 use DateTimeInterface;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use InvalidArgumentException;
+use Jul6Art\AuthBundle\Entity\User;
+use Jul6Art\CoreBundle\Repository\AbstractRepository;
 use SymfonyCasts\Bundle\ResetPassword\Model\ResetPasswordRequestInterface;
 use SymfonyCasts\Bundle\ResetPassword\Persistence\Repository\ResetPasswordRequestRepositoryTrait;
 use SymfonyCasts\Bundle\ResetPassword\Persistence\ResetPasswordRequestRepositoryInterface;
@@ -17,9 +17,12 @@ use SymfonyCasts\Bundle\ResetPassword\Persistence\ResetPasswordRequestRepository
 use function sprintf;
 
 /**
- * @extends ServiceEntityRepository<ResetPasswordRequest>
+ * Dépôt maison : il hérite d'AbstractRepository (core-bundle) pour disposer de
+ * save/delete/flush/clear, et complète le contrat du bundle de réinitialisation.
+ *
+ * @extends AbstractRepository<ResetPasswordRequest>
  */
-final class ResetPasswordRequestRepository extends ServiceEntityRepository implements ResetPasswordRequestRepositoryInterface
+final class ResetPasswordRequestRepository extends AbstractRepository implements ResetPasswordRequestRepositoryInterface
 {
     // persist / find / purge des demandes, fournis par le bundle.
     use ResetPasswordRequestRepositoryTrait;

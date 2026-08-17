@@ -23,9 +23,17 @@ api_platform:
         pagination_client_items_per_page: true
         pagination_maximum_items_per_page: 100
 
+    # L'entité User du auth-bundle est exposée par config/api_platform/ :
+    # ce chemin doit être déclaré, il ne fait pas partie des défauts.
+    mapping:
+        paths:
+            - '%kernel.project_dir%/config/api_platform'
+            - '%kernel.project_dir%/src/ApiResource'
+            - '%kernel.project_dir%/src/Entity'
+
     swagger:
         # Bouton « Authorize » de Swagger UI : on y colle le JWT obtenu sur
-        # POST /api/login (documenté par App\OpenApi\JwtDecorator).
+        # POST /api/login (documenté par l'intégration API Platform de lexik).
         http_auth:
             JWT:
                 scheme: bearer

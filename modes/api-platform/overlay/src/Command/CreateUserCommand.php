@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Command;
 
-use App\Entity\User;
-use App\Repository\UserRepository;
-use Doctrine\ORM\EntityManagerInterface;
+use Jul6Art\AuthBundle\Entity\User;
+use Jul6Art\AuthBundle\Factory\UserFactory;
+use Jul6Art\AuthBundle\Manager\Interfaces\UserManagerInterface;
+use Jul6Art\AuthBundle\Repository\Interfaces\UserRepositoryInterface;
 use RuntimeException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -24,14 +25,15 @@ use function sprintf;
 use function strlen;
 
 /**
- * Création de comptes en console : l'API n'expose pas d'inscription publique.
+ * Crée un compte en ligne de commande — notamment le premier administrateur,
+ * puisque l'inscription publique ne donne que ROLE_USER.
  */
 #[AsCommand(name: 'app:user:create', description: 'Crée un compte utilisateur')]
 final class CreateUserCommand extends Command
 {
     public function __construct(
-        private readonly EntityManagerInterface $entityManager,
-        private readonly UserRepository $users,
+        private readonly UserManagerInterface $userManager,
+        private readonly UserRepositoryInterface $users,
         private readonly UserPasswordHasherInterface $passwordHasher,
         private readonly ValidatorInterface $validator,
     ) {
@@ -71,7 +73,7 @@ final class CreateUserCommand extends Command
             });
         }
 
-        $user = new User();
+        $user = UserFactory::create();
         $user->setEmail($email);
         $user->setRoles(true === $input->getOption('admin') ? [User::ROLE_ADMIN] : []);
         $user->setPassword($this->passwordHasher->hashPassword($user, $password));
@@ -85,8 +87,7 @@ final class CreateUserCommand extends Command
             return Command::INVALID;
         }
 
-        $this->entityManager->persist($user);
-        $this->entityManager->flush();
+        $this->userManager->save($user);
 
         $io->success(sprintf('Compte « %s » créé (%s).', $email, implode(', ', $user->getRoles())));
 

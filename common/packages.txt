@@ -2,6 +2,7 @@
 # Un paquet par ligne, # pour commenter.
 
 symfony/monolog-bundle
+jul6art/core-bundle                 # abstractions maison : manager, repository, événements, traits
 
 # Suggestions :
 # symfony/uid

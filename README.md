@@ -26,6 +26,17 @@ This repository **is not a versioned Symfony project**: `symfony new` is what
 creates the project (so Flex recipes always stay up to date), and the skeleton
 then applies its own packages and files on top.
 
+Every mode builds on two in-house bundles, and the generated code uses them
+rather than reinventing their pieces:
+
+- **`jul6art/core-bundle`** — the shared abstractions: `AbstractRepository`,
+  `AbstractManager`, `IdTrait`, `FactoryInterface`, `AbstractEvent`, the
+  event/entity listener base classes and the `*AwareTrait` setters.
+- **`jul6art/auth-bundle`** — the `User` entity, its repository (a password
+  upgrader), its manager and its factory. No project ever declares its own
+  `App\Entity\User`; validation and serialization rules for that vendor entity
+  live in `config/validator/` and `config/serializer/`.
+
 ## What each mode ships
 
 ### `web` — web application

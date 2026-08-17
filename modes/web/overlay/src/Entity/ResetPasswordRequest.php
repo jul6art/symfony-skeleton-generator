@@ -7,19 +7,18 @@ namespace App\Entity;
 use App\Repository\ResetPasswordRequestRepository;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
+use Jul6Art\AuthBundle\Entity\User;
+use Jul6Art\CoreBundle\Entity\Traits\IdTrait;
 use SymfonyCasts\Bundle\ResetPassword\Model\ResetPasswordRequestInterface;
 use SymfonyCasts\Bundle\ResetPassword\Model\ResetPasswordRequestTrait;
 
 #[ORM\Entity(repositoryClass: ResetPasswordRequestRepository::class)]
 class ResetPasswordRequest implements ResetPasswordRequestInterface
 {
+    // id + getId(), fournis par le core-bundle.
+    use IdTrait;
     // selector, hashedToken, requestedAt, expiresAt + accesseurs.
     use ResetPasswordRequestTrait;
-
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
@@ -29,11 +28,6 @@ class ResetPasswordRequest implements ResetPasswordRequestInterface
     {
         $this->user = $user;
         $this->initialize($expiresAt, $selector, $hashedToken);
-    }
-
-    public function getId(): ?int
-    {
-        return $this->id;
     }
 
     public function getUser(): User

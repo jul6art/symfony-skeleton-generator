@@ -18,10 +18,6 @@
                     <dt class="text-slate-500">Rôles</dt>
                     <dd class="font-medium text-slate-900">{{ app.user.roles|join(', ') }}</dd>
                 </div>
-                <div class="flex justify-between py-3 text-sm">
-                    <dt class="text-slate-500">Compte créé le</dt>
-                    <dd class="font-medium text-slate-900">{{ app.user.createdAt|date('d/m/Y') }}</dd>
-                </div>
             </dl>
 
             <div class="mt-6">
