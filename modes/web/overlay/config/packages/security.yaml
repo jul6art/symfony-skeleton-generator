@@ -1,0 +1,53 @@
+security:
+    password_hashers:
+        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
+
+    providers:
+        app_user_provider:
+            entity:
+                class: App\Entity\User
+                property: email
+
+    firewalls:
+        dev:
+            # Profileur et assets statiques toujours servis.
+            pattern: ^/(_profiler|_wdt|assets|build)/
+            security: false
+        main:
+            lazy: true
+            provider: app_user_provider
+            form_login:
+                login_path: app_login
+                check_path: app_login
+                enable_csrf: true
+                default_target_path: app_home
+            logout:
+                path: app_logout
+                target: app_home
+            remember_me:
+                secret: '%kernel.secret%'
+                lifetime: 604800 # 7 jours
+                secure: auto
+                samesite: lax
+            # Freine le bourrinage sur le formulaire de connexion (symfony/rate-limiter).
+            login_throttling:
+                max_attempts: 5
+                interval: '15 minutes'
+
+    role_hierarchy:
+        ROLE_ADMIN: ROLE_USER
+
+    # Ceinture et bretelles : les contrôleurs portent déjà #[IsGranted].
+    access_control:
+        - { path: ^/admin, roles: ROLE_ADMIN }
+        - { path: ^/profile, roles: ROLE_USER }
+
+when@test:
+    security:
+        password_hashers:
+            # Hachage volontairement faible pour ne pas ralentir la suite de tests.
+            Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
+                algorithm: auto
+                cost: 4
+                time_cost: 3
+                memory_cost: 10

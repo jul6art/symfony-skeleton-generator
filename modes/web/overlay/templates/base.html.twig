@@ -1,16 +1,58 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" class="h-full">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>{% block title %}{{PROJECT_TITLE}}{% endblock %}</title>
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
-        {% block stylesheets %}{% endblock %}
+        {% block stylesheets %}
+            {# Font Awesome est servi depuis assets/fontawesome/ (make fontawesome) : aucune ressource distante. #}
+            <link rel="stylesheet" href="{{ asset('fontawesome/css/all.min.css') }}">
+        {% endblock %}
         {% block javascripts %}
             {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% endblock %}
     </head>
-    <body>
-        {% block body %}{% endblock %}
+    <body class="flex min-h-full flex-col bg-slate-50 text-slate-800 antialiased">
+        <header class="border-b border-slate-200 bg-white">
+            <nav class="mx-auto flex max-w-5xl flex-wrap items-center gap-2 px-4 py-3">
+                <a href="{{ path('app_home') }}" class="mr-auto inline-flex items-center gap-2 text-lg font-semibold text-slate-900">
+                    <i class="fa-solid fa-cube text-indigo-600"></i>
+                    {{PROJECT_TITLE}}
+                </a>
+
+                {% if app.user %}
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <a href="{{ path('app_admin_user_index') }}" class="nav-link">
+                            <i class="fa-solid fa-users-gear"></i> Utilisateurs
+                        </a>
+                    {% endif %}
+                    <a href="{{ path('app_profile') }}" class="nav-link">
+                        <i class="fa-solid fa-user"></i> {{ app.user.userIdentifier }}
+                    </a>
+                    <a href="{{ path('app_logout') }}" class="nav-link">
+                        <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
+                    </a>
+                {% else %}
+                    <a href="{{ path('app_login') }}" class="nav-link">
+                        <i class="fa-solid fa-right-to-bracket"></i> Connexion
+                    </a>
+                    <a href="{{ path('app_register') }}" class="btn btn-primary">
+                        <i class="fa-solid fa-user-plus"></i> Créer un compte
+                    </a>
+                {% endif %}
+            </nav>
+        </header>
+
+        <main class="mx-auto w-full max-w-5xl flex-1 px-4 py-8">
+            {% include 'partials/_flashes.html.twig' %}
+            {% block body %}{% endblock %}
+        </main>
+
+        <footer class="border-t border-slate-200 bg-white">
+            <div class="mx-auto max-w-5xl px-4 py-4 text-sm text-slate-500">
+                {{PROJECT_TITLE}} — {{ "now"|date("Y") }}
+            </div>
+        </footer>
     </body>
 </html>

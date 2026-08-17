@@ -1,0 +1,6 @@
+symfonycasts_tailwind:
+    # Version du binaire Tailwind CLI téléchargée dans var/tailwind/ au premier
+    # `make tailwind` (aucun Node, aucune ressource distante à l'exécution).
+    # `symfony console tailwind:update` remonte la version ici.
+    binary_version: 'v4.3.3'
+    input_css: '%kernel.project_dir%/assets/styles/app.css'

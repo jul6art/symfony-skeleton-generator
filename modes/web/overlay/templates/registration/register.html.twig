@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer un compte — {{PROJECT_TITLE}}{% endblock %}
+
+{% block body %}
+    <div class="mx-auto max-w-md">
+        <div class="card">
+            <h1 class="mb-6 flex items-center gap-2 text-xl font-semibold text-slate-900">
+                <i class="fa-solid fa-user-plus text-indigo-600"></i> Créer un compte
+            </h1>
+
+            {{ form_start(registrationForm) }}
+                {{ form_row(registrationForm.email) }}
+                {{ form_row(registrationForm.plainPassword.first) }}
+                {{ form_row(registrationForm.plainPassword.second) }}
+                {{ form_errors(registrationForm.plainPassword) }}
+
+                <button type="submit" class="btn btn-primary w-full">
+                    <i class="fa-solid fa-check"></i> Créer mon compte
+                </button>
+            {{ form_end(registrationForm) }}
+
+            <p class="mt-6 text-sm text-slate-600">
+                Déjà inscrit ? <a href="{{ path('app_login') }}" class="text-indigo-600 hover:underline">Se connecter</a>
+            </p>
+        </div>
+    </div>
+{% endblock %}

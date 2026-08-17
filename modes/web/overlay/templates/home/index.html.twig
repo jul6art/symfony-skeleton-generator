@@ -3,6 +3,29 @@
 {% block title %}{{PROJECT_TITLE}}{% endblock %}
 
 {% block body %}
-    <h1>{{PROJECT_TITLE}}</h1>
-    <p>Projet généré depuis le skeleton maison ({{MODE}}).</p>
+    <div class="card">
+        <h1 class="text-2xl font-semibold text-slate-900">{{PROJECT_TITLE}}</h1>
+        <p class="mt-2 text-slate-600">Projet généré depuis le skeleton maison ({{MODE}}).</p>
+
+        <div class="mt-6 grid gap-4 sm:grid-cols-2">
+            <div class="rounded-lg border border-slate-200 p-4">
+                <h2 class="flex items-center gap-2 font-medium text-slate-900">
+                    <i class="fa-solid fa-paintbrush text-indigo-600"></i> Tailwind local
+                </h2>
+                <p class="mt-1 text-sm text-slate-600">
+                    Binaire Tailwind téléchargé par <code class="rounded bg-slate-100 px-1">make tailwind</code>,
+                    CSS compilé dans le projet. Aucune ressource distante à l'exécution.
+                </p>
+            </div>
+            <div class="rounded-lg border border-slate-200 p-4">
+                <h2 class="flex items-center gap-2 font-medium text-slate-900">
+                    <i class="fa-solid fa-shield-halved text-indigo-600"></i> Comptes prêts à l'emploi
+                </h2>
+                <p class="mt-1 text-sm text-slate-600">
+                    Inscription, connexion, mot de passe oublié, changement de mot de passe et
+                    administration des comptes.
+                </p>
+            </div>
+        </div>
+    </div>
 {% endblock %}

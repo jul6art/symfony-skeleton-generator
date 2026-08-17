@@ -1,0 +1,21 @@
+{% set styles = {
+    success: 'border-emerald-200 bg-emerald-50 text-emerald-800',
+    error:   'border-red-200 bg-red-50 text-red-800',
+    warning: 'border-amber-200 bg-amber-50 text-amber-800',
+    info:    'border-sky-200 bg-sky-50 text-sky-800',
+} %}
+{% set icons = {
+    success: 'fa-circle-check',
+    error:   'fa-circle-exclamation',
+    warning: 'fa-triangle-exclamation',
+    info:    'fa-circle-info',
+} %}
+
+{% for type, messages in app.flashes %}
+    {% for message in messages %}
+        <div class="mb-4 flex items-start gap-3 rounded-lg border px-4 py-3 text-sm {{ styles[type]|default(styles.info) }}" role="alert">
+            <i class="fa-solid {{ icons[type]|default(icons.info) }} mt-0.5"></i>
+            <span>{{ message }}</span>
+        </div>
+    {% endfor %}
+{% endfor %}
