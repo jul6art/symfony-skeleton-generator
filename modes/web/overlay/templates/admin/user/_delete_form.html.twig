@@ -8,33 +8,12 @@
         <span class="sr-only">Supprimer {{ user.email }}</span>
     </button>
 
-    <dialog data-confirm-target="dialog"
-            aria-labelledby="confirm-delete-title-{{ user.id }}"
-            class="m-auto w-[min(28rem,calc(100vw-2rem))] rounded-xl border border-slate-200 bg-white p-0 text-slate-800 shadow-xl backdrop:bg-slate-900/50">
-        <div class="p-6">
-            <div class="flex items-start gap-3">
-                <span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-red-100 text-red-600">
-                    <i class="fa-solid fa-triangle-exclamation"></i>
-                </span>
-                <div>
-                    <h2 id="confirm-delete-title-{{ user.id }}" class="text-lg font-semibold text-slate-900">
-                        Supprimer ce compte ?
-                    </h2>
-                    <p class="mt-1 text-sm text-slate-600">
-                        <span class="font-medium text-slate-900">{{ user.email }}</span> sera définitivement
-                        supprimé. Cette action est irréversible.
-                    </p>
-                </div>
-            </div>
-
-            <div class="mt-6 flex justify-end gap-2">
-                <button type="button" class="btn btn-secondary" data-action="confirm#cancel">
-                    Annuler
-                </button>
-                <button type="button" class="btn btn-danger" data-action="confirm#accept">
-                    <i class="fa-solid fa-trash"></i> Supprimer
-                </button>
-            </div>
-        </div>
-    </dialog>
+    {{ include('partials/_confirm_dialog.html.twig', {
+        dialog_id: 'confirm-delete-user-' ~ user.id,
+        title: 'Supprimer ce compte ?',
+        highlight: user.email,
+        message: 'sera définitivement supprimé. Cette action est irréversible.',
+        confirm_label: 'Supprimer',
+        confirm_icon: 'fa-trash',
+    }, with_context = false) }}
 </form>

@@ -30,9 +30,24 @@
                     <a href="{{ path('app_profile') }}" class="nav-link">
                         <i class="fa-solid fa-user"></i> {{ app.user.userIdentifier }}
                     </a>
-                    <a href="{{ path('app_logout') }}" class="nav-link">
-                        <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
-                    </a>
+                    {# Déconnexion en POST + CSRF : un lien GET part au moindre préchargement. #}
+                    <form method="post" action="{{ logout_path() }}"
+                          data-controller="confirm" data-action="submit->confirm#request">
+                        <button type="submit" class="nav-link">
+                            <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
+                        </button>
+
+                        {{ include('partials/_confirm_dialog.html.twig', {
+                            dialog_id: 'confirm-logout',
+                            title: 'Se déconnecter ?',
+                            message: 'Votre session en cours sera fermée.',
+                            icon: 'fa-right-from-bracket',
+                            icon_class: 'bg-indigo-100 text-indigo-600',
+                            confirm_label: 'Se déconnecter',
+                            confirm_icon: 'fa-right-from-bracket',
+                            confirm_class: 'btn-primary',
+                        }, with_context = false) }}
+                    </form>
                 {% else %}
                     <a href="{{ path('app_login') }}" class="nav-link">
                         <i class="fa-solid fa-right-to-bracket"></i> Connexion

@@ -24,6 +24,9 @@ security:
             logout:
                 path: app_logout
                 target: app_home
+                # Déconnexion en POST avec jeton : pas de déconnexion
+                # déclenchée par un lien tiers ou un préchargement.
+                enable_csrf: true
             remember_me:
                 secret: '%kernel.secret%'
                 lifetime: 604800 # 7 jours

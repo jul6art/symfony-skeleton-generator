@@ -25,7 +25,7 @@ final class SecurityController extends AbstractController
         ]);
     }
 
-    #[Route('/logout', name: 'app_logout', methods: ['GET'])]
+    #[Route('/logout', name: 'app_logout', methods: ['POST'])]
     public function logout(): never
     {
         throw new LogicException('Cette action est interceptée par la clé "logout" du pare-feu.');

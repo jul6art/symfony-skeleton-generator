@@ -21,12 +21,13 @@
   sur chaque `form_row`.
 - Turbo est actif : un formulaire invalide doit être renvoyé en **422**
   (`Response::HTTP_UNPROCESSABLE_ENTITY`), sinon Turbo ignore la réponse.
-- Toute action destructive passe par le contrôleur Stimulus `confirm`
+- Toute action sensible passe par le contrôleur Stimulus `confirm`
   (`assets/controllers/confirm_controller.js`) : le formulaire porte
-  `data-controller="confirm" data-action="submit->confirm#request"` et contient
-  un `<dialog data-confirm-target="dialog">` avec deux boutons
-  (`confirm#cancel` / `confirm#accept`). Jamais de `confirm()` natif : il
-  bloque le thread et jure avec le reste de l'interface.
+  `data-controller="confirm" data-action="submit->confirm#request"` et inclut
+  `partials/_confirm_dialog.html.twig` (titre, message, libellés, icônes en
+  paramètres). Jamais de `confirm()` natif : il bloque le thread et jure avec
+  le reste de l'interface. Déjà en place sur la suppression d'un compte et sur
+  la déconnexion.
 
 ### Comptes et sécurité
 
@@ -38,6 +39,9 @@
 - Le pare-feu utilise `form_login` (pas d'authenticator maison) avec CSRF,
   `remember_me` et `login_throttling`. Toute nouvelle règle d'accès va dans
   `config/packages/security.yaml` **et** dans un `#[IsGranted]` sur le contrôleur.
+- La déconnexion est en **POST + CSRF** (`enable_csrf`, route `app_logout`
+  limitée à POST) : le lien GET historique se déclenchait sur un préchargement
+  ou une image tierce. Toujours utiliser `logout_path()` dans un formulaire.
 - Le premier administrateur se crée en console :
   `make user-create ARGS="moi@exemple.com --admin"`.
 - Les e-mails partent par Messenger (`SendEmailMessage` routé sur `async`) : sans
