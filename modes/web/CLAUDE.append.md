@@ -21,6 +21,12 @@
   sur chaque `form_row`.
 - Turbo est actif : un formulaire invalide doit être renvoyé en **422**
   (`Response::HTTP_UNPROCESSABLE_ENTITY`), sinon Turbo ignore la réponse.
+- Toute action destructive passe par le contrôleur Stimulus `confirm`
+  (`assets/controllers/confirm_controller.js`) : le formulaire porte
+  `data-controller="confirm" data-action="submit->confirm#request"` et contient
+  un `<dialog data-confirm-target="dialog">` avec deux boutons
+  (`confirm#cancel` / `confirm#accept`). Jamais de `confirm()` natif : il
+  bloque le thread et jure avec le reste de l'interface.
 
 ### Comptes et sécurité
 
