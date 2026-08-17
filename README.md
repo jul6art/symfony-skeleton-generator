@@ -18,13 +18,50 @@ A Symfony project generator with three modes to choose from:
 
 | Mode | Base | Contents |
 | --- | --- | --- |
-| `web` | `symfony new --webapp` | Twig, AssetMapper, Stimulus/Turbo, Doctrine, Security, Mailer… |
-| `api` | `symfony new` (bare skeleton) | Doctrine, Serializer, Validator, Security, CORS |
+| `web` | `symfony new --webapp` | Twig + local Tailwind & Font Awesome, full account flow (register / login / forgot password / change password), user CRUD |
+| `api` | `symfony new` (bare skeleton) | Doctrine, Serializer, Validator, JWT authentication, CORS |
 | `api-platform` | `symfony new --api` | API Platform (REST + JSON-LD/Hydra, OpenAPI docs, optional GraphQL) |
 
 This repository **is not a versioned Symfony project**: `symfony new` is what
 creates the project (so Flex recipes always stay up to date), and the skeleton
 then applies its own packages and files on top.
+
+## What each mode ships
+
+### `web` — web application
+
+- **Tailwind** through `symfonycasts/tailwind-bundle`: a standalone binary, no
+  Node build. **Font Awesome Free** is downloaded into `assets/fontawesome/` by
+  `make fontawesome` (run by `make install`). Nothing is loaded from a CDN at
+  runtime — no remote `src` anywhere in the layout.
+- Ready-made account flow: `/register`, `/login` (CSRF, remember me, throttling),
+  `/reset-password` (`symfonycasts/reset-password-bundle`, e-mail + one-shot
+  token), `/profile/password`.
+- User CRUD under `/admin/users`, restricted to `ROLE_ADMIN`.
+- A `User` entity, a Tailwind form theme, flash messages and a responsive
+  layout, all ready to build on.
+- First administrator: `make user-create ARGS="me@example.com --admin"`.
+
+### `api` — JSON API
+
+- **JWT authentication** (`lexik/jwt-authentication-bundle`): `POST /api/login`
+  returns a token, every other `/api` route expects
+  `Authorization: Bearer <token>`. The key pair is generated at install time
+  (`make jwt-keypair` to regenerate).
+- **CORS** through `nelmio/cors-bundle`, driven by `CORS_ALLOW_ORIGIN`.
+- `GET /health` as a database-free smoke test, `GET /api/me` for the account
+  behind the token, and accounts created from the console (no public sign-up by
+  default).
+
+### `api-platform` — declarative API
+
+`symfony new --api` plus house rules: pagination bounds, JSON-LD + JSON formats,
+`stateless` operations, and make targets for the OpenAPI export and the
+interactive docs.
+
+Every mode also ships a smoke test — public pages and probes answer, protected
+areas stay closed — so `make qa` (php-cs-fixer, PHPStan level 8, PHPUnit) is
+green on a freshly generated project.
 
 ## Usage
 
@@ -89,6 +126,7 @@ modes/
     mode.conf             # DESCRIPTION + SYMFONY_NEW_FLAGS
     packages.txt          # + packages-dev.txt, gitignore.append
     CLAUDE.append.md
+    post-install.sh       # (optional) hook for this mode
     overlay/
   api/
     …
@@ -97,6 +135,12 @@ modes/
 bin/new-project
 ```
 
+Both `post-install.sh` hooks run with `PROJECT_DIR`, `PROJECT_NAME`, `MODE`,
+`MODE_DIR`, `SKELETON_DIR` and `PHP_VERSION` in the environment. The `web` hook
+fetches Font Awesome and builds Tailwind; the `api` hook generates the JWT key
+pair. Both degrade gracefully when there is no network — the matching `make`
+target can be re-run later.
+
 ## Adding a mode
 
 A mode is just a data directory — there is no code to touch. Every file is
@@ -104,7 +148,7 @@ optional except `mode.conf`:
 
 | File | Role |
 | --- | --- |
-| `mode.conf` | `DESCRIPTION` (shown by `--list`) + `SYMFONY_NEW_FLAGS` |
+| `mode.conf` | `DESCRIPTION` (shown by `--list`), `SYMFONY_NEW_FLAGS`, optional `NEXT_STEPS` printed once the project is generated |
 | `packages.txt` | `composer require`, on top of `common/packages.txt` |
 | `packages-dev.txt` | `composer require --dev` |
 | `gitignore.append` | appended to the `.gitignore` written by Flex |
