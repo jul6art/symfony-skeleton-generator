@@ -5,3 +5,7 @@ parameters:
         - tests
     symfony:
         containerXmlPath: var/cache/dev/App_KernelDevDebugContainer.xml
+    doctrine:
+        # Les entités portent des propriétés nullables tant qu'elles ne sont pas
+        # persistées (style maker), alors que la colonne est NOT NULL.
+        allowNullablePropertyForRequiredField: true

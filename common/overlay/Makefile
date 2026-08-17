@@ -59,7 +59,7 @@ cs-fix: ## Corrige le style de code
 
 stan: ## Analyse statique
 	$(CONSOLE) cache:warmup --env=dev
-	$(PHP) vendor/bin/phpstan analyse
+	$(PHP) vendor/bin/phpstan analyse --memory-limit=1G
 
 qa: cs stan test ## Style + analyse statique + tests
 

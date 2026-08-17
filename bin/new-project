@@ -131,6 +131,7 @@ fi
 
 DESCRIPTION=''
 SYMFONY_NEW_FLAGS=''
+NEXT_STEPS=''
 if [ -f "$MODES_DIR/$MODE/mode.conf" ]; then . "$MODES_DIR/$MODE/mode.conf"; fi
 
 case "$TARGET" in
@@ -256,6 +257,10 @@ if [ "$NO_EXTRAS" = 0 ]; then
     # les listes de paquets du skeleton sont curatées à la main.
     log "Paquets du skeleton"
     run symfony composer config --no-plugins extra.symfony.allow-contrib true
+    # phpstan/extension-installer est un plugin composer : sans autorisation
+    # explicite, composer le bloque et PHPStan perd ses extensions (le
+    # phpstan.dist.neon du skeleton s'appuie dessus).
+    run symfony composer config --no-plugins allow-plugins.phpstan/extension-installer true
 
     PKGS="$(read_packages "$COMMON_DIR/packages.txt" "$MODES_DIR/$MODE/packages.txt")"
     if [ -n "$PKGS" ]; then
@@ -315,3 +320,9 @@ cat <<EOF
     make start      # serveur local https
     make qa         # cs-fixer + phpstan + phpunit
 EOF
+
+# Étapes propres au mode (base de données, premier compte…).
+if [ -n "$NEXT_STEPS" ]; then
+    printf '\n%sÀ faire ensuite :%s\n' "$B" "$N"
+    printf '%b\n' "$NEXT_STEPS"
+fi
