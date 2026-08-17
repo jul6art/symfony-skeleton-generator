@@ -5,3 +5,12 @@ lexik_jwt_authentication:
     # Durée de vie du jeton (en secondes) : court par défaut, à compléter par un
     # refresh token si le client en a besoin.
     token_ttl: 3600
+
+    # Documente POST /api/login dans la spec OpenAPI : la route est servie par
+    # le pare-feu, API Platform ne peut pas la découvrir seule. Le chemin doit
+    # être écrit tel quel (et non le nom de route), c'est lui qui apparaît.
+    api_platform:
+        enabled: true
+        check_path: /api/login
+        username_path: email
+        password_path: password

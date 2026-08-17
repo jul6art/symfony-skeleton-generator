@@ -31,6 +31,15 @@
 - `GET /api/me` renvoie le compte porté par le jeton — sonde pratique côté
   client.
 
+### Requêtes de test
+
+`request/test.http` (client HTTP de PhpStorm / VS Code) couvre les routes
+livrées : sonde, connexion — elle enregistre le jeton pour les suivantes —,
+`/api/me`, les cas 401 et le préflight CORS. **Toute route ajoutée à l'API doit
+y être ajoutée aussi**, avec son cas d'échec. L'hôte et l'adresse vivent dans
+`request/http-client.env.json`, le mot de passe dans
+`request/http-client.private.env.json` (non versionné, créé à la génération).
+
 ### CORS
 
 `nelmio/cors-bundle`, réglé dans `config/packages/nelmio_cors.yaml`.

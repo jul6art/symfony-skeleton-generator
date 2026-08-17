@@ -2,3 +2,8 @@
 # Les clés sont générées par `make jwt-keypair` : jamais dans le dépôt.
 /config/jwt/*.pem
 ###< clés JWT ###
+
+###> client HTTP ###
+# Mots de passe des environnements du client HTTP (PhpStorm / VS Code).
+/request/http-client.private.env.json
+###< client HTTP ###

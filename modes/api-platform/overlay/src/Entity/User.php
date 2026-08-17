@@ -31,14 +31,17 @@ use function in_array;
 #[UniqueEntity(fields: ['email'], message: 'Un compte existe déjà avec cette adresse e-mail.')]
 #[ApiResource(
     operations: [
+        // L'opération d'item canonique doit rester la première déclarée : c'est
+        // elle qui sert de gabarit aux IRI (@id) de la ressource. Placer /me
+        // en tête ferait pointer tous les @id sur /api/me.
+        new Get(security: "is_granted('ROLE_ADMIN') or object == user"),
+        new GetCollection(security: "is_granted('ROLE_ADMIN')"),
         new Get(
             uriTemplate: '/me',
             security: "is_granted('ROLE_USER')",
             description: 'Compte associé au jeton présenté.',
             provider: MeProvider::class,
         ),
-        new GetCollection(security: "is_granted('ROLE_ADMIN')"),
-        new Get(security: "is_granted('ROLE_ADMIN') or object == user"),
     ],
     normalizationContext: ['groups' => ['user:read']],
 )]

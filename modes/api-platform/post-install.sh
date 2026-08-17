@@ -37,6 +37,20 @@ CORS_ALLOW_ORIGIN='^https?://(localhost|127\.0\.0\.1)(:[0-9]+)?$'
 EOF
 fi
 
+# Environnement du client HTTP : le fichier privé porte le mot de passe et
+# n'est pas versionné.
+if [ -f request/http-client.private.env.json.dist ] && [ ! -f request/http-client.private.env.json ]; then
+    printf '    request/http-client.private.env.json\n'
+    cp request/http-client.private.env.json.dist request/http-client.private.env.json
+fi
+
+# Assets d'API Platform (Swagger UI, polices, feuille de style) : sans eux la
+# documentation s'affiche sans mise en forme.
+printf '    Assets API Platform…\n'
+if ! symfony console assets:install public >/dev/null 2>&1; then
+    printf '/!\\ installation des assets impossible — relancer « make assets ».\n' >&2
+fi
+
 printf '    Paire de clés JWT…\n'
 if ! symfony console lexik:jwt:generate-keypair --skip-if-exists >/dev/null 2>&1; then
     printf '/!\\ génération des clés JWT impossible — relancer « make jwt-keypair ».\n' >&2

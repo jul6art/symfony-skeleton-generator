@@ -56,6 +56,11 @@ then applies its own packages and files on top.
 - `GET /health` as a database-free smoke test, `GET /api/me` for the account
   behind the token, and accounts created from the console (no public sign-up by
   default).
+- `request/test.http` drives every shipped route from the IDE (PhpStorm / VS
+  Code HTTP client): the login request stores the token for the following ones,
+  and the 401 cases are part of the file. Host and e-mail live in
+  `request/http-client.env.json`, the password in the gitignored
+  `request/http-client.private.env.json`.
 
 ### `api-platform` — declarative API
 

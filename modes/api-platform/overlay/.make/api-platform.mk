@@ -1,9 +1,15 @@
 SERVER_URL ?= https://127.0.0.1:8000
 
-.PHONY: routes docs openapi health jwt-keypair user-create token
+.PHONY: routes assets docs openapi health jwt-keypair user-create token
 
 routes: ## Liste les routes de l'API
 	$(CONSOLE) debug:router
+
+# Swagger UI, polices et feuille de style d'API Platform vivent dans public/bundles/.
+install: assets
+
+assets: ## (Ré)installe les assets des bundles dans public/
+	$(CONSOLE) assets:install public
 
 docs: ## Ouvre la doc interactive (Swagger UI) dans le navigateur
 	@symfony open:local --path=/api/docs || true

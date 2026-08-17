@@ -35,10 +35,16 @@
   identifiants), `api` (jetons, tout est `stateless`), `main` (le reste, dont
   `/health`). `access_control` n'ouvre que ce qui doit l'être — la sécurité
   fine se déclare **sur les opérations** (`security:` d'`#[ApiResource]`).
-- `App\OpenApi\JwtDecorator` documente `POST /api/login` dans la spec, et
+- `POST /api/login` est documenté par l'intégration d'API Platform du bundle
+  lexik (`lexik_jwt_authentication.api_platform`), et
   `api_platform.swagger.http_auth` ajoute le bouton « Authorize » (Bearer) de
-  Swagger UI. Une opération hors modèle non documentée n'existe pas pour les
-  clients.
+  Swagger UI. Le `check_path` y est écrit **en chemin** (`/api/login`) et non
+  en nom de route, sinon c'est le nom brut qui s'affiche dans la doc. Une
+  opération hors modèle non documentée n'existe pas pour les clients.
+- Swagger UI a besoin des assets du bundle dans `public/bundles/` : ils sont
+  installés à la génération et par `make install`. Sans eux, `/api` s'affiche
+  sans aucune mise en forme — c'est le premier réflexe si la doc « a perdu son
+  design » (`make assets`).
 - `GET /api/me` est une opération `Get` alimentée par `App\State\MeProvider` :
   le compte porté par le jeton, sans identifiant dans l'URL.
 - `/api/users` est réservé à `ROLE_ADMIN` ; une fiche n'est lisible que par son
@@ -50,6 +56,16 @@
   régénère, la passphrase est dans `.env`.
 - La documentation `/api/docs` est ouverte : la fermer dans `access_control` si
   l'API n'est pas publique.
+
+### Requêtes de test
+
+`request/test.http` (client HTTP de PhpStorm / VS Code) couvre les routes
+livrées : sonde, spec OpenAPI, connexion — elle enregistre le jeton pour les
+suivantes —, `/api/me`, la collection paginée, une fiche, les cas 401 et le
+préflight CORS. **Toute opération ajoutée doit y être ajoutée aussi**, avec son
+cas d'échec. L'hôte et l'adresse vivent dans `request/http-client.env.json`, le
+mot de passe dans `request/http-client.private.env.json` (non versionné, créé à
+la génération).
 
 ### CORS
 
