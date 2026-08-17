@@ -1,0 +1,317 @@
+#!/usr/bin/env bash
+#
+# new-project — génère un projet Symfony à partir du skeleton maison.
+#
+#   ./bin/new-project mon-site  --web
+#   ./bin/new-project mon-api   --api
+#   ./bin/new-project ~/www/foo --web --version=7.4.* --dry-run
+#
+# Principe : `symfony new` fait le gros du travail (recettes Flex toujours à
+# jour), puis on applique par-dessus les paquets + fichiers du skeleton.
+#
+# Compatible bash 3.2 (bash système de macOS).
+
+set -euo pipefail
+
+SKELETON_DIR="$(cd -- "$(dirname -- "$0")/.." && pwd)"
+COMMON_DIR="$SKELETON_DIR/common"
+MODES_DIR="$SKELETON_DIR/modes"
+SF_VERSION="${SKELETON_SF_VERSION:-7.4.*}"
+
+# ---------------------------------------------------------------- affichage --
+if [ -t 1 ]; then
+    B=$'\033[1m'; DIM=$'\033[2m'; GREEN=$'\033[32m'; YELLOW=$'\033[33m'
+    RED=$'\033[31m'; CYAN=$'\033[36m'; N=$'\033[0m'
+else
+    B=''; DIM=''; GREEN=''; YELLOW=''; RED=''; CYAN=''; N=''
+fi
+
+log()  { printf '\n%s==> %s%s\n' "$GREEN$B" "$*" "$N"; }
+info() { printf '    %s\n' "$*"; }
+warn() { printf '%s/!\\ %s%s\n' "$YELLOW" "$*" "$N" >&2; }
+die()  { printf '%sERREUR : %s%s\n' "$RED" "$*" "$N" >&2; exit 1; }
+
+DRY_RUN=0
+run() {
+    printf '%s    $ %s%s\n' "$DIM" "$*" "$N"
+    if [ "$DRY_RUN" = 1 ]; then return 0; fi
+    "$@"
+}
+
+# -------------------------------------------------------------------- modes --
+modes_list() {
+    local d
+    for d in "$MODES_DIR"/*/; do
+        [ -d "$d" ] || continue
+        basename "$d"
+    done
+}
+
+mode_description() {
+    local conf="$MODES_DIR/$1/mode.conf"
+    local DESCRIPTION=''
+    if [ -f "$conf" ]; then . "$conf"; fi
+    printf '%s' "${DESCRIPTION:-}"
+}
+
+usage() {
+    local m
+    printf '%sUsage :%s new-project <nom-ou-chemin> [--<mode>] [options]\n\n' "$B" "$N"
+    printf '%sModes disponibles :%s\n' "$B" "$N"
+    for m in $(modes_list); do
+        printf '  %s--%-8s%s %s\n' "$CYAN" "$m" "$N" "$(mode_description "$m")"
+    done
+    printf '\n%sOptions :%s\n' "$B" "$N"
+    cat <<'EOF'
+  --mode=<nom>      équivalent de --<nom>
+  --version=<ver>   version du skeleton Symfony (défaut : 7.4.*)
+  --php=<x.y>       force la version de PHP passée à symfony new
+  --docker          ajoute le support Docker (symfony new --docker)
+  --no-extras       n'installe pas les paquets du skeleton (squelette nu)
+  --no-git          ne pas initialiser le dépôt git
+  --dry-run         affiche les commandes sans rien exécuter
+  -l, --list        liste les modes
+  -h, --help        cette aide
+EOF
+}
+
+# --------------------------------------------------------------- arguments ---
+TARGET=''
+MODE=''
+NO_GIT=0
+NO_EXTRAS=0
+DOCKER_FLAG=''
+PHP_VERSION=''
+PHP_EXPLICIT=0
+PHP_FLAG=''
+
+while [ $# -gt 0 ]; do
+    case "$1" in
+        -h|--help)  usage; exit 0 ;;
+        -l|--list)
+            for m in $(modes_list); do printf '%-8s %s\n' "$m" "$(mode_description "$m")"; done
+            exit 0 ;;
+        --mode=*)    MODE="${1#*=}" ;;
+        --version=*) SF_VERSION="${1#*=}" ;;
+        --php=*)     PHP_VERSION="${1#*=}"; PHP_EXPLICIT=1; PHP_FLAG="--php=${1#*=}" ;;
+        --docker)    DOCKER_FLAG='--docker' ;;
+        --no-extras) NO_EXTRAS=1 ;;
+        --no-git)    NO_GIT=1 ;;
+        --dry-run)   DRY_RUN=1 ;;
+        --*)
+            cand="${1#--}"
+            if [ -d "$MODES_DIR/$cand" ]; then MODE="$cand"; else die "option inconnue : $1"; fi ;;
+        *)
+            if [ -z "$TARGET" ]; then TARGET="$1"; else die "argument en trop : $1"; fi ;;
+    esac
+    shift
+done
+
+if [ -z "$TARGET" ]; then usage; printf '\n'; die "nom ou chemin du projet manquant"; fi
+
+# Choix interactif du mode si non fourni.
+if [ -z "$MODE" ]; then
+    printf '%sQuel type de projet ?%s\n' "$B" "$N"
+    i=0; choices=''
+    for m in $(modes_list); do
+        i=$((i + 1)); choices="$choices $m"
+        printf '  %s%d)%s %-8s %s\n' "$CYAN" "$i" "$N" "$m" "$(mode_description "$m")"
+    done
+    printf 'Choix [1] : '
+    read -r answer || answer=''
+    [ -n "$answer" ] || answer=1
+    if [ -d "$MODES_DIR/$answer" ]; then
+        MODE="$answer"
+    else
+        MODE=$(printf '%s' "$choices" | awk -v n="$answer" '{print $n}')
+    fi
+fi
+
+[ -d "$MODES_DIR/$MODE" ] || die "mode inconnu : $MODE (voir --list)"
+
+DESCRIPTION=''
+SYMFONY_NEW_FLAGS=''
+if [ -f "$MODES_DIR/$MODE/mode.conf" ]; then . "$MODES_DIR/$MODE/mode.conf"; fi
+
+case "$TARGET" in
+    /*) PROJECT_DIR="$TARGET" ;;
+    *)  PROJECT_DIR="$PWD/$TARGET" ;;
+esac
+PROJECT_NAME="$(basename "$PROJECT_DIR")"
+
+if [ -e "$PROJECT_DIR" ] && [ -n "$(ls -A "$PROJECT_DIR" 2>/dev/null || true)" ]; then
+    die "$PROJECT_DIR existe déjà et n'est pas vide"
+fi
+
+# --------------------------------------------------------------------- PHP ---
+# -n (pas de php.ini) : évite qu'une extension cassée ou un warning de démarrage
+# pollue la sortie — en CLI, display_errors vaut STDOUT par défaut.
+# Le sous-shell avec stderr fermé évite les « Abort trap: 6 » de bash quand un
+# binaire php est cassé (dyld, extension manquante…).
+php_eval()  { ( exec 2>/dev/null; "$1" -n -d display_errors=0 -r "$2" ); }
+php_id()    { php_eval "$1" 'echo PHP_VERSION_ID;' | LC_ALL=C tr -cd '0-9'; }
+php_short() { php_eval "$1" 'echo PHP_MAJOR_VERSION.".".PHP_MINOR_VERSION;' | LC_ALL=C tr -cd '0-9.'; }
+php_ok() {
+    [ -n "${1:-}" ] && [ -x "$1" ] || return 1
+    ( exec >/dev/null 2>&1; "$1" -n -d display_errors=0 -r 'exit(PHP_VERSION_ID >= 80200 ? 0 : 1);' )
+}
+
+ensure_php() {
+    if [ "$PHP_EXPLICIT" = 1 ]; then return 0; fi
+
+    local current best best_id cand id
+    current="$(command -v php || true)"
+    if php_ok "$current"; then
+        PHP_VERSION="$(php_short "$current")"
+        return 0
+    fi
+
+    warn "le php du PATH est inutilisable ou trop ancien, recherche d'une autre version…"
+    best=''; best_id=0
+    for cand in \
+        /opt/homebrew/opt/php/bin/php /opt/homebrew/opt/php@*/bin/php \
+        /usr/local/opt/php/bin/php /usr/local/opt/php@*/bin/php \
+        /opt/homebrew/Cellar/php*/*/bin/php /usr/local/Cellar/php*/*/bin/php
+    do
+        php_ok "$cand" || continue
+        id="$(php_id "$cand")"
+        if [ "$id" -gt "$best_id" ]; then best="$cand"; best_id="$id"; fi
+    done
+
+    [ -n "$best" ] || die "aucun PHP >= 8.2 fonctionnel trouvé (brew install php)"
+    PATH="$(dirname "$best"):$PATH"; export PATH
+    PHP_VERSION="$(php_short "$best")"
+    info "PHP retenu : $best ($PHP_VERSION)"
+}
+
+# ----------------------------------------------------------------- helpers ---
+read_packages() {
+    local f
+    for f in "$@"; do
+        [ -f "$f" ] || continue
+        LC_ALL=C sed -e 's/#.*$//' -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' "$f"
+    done | grep -v '^$' || true
+}
+
+OVERLAY_FILES=''
+apply_overlay() {
+    local src="$1"
+    [ -d "$src" ] || return 0
+    info "overlay : ${src#$SKELETON_DIR/}"
+    run rsync -a --exclude '.DS_Store' "$src/" "$PROJECT_DIR/"
+    OVERLAY_FILES="$OVERLAY_FILES
+$(cd "$src" && find . -type f ! -name '.DS_Store' | LC_ALL=C sed 's|^\./||')"
+}
+
+append_file() {
+    local src="$1" dest="$2" title="$3"
+    [ -f "$src" ] || return 0
+    info "$title → $(basename "$dest")"
+    if [ "$DRY_RUN" = 1 ]; then return 0; fi
+    { printf '\n'; LC_ALL=C sed -e 's/[[:space:]]*$//' "$src"; } >> "$dest"
+}
+
+substitute_placeholders() {
+    local f
+    if [ "$DRY_RUN" = 1 ]; then return 0; fi
+    printf '%s\n' "$OVERLAY_FILES" | while IFS= read -r f; do
+        [ -n "$f" ] || continue
+        [ -f "$PROJECT_DIR/$f" ] || continue
+        case "$f" in
+            *.png|*.jpg|*.jpeg|*.gif|*.ico|*.webp|*.woff|*.woff2|*.ttf|*.pdf) continue ;;
+        esac
+        perl -pi -e '
+            s/\{\{PROJECT_NAME\}\}/$ENV{SK_NAME}/g;
+            s/\{\{PROJECT_SLUG\}\}/$ENV{SK_SLUG}/g;
+            s/\{\{PROJECT_SNAKE\}\}/$ENV{SK_SNAKE}/g;
+            s/\{\{PROJECT_TITLE\}\}/$ENV{SK_TITLE}/g;
+            s/\{\{MODE\}\}/$ENV{SK_MODE}/g;
+            s/\{\{SYMFONY_VERSION\}\}/$ENV{SK_SF}/g;
+            s/\{\{PHP_VERSION\}\}/$ENV{SK_PHP}/g;
+            s/\{\{DATE\}\}/$ENV{SK_DATE}/g;
+            s/\{\{YEAR\}\}/$ENV{SK_YEAR}/g;
+        ' "$PROJECT_DIR/$f"
+    done
+}
+
+# -------------------------------------------------------------------- go ! ---
+log "Projet « $PROJECT_NAME » — mode $MODE — Symfony $SF_VERSION"
+info "${DESCRIPTION:-}"
+info "cible : $PROJECT_DIR"
+
+ensure_php
+
+log "symfony new"
+run symfony new "$PROJECT_DIR" --version="$SF_VERSION" --no-git \
+    $PHP_FLAG $SYMFONY_NEW_FLAGS $DOCKER_FLAG
+
+if [ "$DRY_RUN" = 0 ]; then
+    cd "$PROJECT_DIR"
+    printf '%s\n' "$PHP_VERSION" > "$PROJECT_DIR/.php-version"
+fi
+info ".php-version → $PHP_VERSION"
+
+if [ "$NO_EXTRAS" = 0 ]; then
+    # Les recettes contrib (nelmio/cors, fixtures…) sont acceptées sans prompt :
+    # les listes de paquets du skeleton sont curatées à la main.
+    log "Paquets du skeleton"
+    run symfony composer config --no-plugins extra.symfony.allow-contrib true
+
+    PKGS="$(read_packages "$COMMON_DIR/packages.txt" "$MODES_DIR/$MODE/packages.txt")"
+    if [ -n "$PKGS" ]; then
+        run symfony composer require --no-interaction $PKGS
+    fi
+
+    PKGS_DEV="$(read_packages "$COMMON_DIR/packages-dev.txt" "$MODES_DIR/$MODE/packages-dev.txt")"
+    if [ -n "$PKGS_DEV" ]; then
+        run symfony composer require --dev --no-interaction $PKGS_DEV
+    fi
+fi
+
+log "Fichiers du skeleton"
+apply_overlay "$COMMON_DIR/overlay"
+apply_overlay "$MODES_DIR/$MODE/overlay"
+append_file "$COMMON_DIR/gitignore.append"      "$PROJECT_DIR/.gitignore" "règles communes"
+append_file "$MODES_DIR/$MODE/gitignore.append" "$PROJECT_DIR/.gitignore" "règles $MODE"
+append_file "$MODES_DIR/$MODE/CLAUDE.append.md" "$PROJECT_DIR/CLAUDE.md" "notes $MODE"
+
+SK_NAME="$PROJECT_NAME"
+SK_SLUG="$(printf '%s' "$PROJECT_NAME" | LC_ALL=C tr '[:upper:]' '[:lower:]' | LC_ALL=C tr -cs 'a-z0-9' '-' | LC_ALL=C sed -e 's/^-//' -e 's/-$//')"
+SK_SNAKE="$(printf '%s' "$SK_SLUG" | LC_ALL=C tr '-' '_')"
+SK_TITLE="$(printf '%s' "$SK_SLUG" | perl -pe 's/[-_]+/ /g; s/(\w+)/\u$1/g')"
+SK_MODE="$MODE"
+SK_SF="$SF_VERSION"
+SK_PHP="$PHP_VERSION"
+SK_DATE="$(date +%Y-%m-%d)"
+SK_YEAR="$(date +%Y)"
+export SK_NAME SK_SLUG SK_SNAKE SK_TITLE SK_MODE SK_SF SK_PHP SK_DATE SK_YEAR
+
+substitute_placeholders
+
+for hook in "$COMMON_DIR/post-install.sh" "$MODES_DIR/$MODE/post-install.sh"; do
+    [ -f "$hook" ] || continue
+    log "Hook ${hook#$SKELETON_DIR/}"
+    if [ "$DRY_RUN" = 0 ]; then
+        PROJECT_DIR="$PROJECT_DIR" PROJECT_NAME="$PROJECT_NAME" MODE="$MODE" \
+        SKELETON_DIR="$SKELETON_DIR" MODE_DIR="$MODES_DIR/$MODE" PHP_VERSION="$PHP_VERSION" \
+            bash "$hook"
+    fi
+done
+
+if [ "$NO_GIT" = 0 ]; then
+    log "Dépôt git"
+    # symfony new clone symfony/skeleton : on repart d'un dépôt vierge pour ne
+    # pas hériter de l'historique de Symfony (le dossier vient d'être créé ici).
+    if [ -d "$PROJECT_DIR/.git" ]; then run rm -rf "$PROJECT_DIR/.git"; fi
+    run git init -q -b main
+    run git add -A
+    run git commit -q -m "chore: init $PROJECT_NAME ($MODE, Symfony $SF_VERSION)"
+fi
+
+log "Terminé"
+cat <<EOF
+    cd $PROJECT_DIR
+    make            # liste les cibles disponibles
+    make start      # serveur local https
+    make qa         # cs-fixer + phpstan + phpunit
+EOF

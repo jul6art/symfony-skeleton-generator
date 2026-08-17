@@ -1,0 +1,11 @@
+# Dépôt du skeleton (ce n'est pas un projet Symfony).
+# Le .gitignore des projets générés vient de common/gitignore.append.
+
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+/.idea/
+/.vscode/
+*.swp
+*~

@@ -1,0 +1,54 @@
+# --- Ajouté par le skeleton maison ---------------------------------------
+# Les blocs ###> ... ### du .gitignore sont gérés par Flex (framework-bundle,
+# asset-mapper, phpunit, php-cs-fixer, phpstan…) : on ne touche qu'au reste.
+
+###> macOS ###
+.DS_Store
+.DS_Store?
+._*
+.AppleDouble
+.LSOverride
+.AppleDB
+.AppleDesktop
+.Spotlight-V100
+.DocumentRevisions-V100
+.TemporaryItems
+.Trashes
+.fseventsd
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+Icon?
+Network Trash Folder
+Temporary Items
+.apdisk
+###< macOS ###
+
+###> IDE / éditeurs ###
+/.idea/
+/.vscode/
+/.fleet/
+/nbproject/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*~
+###< IDE / éditeurs ###
+
+###> symfony CLI ###
+/.symfony/
+/.web-server-pid
+###< symfony CLI ###
+
+###> node / outils front ###
+/node_modules/
+npm-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+###< node / outils front ###
+
+###> divers ###
+*.log
+/coverage/
+/.phpunit.cache/
+###< divers ###

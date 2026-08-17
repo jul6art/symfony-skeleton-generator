@@ -1,0 +1,19 @@
+# `symfony new --api` installe déjà api-platform/api-pack, soit :
+# api-platform/symfony, api-platform/doctrine-orm, symfony/orm-pack (avec
+# doctrine-migrations-bundle), symfony/serializer-pack, symfony/validator,
+# symfony/security-bundle, symfony/twig-bundle, symfony/asset,
+# symfony/expression-language, nelmio/cors-bundle,
+# phpdocumentor/reflection-docblock.
+#
+# Ici : uniquement les ajouts maison.
+
+symfony/http-client
+symfony/uid
+
+# Suggestions :
+# api-platform/graphql                # ajoute /graphql + GraphiQL
+# lexik/jwt-authentication-bundle     # auth JWT
+# symfony/messenger                   # bus de messages / async
+# symfony/mercure-bundle              # mises à jour temps réel
+# symfony/rate-limiter
+# symfony/mailer

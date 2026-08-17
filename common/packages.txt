@@ -1,0 +1,8 @@
+# Paquets installés dans TOUS les modes (composer require).
+# Un paquet par ligne, # pour commenter.
+
+symfony/monolog-bundle
+
+# Suggestions :
+# symfony/uid
+# symfony/rate-limiter

@@ -1,0 +1,30 @@
+# Écrase le fichier de la recette Flex : ce sont les réglages maison.
+# Les ressources sont découvertes automatiquement dans src/Entity/ et
+# src/ApiResource/.
+api_platform:
+    title: '{{PROJECT_TITLE}}'
+    description: 'API de {{PROJECT_TITLE}}'
+    version: '1.0.0'
+
+    # JSON-LD reste le format par défaut (hypermedia, doc, GraphQL) ; le JSON
+    # brut est exposé en plus pour les clients qui ne gèrent pas Hydra.
+    formats:
+        jsonld: ['application/ld+json']
+        json: ['application/json']
+
+    defaults:
+        # Pas de session ni d'état serveur : l'API est cacheable.
+        stateless: true
+        cache_headers:
+            vary: ['Content-Type', 'Authorization', 'Origin']
+        # Pagination : bornée côté serveur, ajustable côté client via
+        # ?itemsPerPage= dans la limite du maximum.
+        pagination_items_per_page: 30
+        pagination_client_items_per_page: true
+        pagination_maximum_items_per_page: 100
+
+    # Décommenter pour exposer la doc dans d'autres formats :
+    # docs_formats:
+    #     jsonld: ['application/ld+json']
+    #     jsonopenapi: ['application/vnd.openapi+json']
+    #     html: ['text/html']

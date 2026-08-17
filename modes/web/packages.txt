@@ -1,0 +1,11 @@
+# --webapp installe déjà : twig, asset-mapper, stimulus, ux-turbo, form,
+# validator, security-bundle, doctrine + migrations, mailer, messenger,
+# notifier, translation, serializer, http-client, intl, string…
+#
+# Ici : uniquement les ajouts maison.
+
+# symfonycasts/tailwind-bundle
+# symfonycasts/sass-bundle
+# symfony/ux-live-component
+# symfony/ux-icons
+# knplabs/knp-paginator-bundle

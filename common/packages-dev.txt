@@ -1,0 +1,14 @@
+# Paquets de dev installés dans TOUS les modes (composer require --dev).
+
+symfony/maker-bundle
+symfony/test-pack
+doctrine/doctrine-fixtures-bundle
+friendsofphp/php-cs-fixer
+phpstan/phpstan
+phpstan/extension-installer
+phpstan/phpstan-symfony
+phpstan/phpstan-doctrine
+
+# Suggestions :
+# rector/rector
+# dama/doctrine-test-bundle

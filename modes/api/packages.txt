@@ -1,0 +1,21 @@
+# Le skeleton nu ne contient que framework-bundle, console, dotenv, flex,
+# runtime et yaml : tout le reste est explicite ici.
+
+symfony/orm-pack
+doctrine/doctrine-migrations-bundle
+symfony/serializer-pack
+symfony/validator
+symfony/security-bundle
+symfony/expression-language
+symfony/http-client
+symfony/uid
+nelmio/cors-bundle
+
+# Suggestions :
+# lexik/jwt-authentication-bundle     # auth JWT
+# symfony/messenger                   # bus de messages / async
+# symfony/mailer
+# symfony/rate-limiter
+#
+# Pour une API déclarative (REST + JSON-LD + doc OpenAPI), utiliser plutôt le
+# mode dédié : ./bin/new-project <projet> --api-platform

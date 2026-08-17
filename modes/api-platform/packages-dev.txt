@@ -1,0 +1,11 @@
+symfony/debug-pack
+symfony/browser-kit
+symfony/css-selector
+
+# Requis par les assertions JSON Schema d'ApiTestCase
+# (assertMatchesResourceItemJsonSchema / …CollectionJsonSchema).
+justinrainbow/json-schema
+
+# Suggestions :
+# dama/doctrine-test-bundle           # une transaction par test
+# zenstruck/foundry                   # fabriques d'entités pour les tests
