@@ -361,6 +361,8 @@ if [ "$USER_MANAGEMENT" = 0 ]; then NEXT_STEPS_USER=''; fi
 
 if [ -n "$NEXT_STEPS" ] || [ -n "$NEXT_STEPS_USER" ]; then
     printf '\n%sÀ faire ensuite :%s\n' "$B" "$N"
-    [ -n "$NEXT_STEPS" ] && printf '%b\n' "$NEXT_STEPS"
-    [ -n "$NEXT_STEPS_USER" ] && printf '%b\n' "$NEXT_STEPS_USER"
+    # En if/fi et non en `[ … ] && …` : un test faux en dernière instruction
+    # ferait sortir le script en code 1 alors que tout s'est bien passé.
+    if [ -n "$NEXT_STEPS" ]; then printf '%b\n' "$NEXT_STEPS"; fi
+    if [ -n "$NEXT_STEPS_USER" ]; then printf '%b\n' "$NEXT_STEPS_USER"; fi
 fi
