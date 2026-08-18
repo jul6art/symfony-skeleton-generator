@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'reset.request.title'|trans }} — {{PROJECT_TITLE}}{% endblock %}
+
+{% block body %}
+    <div class="mx-auto max-w-md">
+        <div class="card">
+            <h1 class="mb-2 flex items-center gap-2 text-xl font-semibold text-slate-900">
+                <i class="fa-solid fa-key text-indigo-600"></i> {{ 'reset.request.title'|trans }}
+            </h1>
+            <p class="mb-6 text-sm text-slate-600">
+                Indiquez votre adresse e-mail : si un compte y est associé, vous recevrez un lien
+                de réinitialisation.
+            </p>
+
+            {{ form_start(requestForm) }}
+                {{ form_row(requestForm.email) }}
+
+                <button type="submit" class="btn btn-primary w-full">
+                    <i class="fa-solid fa-paper-plane"></i> {{ 'reset.request.submit'|trans }}
+                </button>
+            {{ form_end(requestForm) }}
+
+            <p class="mt-6 text-sm">
+                <a href="{{ path('app_login') }}" class="text-indigo-600 hover:underline">{{ 'reset.request.back'|trans }}</a>
+            </p>
+        </div>
+    </div>
+{% endblock %}

@@ -5,18 +5,12 @@ symfony/orm-pack
 doctrine/doctrine-migrations-bundle
 symfony/serializer-pack
 symfony/validator
-symfony/security-bundle
 symfony/expression-language
 symfony/http-client
 symfony/uid
 nelmio/cors-bundle
-lexik/jwt-authentication-bundle
-symfony/rate-limiter
-
-jul6art/auth-bundle                 # entité User, dépôt et manager
 
 # Suggestions :
-# gesdinet/jwt-refresh-token-bundle    # refresh tokens
 # symfony/messenger                    # bus de messages / async
 # symfony/mailer
 #

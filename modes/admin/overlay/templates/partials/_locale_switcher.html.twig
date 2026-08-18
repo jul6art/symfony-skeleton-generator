@@ -1,0 +1,12 @@
+{# Sélecteur de langue : la locale choisie est mémorisée en session
+   (App\EventListener\LocaleListener). #}
+<div class="ml-2 flex items-center gap-1 text-xs">
+    {% for locale in enabled_locales %}
+        {% if locale == app.request.locale %}
+            <span class="rounded px-2 py-1 font-semibold text-slate-900 uppercase">{{ locale }}</span>
+        {% else %}
+            <a href="{{ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')|merge(app.request.query.all)|merge({_locale: locale})) }}"
+               class="rounded px-2 py-1 text-slate-500 uppercase transition hover:bg-slate-100 hover:text-slate-900">{{ locale }}</a>
+        {% endif %}
+    {% endfor %}
+</div>

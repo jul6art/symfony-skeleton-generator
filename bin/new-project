@@ -69,6 +69,7 @@ usage() {
   --docker          ajoute le support Docker (symfony new --docker)
   --no-extras       n'installe pas les paquets du skeleton (squelette nu)
   --no-registration ferme l'inscription publique (modes qui la gèrent : web)
+  --no-user         génère sans gestion des comptes (ni connexion, ni CRUD)
   --no-git          ne pas initialiser le dépôt git
   --dry-run         affiche les commandes sans rien exécuter
   -l, --list        liste les modes
@@ -83,6 +84,8 @@ NO_GIT=0
 NO_EXTRAS=0
 # Lu par les hooks post-install des modes qui exposent une inscription publique.
 REGISTRATION=1
+# Brique « comptes » : overlay-user/, packages-user.txt, hook et notes associés.
+USER_MANAGEMENT=1
 DOCKER_FLAG=''
 PHP_VERSION=''
 PHP_EXPLICIT=0
@@ -100,6 +103,7 @@ while [ $# -gt 0 ]; do
         --docker)    DOCKER_FLAG='--docker' ;;
         --no-extras) NO_EXTRAS=1 ;;
         --no-registration) REGISTRATION=0 ;;
+        --no-user)   USER_MANAGEMENT=0; REGISTRATION=0 ;;
         --no-git)    NO_GIT=1 ;;
         --dry-run)   DRY_RUN=1 ;;
         --*)
@@ -136,7 +140,15 @@ fi
 DESCRIPTION=''
 SYMFONY_NEW_FLAGS=''
 NEXT_STEPS=''
+# Étapes affichées en plus quand la brique « comptes » est installée.
+NEXT_STEPS_USER=''
+# Un mode peut déclarer REQUIRES_USER=1 : la gestion des comptes y est le sujet.
+REQUIRES_USER=0
 if [ -f "$MODES_DIR/$MODE/mode.conf" ]; then . "$MODES_DIR/$MODE/mode.conf"; fi
+
+if [ "$REQUIRES_USER" = 1 ] && [ "$USER_MANAGEMENT" = 0 ]; then
+    die "le mode $MODE est bâti autour des comptes : --no-user n'a pas de sens ici"
+fi
 
 case "$TARGET" in
     /*) PROJECT_DIR="$TARGET" ;;
@@ -266,7 +278,10 @@ if [ "$NO_EXTRAS" = 0 ]; then
     # phpstan.dist.neon du skeleton s'appuie dessus).
     run symfony composer config --no-plugins allow-plugins.phpstan/extension-installer true
 
-    PKGS="$(read_packages "$COMMON_DIR/packages.txt" "$MODES_DIR/$MODE/packages.txt")"
+    USER_PKGS=""
+    if [ "$USER_MANAGEMENT" = 1 ]; then USER_PKGS="$MODES_DIR/$MODE/packages-user.txt"; fi
+
+    PKGS="$(read_packages "$COMMON_DIR/packages.txt" "$MODES_DIR/$MODE/packages.txt" $USER_PKGS)"
     if [ -n "$PKGS" ]; then
         run symfony composer require --no-interaction $PKGS
     fi
@@ -280,9 +295,14 @@ fi
 log "Fichiers du skeleton"
 apply_overlay "$COMMON_DIR/overlay"
 apply_overlay "$MODES_DIR/$MODE/overlay"
+if [ "$USER_MANAGEMENT" = 1 ]; then apply_overlay "$MODES_DIR/$MODE/overlay-user"; fi
 append_file "$COMMON_DIR/gitignore.append"      "$PROJECT_DIR/.gitignore" "règles communes"
 append_file "$MODES_DIR/$MODE/gitignore.append" "$PROJECT_DIR/.gitignore" "règles $MODE"
 append_file "$MODES_DIR/$MODE/CLAUDE.append.md" "$PROJECT_DIR/CLAUDE.md" "notes $MODE"
+if [ "$USER_MANAGEMENT" = 1 ]; then
+    append_file "$MODES_DIR/$MODE/gitignore-user.append" "$PROJECT_DIR/.gitignore" "règles comptes"
+    append_file "$MODES_DIR/$MODE/CLAUDE-user.append.md" "$PROJECT_DIR/CLAUDE.md" "notes comptes"
+fi
 
 SK_NAME="$PROJECT_NAME"
 SK_SLUG="$(printf '%s' "$PROJECT_NAME" | LC_ALL=C tr '[:upper:]' '[:lower:]' | LC_ALL=C tr -cs 'a-z0-9' '-' | LC_ALL=C sed -e 's/^-//' -e 's/-$//')"
@@ -297,13 +317,16 @@ export SK_NAME SK_SLUG SK_SNAKE SK_TITLE SK_MODE SK_SF SK_PHP SK_DATE SK_YEAR
 
 substitute_placeholders
 
-for hook in "$COMMON_DIR/post-install.sh" "$MODES_DIR/$MODE/post-install.sh"; do
+HOOKS="$COMMON_DIR/post-install.sh $MODES_DIR/$MODE/post-install.sh"
+if [ "$USER_MANAGEMENT" = 1 ]; then HOOKS="$HOOKS $MODES_DIR/$MODE/post-install-user.sh"; fi
+
+for hook in $HOOKS; do
     [ -f "$hook" ] || continue
     log "Hook ${hook#$SKELETON_DIR/}"
     if [ "$DRY_RUN" = 0 ]; then
         PROJECT_DIR="$PROJECT_DIR" PROJECT_NAME="$PROJECT_NAME" MODE="$MODE" \
         SKELETON_DIR="$SKELETON_DIR" MODE_DIR="$MODES_DIR/$MODE" PHP_VERSION="$PHP_VERSION" \
-        REGISTRATION="$REGISTRATION" \
+        REGISTRATION="$REGISTRATION" USER_MANAGEMENT="$USER_MANAGEMENT" \
             bash "$hook"
     fi
 done
@@ -327,7 +350,10 @@ cat <<EOF
 EOF
 
 # Étapes propres au mode (base de données, premier compte…).
-if [ -n "$NEXT_STEPS" ]; then
+if [ "$USER_MANAGEMENT" = 0 ]; then NEXT_STEPS_USER=''; fi
+
+if [ -n "$NEXT_STEPS" ] || [ -n "$NEXT_STEPS_USER" ]; then
     printf '\n%sÀ faire ensuite :%s\n' "$B" "$N"
-    printf '%b\n' "$NEXT_STEPS"
+    [ -n "$NEXT_STEPS" ] && printf '%b\n' "$NEXT_STEPS"
+    [ -n "$NEXT_STEPS_USER" ] && printf '%b\n' "$NEXT_STEPS_USER"
 fi

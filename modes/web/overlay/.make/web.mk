@@ -2,7 +2,7 @@ FONTAWESOME_VERSION ?= 7.3.1
 FA_DIR  := assets/fontawesome
 FA_BASE := https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@$(FONTAWESOME_VERSION)
 
-.PHONY: assets tailwind tailwind-watch fontawesome importmap-update worker user-create
+.PHONY: assets tailwind tailwind-watch fontawesome importmap-update worker
 
 # `make install` récupère aussi les polices : elles ne sont pas versionnées.
 install: fontawesome
@@ -37,6 +37,3 @@ importmap-update: ## Met à jour les dépendances JS de l'importmap
 
 worker: ## Consomme la file async (les e-mails y passent : mot de passe oublié…)
 	$(CONSOLE) messenger:consume async -vv
-
-user-create: ## Crée un compte — ARGS="moi@exemple.com --admin"
-	$(CONSOLE) app:user:create $(ARGS)

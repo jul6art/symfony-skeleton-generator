@@ -1,0 +1,120 @@
+# Interface strings. Keys are dotted and grouped by screen.
+nav:
+    admin: Back office
+    users: Users
+    profile: My account
+    logout: Sign out
+    login: Sign in
+    register: Create an account
+
+home:
+    subtitle: 'Project generated from the in-house skeleton (%mode%).'
+    tailwind:
+        title: Local Tailwind
+        body: 'Tailwind binary downloaded by <code>make tailwind</code>, CSS compiled inside the project. No remote asset at runtime.'
+    accounts:
+        title: Accounts out of the box
+        body: 'Registration, sign in, forgotten password, password change and account administration.'
+
+login:
+    title: Sign in
+    email: Email address
+    password: Password
+    remember_me: Stay signed in
+    submit: Sign in
+    forgot: Forgot your password?
+
+register:
+    title: Create an account
+    submit: Create my account
+    already: 'Already registered?'
+
+profile:
+    title: My account
+    email: Email address
+    roles: Roles
+    change_password: Change my password
+    password:
+        title: Change password
+        current: Current password
+        new: New password
+
+reset:
+    request:
+        title: Forgotten password
+        help: 'Enter your email address: if an account matches, you will receive a reset link.'
+        submit: Send the link
+        back: Back to sign in
+    check_email:
+        title: Check your email
+        body: 'If an account matches that address, a reset link has just been sent. It expires in %duration%.'
+        spam: 'Remember to look in your spam folder. You can %link% if needed.'
+        again: make another request
+    new:
+        title: New password
+        submit: Save
+    email:
+        subject: Reset your password
+        body: 'A password reset was requested for your %app% account. If you did not ask for it, simply ignore this email.'
+        cta: Choose a new password
+        expires: 'This link expires in %duration%.'
+
+user:
+    email: Email address
+    roles: Roles
+    role:
+        admin: Administrator
+        user: User
+    roles_help: 'Every account has ROLE_USER implicitly.'
+    password: Password
+    password_new: New password
+    password_confirm: Confirm the password
+    password_keep: Leave empty to keep the current password.
+
+admin:
+    dashboard: Dashboard
+    back_to_site: Back to the site
+    section:
+        accounts: Accounts
+        site: Site
+    users:
+        singular: account
+        title: Users
+        new: New account
+        empty: No account yet.
+        created: Created on
+        actions: Actions
+        show: View
+        edit: Edit
+        delete: Delete
+        delete_label: 'Delete %email%'
+        create_submit: Create the account
+        back: Back to the list
+        id: Identifier
+
+action:
+    save: Save
+    cancel: Cancel
+    confirm: Confirm
+
+confirm:
+    logout:
+        title: 'Sign out?'
+        body: Your current session will be closed.
+    delete_user:
+        title: 'Delete this account?'
+        body: 'will be permanently deleted. This cannot be undone.'
+
+flash:
+    account:
+        created: 'Welcome! Your account has been created.'
+        updated: 'Account “%email%” updated.'
+        admin_created: 'Account “%email%” created.'
+        deleted: Account deleted.
+        self_delete: You cannot delete your own account.
+    password:
+        changed: Your password has been changed.
+        reset: 'Password changed: you can now sign in.'
+    reset:
+        invalid: 'This link is no longer valid (%reason%). Please make a new request.'
+    csrf: Invalid CSRF token.

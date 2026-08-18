@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+/* Sources scannées par Tailwind — déclarées explicitement pour ne pas dépendre
+   du répertoire d'exécution du binaire. */
+@source "../../templates/**/*.html.twig";
+@source "../../src/**/*.php";
+@source "../controllers/**/*.js";
+
+@layer components {
+    /* Tailwind v4 laisse les <button> avec `cursor: default` : les classes qui
+       habillent un bouton (poubelle, déconnexion, actions des modales) doivent
+       donc demander le curseur main explicitement. */
+    .btn {
+        @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition focus:ring-2 focus:ring-offset-2 focus:outline-none;
+    }
+
+    .btn-primary {
+        @apply bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500;
+    }
+
+    .btn-secondary {
+        @apply border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 focus:ring-slate-400;
+    }
+
+    .btn-danger {
+        @apply bg-red-600 text-white hover:bg-red-700 focus:ring-red-500;
+    }
+
+    .nav-link {
+        @apply inline-flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900;
+    }
+
+    .card {
+        @apply rounded-xl border border-slate-200 bg-white p-6 shadow-sm;
+    }
+
+    .badge {
+        @apply inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium;
+    }
+}

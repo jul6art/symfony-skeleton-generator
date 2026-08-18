@@ -1,0 +1,15 @@
+# L'entité User vient du auth-bundle : ses contraintes se déclarent ici, le
+# code du vendor ne portant volontairement aucune règle applicative.
+Jul6Art\AuthBundle\Entity\User:
+    constraints:
+        - Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity:
+            fields: ['email']
+            message: 'user.email.unique'
+    # Le mot de passe est haché par le contrôleur après validation : le valider
+    # ici invaliderait tous les formulaires. Les règles de robustesse vivent dans
+    # App\Form\PlainPasswordType.
+    properties:
+        email:
+            - NotBlank: { message: 'user.email.not_blank' }
+            - Email: { message: 'user.email.invalid' }
+            - Length: { max: 180 }

@@ -1,0 +1,120 @@
+# Chaînes d'interface. Les clés sont pointées et groupées par écran.
+nav:
+    admin: Back-office
+    users: Utilisateurs
+    profile: Mon compte
+    logout: Déconnexion
+    login: Connexion
+    register: Créer un compte
+
+home:
+    subtitle: 'Projet généré depuis le skeleton maison (%mode%).'
+    tailwind:
+        title: Tailwind local
+        body: 'Binaire Tailwind téléchargé par <code>make tailwind</code>, CSS compilé dans le projet. Aucune ressource distante à l''exécution.'
+    accounts:
+        title: Comptes prêts à l'emploi
+        body: 'Inscription, connexion, mot de passe oublié, changement de mot de passe et administration des comptes.'
+
+login:
+    title: Connexion
+    email: Adresse e-mail
+    password: Mot de passe
+    remember_me: Rester connecté
+    submit: Se connecter
+    forgot: 'Mot de passe oublié ?'
+
+register:
+    title: Créer un compte
+    submit: Créer mon compte
+    already: 'Déjà inscrit ?'
+
+profile:
+    title: Mon compte
+    email: Adresse e-mail
+    roles: Rôles
+    change_password: Changer mon mot de passe
+    password:
+        title: Changer de mot de passe
+        current: Mot de passe actuel
+        new: Nouveau mot de passe
+
+reset:
+    request:
+        title: Mot de passe oublié
+        help: 'Indiquez votre adresse e-mail : si un compte y est associé, vous recevrez un lien de réinitialisation.'
+        submit: Envoyer le lien
+        back: Retour à la connexion
+    check_email:
+        title: Vérifiez vos e-mails
+        body: 'Si un compte correspond à cette adresse, un lien de réinitialisation vient d''être envoyé. Il expire dans %duration%.'
+        spam: 'Pensez à regarder dans les indésirables. Vous pouvez %link% si besoin.'
+        again: refaire une demande
+    new:
+        title: Nouveau mot de passe
+        submit: Enregistrer
+    email:
+        subject: Réinitialisation de votre mot de passe
+        body: 'Une réinitialisation du mot de passe de votre compte %app% a été demandée. Si vous n''êtes pas à l''origine de cette demande, ignorez simplement cet e-mail.'
+        cta: Choisir un nouveau mot de passe
+        expires: 'Ce lien expire dans %duration%.'
+
+user:
+    email: Adresse e-mail
+    roles: Rôles
+    role:
+        admin: Administrateur
+        user: Utilisateur
+    roles_help: 'Tout compte dispose au minimum de ROLE_USER.'
+    password: Mot de passe
+    password_new: Nouveau mot de passe
+    password_confirm: Confirmer le mot de passe
+    password_keep: Laisser vide pour conserver le mot de passe actuel.
+
+admin:
+    dashboard: Tableau de bord
+    back_to_site: Retour au site
+    section:
+        accounts: Comptes
+        site: Site
+    users:
+        singular: compte
+        title: Utilisateurs
+        new: Nouveau compte
+        empty: Aucun compte pour l'instant.
+        created: Créé le
+        actions: Actions
+        show: Voir
+        edit: Modifier
+        delete: Supprimer
+        delete_label: 'Supprimer %email%'
+        create_submit: Créer le compte
+        back: Retour à la liste
+        id: Identifiant
+
+action:
+    save: Enregistrer
+    cancel: Annuler
+    confirm: Confirmer
+
+confirm:
+    logout:
+        title: 'Se déconnecter ?'
+        body: Votre session en cours sera fermée.
+    delete_user:
+        title: 'Supprimer ce compte ?'
+        body: 'sera définitivement supprimé. Cette action est irréversible.'
+
+flash:
+    account:
+        created: 'Bienvenue ! Votre compte est créé.'
+        updated: 'Compte « %email% » mis à jour.'
+        admin_created: 'Compte « %email% » créé.'
+        deleted: Compte supprimé.
+        self_delete: Vous ne pouvez pas supprimer votre propre compte.
+    password:
+        changed: Votre mot de passe a été modifié.
+        reset: 'Mot de passe modifié : vous pouvez vous connecter.'
+    reset:
+        invalid: 'Ce lien n''est plus valable (%reason%). Merci de refaire une demande.'
+    csrf: Jeton CSRF invalide.

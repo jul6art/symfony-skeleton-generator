@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'admin.users.title'|trans }} — {{PROJECT_TITLE}}{% endblock %}
+
+{% block body %}
+    <div class="mb-6 flex flex-wrap items-center gap-3">
+        <h1 class="mr-auto flex items-center gap-2 text-2xl font-semibold text-slate-900">
+            <i class="fa-solid fa-users-gear text-indigo-600"></i> {{ 'admin.users.title'|trans }}
+        </h1>
+        <a href="{{ path('app_admin_user_new') }}" class="btn btn-primary">
+            <i class="fa-solid fa-plus"></i> {{ 'admin.users.new'|trans }}
+        </a>
+    </div>
+
+    <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+        <table class="min-w-full divide-y divide-slate-200 text-sm">
+            <thead class="bg-slate-50 text-left text-xs font-semibold tracking-wide text-slate-500 uppercase">
+                <tr>
+                    <th class="px-4 py-3">{{ 'user.email'|trans }}</th>
+                    <th class="px-4 py-3">{{ 'user.roles'|trans }}</th>
+                    <th class="px-4 py-3 text-right">{{ 'admin.users.actions'|trans }}</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+                {% for user in users %}
+                    <tr class="hover:bg-slate-50">
+                        <td class="px-4 py-3 font-medium text-slate-900">{{ user.email }}</td>
+                        <td class="px-4 py-3">
+                            {% if 'ROLE_ADMIN' in user.roles %}
+                                <span class="badge bg-indigo-100 text-indigo-700"><i class="fa-solid fa-shield-halved"></i> {{ 'user.role.admin'|trans }}</span>
+                            {% else %}
+                                <span class="badge bg-slate-100 text-slate-600">{{ 'user.role.user'|trans }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-4 py-3">
+                            <div class="flex justify-end gap-2">
+                                <a href="{{ path('app_admin_user_show', {id: user.id}) }}" class="nav-link" title="{{ 'admin.users.show'|trans }}">
+                                    <i class="fa-solid fa-eye"></i>
+                                </a>
+                                <a href="{{ path('app_admin_user_edit', {id: user.id}) }}" class="nav-link" title="{{ 'admin.users.edit'|trans }}">
+                                    <i class="fa-solid fa-pen"></i>
+                                </a>
+                                {{ include('admin/user/_delete_form.html.twig') }}
+                            </div>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="3" class="px-4 py-6 text-center text-slate-500">{{ 'admin.users.empty'|trans }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

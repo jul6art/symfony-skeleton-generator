@@ -1,0 +1,10 @@
+framework:
+    default_locale: en
+    enabled_locales: ['en', 'fr']
+    # Une API n'a pas de session : la langue vient de l'en-tête du client.
+    set_locale_from_accept_language: true
+    translator:
+        default_path: '%kernel.project_dir%/translations'
+        fallbacks:
+            - en
+        providers:

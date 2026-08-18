@@ -1,0 +1,9 @@
+parameters:
+    # Expéditeur par défaut ; surchargeable par MAILER_FROM dans .env.local.
+    app.mailer_from: 'noreply@{{PROJECT_SLUG}}.example'
+
+framework:
+    mailer:
+        dsn: '%env(MAILER_DSN)%'
+        headers:
+            from: '%env(default:app.mailer_from:MAILER_FROM)%'

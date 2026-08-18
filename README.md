@@ -14,13 +14,14 @@ Symfony skeleton generator
 
 # In-house Symfony skeleton
 
-A Symfony project generator with three modes to choose from:
+A Symfony project generator with four modes to choose from:
 
 | Mode | Base | Contents |
 | --- | --- | --- |
 | `web` | `symfony new --webapp` | Twig + local Tailwind & Font Awesome, full account flow (register / login / forgot password / change password), user CRUD |
 | `api` | `symfony new` (bare skeleton) | Doctrine, Serializer, Validator, JWT authentication, CORS |
 | `api-platform` | `symfony new --api` | API Platform (REST + JSON-LD/Hydra, OpenAPI docs, JWT authentication, optional GraphQL) |
+| `admin` | `symfony new --webapp` | EasyAdmin back office themed after the `web` front, accounts and user CRUD included |
 
 This repository **is not a versioned Symfony project**: `symfony new` is what
 creates the project (so Flex recipes always stay up to date), and the skeleton
@@ -73,6 +74,15 @@ rather than reinventing their pieces:
   `request/http-client.env.json`, the password in the gitignored
   `request/http-client.private.env.json`.
 
+### `admin` — back office
+
+The public side (home, sign in, forgotten password, profile) is the `web` front;
+the back office is EasyAdmin, themed to match through its CSS custom properties
+(`assets/styles/admin.css`). The dashboard and the user CRUD are wired to the
+same `UserManagerInterface` as everything else, and the password field maps to
+the bundle transient `plainPassword`, hashed by the controller. Accounts are the
+subject of this mode, so `--no-user` is refused there.
+
 ### `api-platform` — declarative API
 
 `symfony new --api` plus house rules: pagination bounds, JSON-LD + JSON formats,
@@ -98,6 +108,7 @@ green on a freshly generated project.
 ./bin/new-project my-site --web
 ./bin/new-project my-api  --api
 ./bin/new-project my-shop --api-platform
+./bin/new-project my-back  --admin
 ./bin/new-project ~/www/foo --web --version=7.4.* --docker
 ./bin/new-project test --api --dry-run     # prints everything, changes nothing
 ./bin/new-project my-project               # asks for the mode interactively
@@ -105,8 +116,33 @@ green on a freshly generated project.
 
 Options: `--mode=<name>`, `--version=`, `--php=`, `--docker`, `--no-extras`
 (bare skeleton, without the skeleton's packages), `--no-registration` (closes
-public sign-up — honored by the modes that expose one, i.e. `web`), `--no-git`,
-`--dry-run`, `--list`, `--help`.
+public sign-up), `--no-user` (see below), `--no-git`, `--dry-run`, `--list`,
+`--help`.
+
+## Generating without accounts
+
+```bash
+./bin/new-project my-site --web --no-user
+```
+
+Account management is a **brick**, not a hardcoded part of a mode: sign in, sign
+up, forgotten password, profile and user CRUD live in `overlay-user/`,
+`packages-user.txt`, `post-install-user.sh`, `gitignore-user.append` and
+`CLAUDE-user.append.md`. With `--no-user` none of it is copied and none of the
+related packages (`jul6art/auth-bundle`, the reset-password bundle, the JWT
+bundle…) are installed — the project keeps its layout, its front and its quality
+gate, and `make qa` stays green. A mode whose subject *is* accounts declares
+`REQUIRES_USER=1` in its `mode.conf` and rejects the flag (`admin` does).
+
+## Translations
+
+English is the default locale, French ships complete, and both are declared in
+`framework.enabled_locales`. Interface strings live in `translations/messages.*`
+and validation messages in `translations/validators.*`; templates and form
+labels only carry keys. The `web` and `admin` modes get a locale switcher in the
+navigation bar (`?_locale=fr`, remembered in the session by
+`App\EventListener\LocaleListener`); the API modes read `Accept-Language`
+instead, since they have no session.
 
 To have it at hand everywhere, add this to `~/.zshrc`:
 
@@ -178,12 +214,13 @@ optional except `mode.conf`:
 
 | File | Role |
 | --- | --- |
-| `mode.conf` | `DESCRIPTION` (shown by `--list`), `SYMFONY_NEW_FLAGS`, optional `NEXT_STEPS` printed once the project is generated |
+| `mode.conf` | `DESCRIPTION` (shown by `--list`), `SYMFONY_NEW_FLAGS`, `NEXT_STEPS` / `NEXT_STEPS_USER` printed once the project is generated, optional `REQUIRES_USER=1` |
 | `packages.txt` | `composer require`, on top of `common/packages.txt` |
 | `packages-dev.txt` | `composer require --dev` |
 | `gitignore.append` | appended to the `.gitignore` written by Flex |
 | `CLAUDE.append.md` | appended to the project's `CLAUDE.md` |
 | `overlay/` | files copied into the project (placeholders included) |
+| `overlay-user/`, `packages-user.txt`, `post-install-user.sh`, `gitignore-user.append`, `CLAUDE-user.append.md` | the account brick — skipped by `--no-user` |
 | `post-install.sh` | hook run at the end of the generation |
 
 Example — a `console` mode for a CLI-only project (no HTTP, no Doctrine):
@@ -206,8 +243,13 @@ EOF
 `./bin/new-project foo --console` works right away, and `--list` picks the mode
 up on its own.
 
-Same idea for a `microservice` mode (bare skeleton + Messenger + HTTP client)
-or an `admin` mode (`--webapp` + EasyAdmin).
+A mode that needs accounts reuses an existing brick rather than rewriting it:
+copy `modes/web/overlay-user/` and `modes/web/packages-user.txt` into the new
+mode, then adapt. That is exactly how the `admin` mode was built — same front,
+same account brick, EasyAdmin in place of the hand written CRUD.
+
+Same idea for a `microservice` mode (bare skeleton + Messenger + HTTP client) or
+a `shop` mode (`--webapp` + a catalogue).
 
 License
 -------

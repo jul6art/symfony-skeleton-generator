@@ -1,0 +1,9 @@
+<h1>{{ 'reset.email.subject'|trans }}</h1>
+
+<p>{{ 'reset.email.body'|trans({'%app%': '{{PROJECT_TITLE}}'}) }}</p>
+
+<p>
+    <a href="{{ url('app_reset_password', {token: resetToken.token}) }}">{{ 'reset.email.cta'|trans }}</a>
+</p>
+
+<p>{{ 'reset.email.expires'|trans({'%duration%': resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle')}) }}</p>

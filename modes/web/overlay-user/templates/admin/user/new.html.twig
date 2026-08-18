@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'admin.users.new'|trans }} — {{PROJECT_TITLE}}{% endblock %}
+
+{% block body %}
+    <div class="mx-auto max-w-xl">
+        <h1 class="mb-6 flex items-center gap-2 text-2xl font-semibold text-slate-900">
+            <i class="fa-solid fa-user-plus text-indigo-600"></i> {{ 'admin.users.new'|trans }}
+        </h1>
+
+        <div class="card">
+            {{ include('admin/user/_form.html.twig', {button_label: 'admin.users.create_submit'|trans}) }}
+        </div>
+    </div>
+{% endblock %}

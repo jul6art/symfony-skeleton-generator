@@ -1,0 +1,45 @@
+{# Barre de navigation avec les comptes (brique « comptes » du mode). #}
+<a href="{{ path('app_home') }}" class="mr-auto inline-flex items-center gap-2 text-lg font-semibold text-slate-900">
+    <i class="fa-solid fa-cube text-indigo-600"></i>
+    {{PROJECT_TITLE}}
+</a>
+
+{% if app.user %}
+    {% if is_granted('ROLE_ADMIN') %}
+        <a href="{{ path('admin') }}" class="nav-link">
+            <i class="fa-solid fa-gauge"></i> {{ 'nav.admin'|trans }}
+        </a>
+    {% endif %}
+    <a href="{{ path('app_profile') }}" class="nav-link">
+        <i class="fa-solid fa-user"></i> {{ app.user.userIdentifier }}
+    </a>
+    {# Déconnexion en POST + CSRF : un lien GET part au moindre préchargement. #}
+    <form method="post" action="{{ logout_path() }}"
+          data-controller="confirm" data-action="submit->confirm#request">
+        <button type="submit" class="nav-link">
+            <i class="fa-solid fa-right-from-bracket"></i> {{ 'nav.logout'|trans }}
+        </button>
+
+        {{ include('partials/_confirm_dialog.html.twig', {
+            dialog_id: 'confirm-logout',
+            title: 'confirm.logout.title'|trans,
+            message: 'confirm.logout.body'|trans,
+            icon: 'fa-right-from-bracket',
+            icon_class: 'bg-indigo-100 text-indigo-600',
+            confirm_label: 'nav.logout'|trans,
+            confirm_icon: 'fa-right-from-bracket',
+            confirm_class: 'btn-primary',
+        }, with_context = false) }}
+    </form>
+{% else %}
+    <a href="{{ path('app_login') }}" class="nav-link">
+        <i class="fa-solid fa-right-to-bracket"></i> {{ 'nav.login'|trans }}
+    </a>
+    {% if registration_enabled %}
+        <a href="{{ path('app_register') }}" class="btn btn-primary">
+            <i class="fa-solid fa-user-plus"></i> {{ 'nav.register'|trans }}
+        </a>
+    {% endif %}
+{% endif %}
+
+{{ include('partials/_locale_switcher.html.twig') }}

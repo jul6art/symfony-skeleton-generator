@@ -1,0 +1,9 @@
+# Paquets de la brique « comptes » : ignorés avec --no-user.
+
+symfony/security-bundle
+jul6art/auth-bundle                  # entité User, dépôt et manager
+lexik/jwt-authentication-bundle      # authentification par jeton
+symfony/rate-limiter                 # login_throttling sur /api/login
+
+# Suggestions :
+# gesdinet/jwt-refresh-token-bundle   # refresh tokens

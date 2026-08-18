@@ -1,0 +1,14 @@
+{{ form_start(form) }}
+    {{ form_row(form.email) }}
+    {{ form_row(form.roles) }}
+    {{ form_row(form.plainPassword.first) }}
+    {{ form_row(form.plainPassword.second) }}
+    {{ form_errors(form.plainPassword) }}
+
+    <div class="flex gap-2">
+        <button type="submit" class="btn btn-primary">
+            <i class="fa-solid fa-check"></i> {{ button_label|default('action.save'|trans) }}
+        </button>
+        <a href="{{ path('app_admin_user_index') }}" class="btn btn-secondary">{{ 'action.cancel'|trans }}</a>
+    </div>
+{{ form_end(form) }}

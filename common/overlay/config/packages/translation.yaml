@@ -1,0 +1,9 @@
+framework:
+    # L'anglais est la langue par défaut ; le français est fourni en entier.
+    default_locale: en
+    enabled_locales: ['en', 'fr']
+    translator:
+        default_path: '%kernel.project_dir%/translations'
+        fallbacks:
+            - en
+        providers:

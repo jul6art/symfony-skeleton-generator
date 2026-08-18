@@ -1,0 +1,7 @@
+{# Barre de navigation — le socle n'a pas de comptes ; la brique « comptes »
+   (overlay-user du mode) remplace ce fichier par sa propre version. #}
+<a href="{{ path('app_home') }}" class="mr-auto inline-flex items-center gap-2 text-lg font-semibold text-slate-900">
+    <i class="fa-solid fa-cube text-indigo-600"></i>
+    {{PROJECT_TITLE}}
+</a>
+{{ include('partials/_locale_switcher.html.twig') }}

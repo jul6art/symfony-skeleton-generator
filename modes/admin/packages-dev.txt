@@ -1,0 +1,4 @@
+# --webapp fournit déjà debug-bundle, web-profiler-bundle, stopwatch,
+# browser-kit et css-selector en dev.
+
+# symfony/panther

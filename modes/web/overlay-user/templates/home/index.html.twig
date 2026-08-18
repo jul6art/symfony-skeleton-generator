@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{PROJECT_TITLE}}{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <h1 class="text-2xl font-semibold text-slate-900">{{PROJECT_TITLE}}</h1>
+        <p class="mt-2 text-slate-600">{{ 'home.subtitle'|trans({'%mode%': '{{MODE}}'}) }}</p>
+
+        <div class="mt-6 grid gap-4 sm:grid-cols-2">
+            <div class="rounded-lg border border-slate-200 p-4">
+                <h2 class="flex items-center gap-2 font-medium text-slate-900">
+                    <i class="fa-solid fa-paintbrush text-indigo-600"></i> {{ 'home.tailwind.title'|trans }}
+                </h2>
+                <p class="mt-1 text-sm text-slate-600">{{ 'home.tailwind.body'|trans|raw }}</p>
+            </div>
+            <div class="rounded-lg border border-slate-200 p-4">
+                <h2 class="flex items-center gap-2 font-medium text-slate-900">
+                    <i class="fa-solid fa-shield-halved text-indigo-600"></i> {{ 'home.accounts.title'|trans }}
+                </h2>
+                <p class="mt-1 text-sm text-slate-600">{{ 'home.accounts.body'|trans }}</p>
+            </div>
+        </div>
+    </div>
+{% endblock %}

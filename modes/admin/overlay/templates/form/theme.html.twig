@@ -1,0 +1,64 @@
+{# Thème de formulaire maison : utilitaires Tailwind, aucune dépendance à un plugin. #}
+{% use 'form_div_layout.html.twig' %}
+
+{% block form_row %}
+    <div class="mb-5">
+        {{- form_label(form) -}}
+        {{- form_widget(form) -}}
+        {{- form_help(form) -}}
+        {{- form_errors(form) -}}
+    </div>
+{% endblock %}
+
+{% block form_label %}
+    {%- set label_attr = label_attr|merge({class: (label_attr.class|default('') ~ ' mb-1 block text-sm font-medium text-slate-700')|trim}) -%}
+    {{- parent() -}}
+{% endblock %}
+
+{% block form_widget_simple %}
+    {%- set attr = attr|merge({class: (attr.class|default('') ~ ' block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none')|trim}) -%}
+    {{- parent() -}}
+{% endblock %}
+
+{% block choice_widget_collapsed %}
+    {%- set attr = attr|merge({class: (attr.class|default('') ~ ' block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none')|trim}) -%}
+    {{- parent() -}}
+{% endblock %}
+
+{% block choice_widget_expanded %}
+    <div class="space-y-2">
+        {%- for child in form -%}
+            {%- set choice_label = child.vars.label is same as(false) or child.vars.label is empty ? child.vars.value : child.vars.label -%}
+            <label class="flex items-center gap-2 text-sm text-slate-700">
+                {{- form_widget(child, {attr: {class: 'h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500'}}) -}}
+                <span>{{ choice_translation_domain is same as(false) ? choice_label : choice_label|trans({}, choice_translation_domain) }}</span>
+            </label>
+        {%- endfor -%}
+    </div>
+{% endblock %}
+
+{% block checkbox_row %}
+    <div class="mb-5">
+        <label class="flex items-center gap-2 text-sm text-slate-700">
+            {{- form_widget(form, {attr: {class: 'h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500'}}) -}}
+            <span>{{ translation_domain is same as(false) ? label : label|trans({}, translation_domain) }}</span>
+        </label>
+        {{- form_help(form) -}}
+        {{- form_errors(form) -}}
+    </div>
+{% endblock %}
+
+{% block form_help %}
+    {%- set help_attr = help_attr|merge({class: (help_attr.class|default('') ~ ' mt-1 text-xs text-slate-500')|trim}) -%}
+    {{- parent() -}}
+{% endblock %}
+
+{% block form_errors %}
+    {%- if errors|length > 0 -%}
+        <ul class="mt-1 space-y-1 text-sm text-red-600">
+            {%- for error in errors -%}
+                <li><i class="fa-solid fa-circle-exclamation mr-1"></i>{{ error.message }}</li>
+            {%- endfor -%}
+        </ul>
+    {%- endif -%}
+{% endblock %}

@@ -1,0 +1,9 @@
+###> front (AssetMapper / Tailwind / Font Awesome) ###
+# public/assets/ et assets/vendor/ sont déjà gérés par la recette asset-mapper.
+# importmap.php DOIT rester versionné (c'est le lock du front).
+/assets/styles/tailwind.built.css
+/var/tailwind/
+/assets/vendor/sass/
+# Polices Font Awesome : récupérées par `make fontawesome` (lancé par `make install`).
+/assets/fontawesome/
+###< front (AssetMapper / Tailwind / Font Awesome) ###

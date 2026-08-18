@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'profile.title'|trans }} — {{PROJECT_TITLE}}{% endblock %}
+
+{% block body %}
+    <div class="mx-auto max-w-2xl">
+        <h1 class="mb-6 flex items-center gap-2 text-2xl font-semibold text-slate-900">
+            <i class="fa-solid fa-user text-indigo-600"></i> {{ 'profile.title'|trans }}
+        </h1>
+
+        <div class="card">
+            <dl class="divide-y divide-slate-100">
+                <div class="flex justify-between py-3 text-sm">
+                    <dt class="text-slate-500">{{ 'profile.email'|trans }}</dt>
+                    <dd class="font-medium text-slate-900">{{ app.user.email }}</dd>
+                </div>
+                <div class="flex justify-between py-3 text-sm">
+                    <dt class="text-slate-500">{{ 'profile.roles'|trans }}</dt>
+                    <dd class="font-medium text-slate-900">{{ app.user.roles|join(', ') }}</dd>
+                </div>
+            </dl>
+
+            <div class="mt-6">
+                <a href="{{ path('app_change_password') }}" class="btn btn-secondary">
+                    <i class="fa-solid fa-key"></i> {{ 'profile.change_password'|trans }}
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

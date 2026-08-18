@@ -9,10 +9,6 @@
 
 symfony/http-client
 symfony/uid
-lexik/jwt-authentication-bundle       # authentification par jeton
-symfony/rate-limiter                  # login_throttling sur /api/login
-
-jul6art/auth-bundle                 # entité User, dépôt et manager
 
 # Suggestions :
 # api-platform/graphql                # ajoute /graphql + GraphiQL

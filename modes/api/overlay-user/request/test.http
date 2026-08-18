@@ -1,0 +1,84 @@
+# Requêtes de test de l'API — client HTTP de PhpStorm / VS Code (REST Client).
+#
+# Sélectionner l'environnement « dev » (http-client.env.json) avant de jouer les
+# requêtes. Le mot de passe vit dans http-client.private.env.json, non versionné
+# (partir de http-client.private.env.json.dist).
+#
+# Ordre d'exécution : « Connexion » d'abord, elle enregistre le jeton dans une
+# variable globale utilisée par toutes les requêtes protégées.
+
+### Sonde de santé (publique, sans base de données)
+GET {{host}}/health
+Accept: application/json
+
+> {%
+    client.test("la sonde répond", () => client.assert(response.status === 200));
+%}
+
+### Connexion — enregistre le jeton pour les requêtes suivantes
+# @name login
+POST {{host}}/api/login
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}"
+}
+
+> {%
+    client.test("jeton reçu", () => {
+        client.assert(response.status === 200, "statut " + response.status);
+        client.assert(response.body.token !== undefined, "pas de jeton dans la réponse");
+    });
+    client.global.set("token", response.body.token);
+%}
+
+### Compte porté par le jeton
+GET {{host}}/api/me
+Authorization: Bearer {{token}}
+Accept: application/json
+
+> {%
+    client.test("le mot de passe ne sort jamais", () => {
+        client.assert(response.status === 200);
+        client.assert(response.body.password === undefined);
+    });
+%}
+
+### Sans jeton : doit répondre 401
+GET {{host}}/api/me
+Accept: application/json
+
+> {%
+    client.test("l'API est fermée sans jeton", () => client.assert(response.status === 401));
+%}
+
+### Jeton invalide : doit répondre 401
+GET {{host}}/api/me
+Authorization: Bearer jeton-bidon
+Accept: application/json
+
+> {%
+    client.test("un jeton invalide est refusé", () => client.assert(response.status === 401));
+%}
+
+### Mauvais mot de passe : doit répondre 401
+POST {{host}}/api/login
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "{{email}}",
+  "password": "mauvais-mot-de-passe"
+}
+
+> {%
+    client.test("identifiants invalides refusés", () => client.assert(response.status === 401));
+%}
+
+### Préflight CORS (l'origine doit correspondre à CORS_ALLOW_ORIGIN)
+OPTIONS {{host}}/api/me
+Origin: http://localhost:3000
+Access-Control-Request-Method: GET
+Access-Control-Request-Headers: authorization
