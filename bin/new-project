@@ -258,6 +258,13 @@ info "cible : $PROJECT_DIR"
 
 ensure_php
 
+# `symfony new` lance lui-même composer et choisit son PHP : sans .php-version
+# (qui n'existe pas encore), il peut tomber sur un binaire cassé du système. On
+# lui impose donc celui qu'on vient de retenir.
+if [ -z "$PHP_FLAG" ] && [ -n "$PHP_VERSION" ]; then
+    PHP_FLAG="--php=$PHP_VERSION"
+fi
+
 log "symfony new"
 run symfony new "$PROJECT_DIR" --version="$SF_VERSION" --no-git \
     $PHP_FLAG $SYMFONY_NEW_FLAGS $DOCKER_FLAG
