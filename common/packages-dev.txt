@@ -3,6 +3,7 @@
 symfony/maker-bundle
 symfony/test-pack
 doctrine/doctrine-fixtures-bundle
+fakerphp/faker                      # requis par le FakerAwareTrait de core-bundle (fixtures)
 friendsofphp/php-cs-fixer
 phpstan/phpstan
 phpstan/extension-installer

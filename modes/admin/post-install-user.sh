@@ -18,16 +18,3 @@ APP_REGISTRATION_ENABLED=${REGISTRATION:-1}
 EOF
 fi
 
-
-# Le back-office charge son thème par AssetMapper : il lui faut un point
-# d'entrée « admin » dans l'importmap.
-if [ -f importmap.php ] && ! grep -q "'admin'" importmap.php; then
-    printf "    importmap.php → point d'entrée « admin »\n"
-    symfony php -r '
-$f = "importmap.php";
-$c = file_get_contents($f);
-$entry = "    \x27admin\x27 => [\n        \x27path\x27 => \x27./assets/admin.js\x27,\n        \x27entrypoint\x27 => true,\n    ],\n";
-$c = preg_replace("/(\x27app\x27 => \[\n.*?\n    \],\n)/s", "$1".$entry, $c, 1);
-file_put_contents($f, $c);
-' || printf '/!\\ ajout du point d entrée « admin » impossible — le faire à la main dans importmap.php\n' >&2
-fi

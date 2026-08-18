@@ -1,0 +1,4 @@
+symfonycasts_sass:
+    # Le thème du back-office ; app.css reste géré par Tailwind.
+    root_sass:
+        - '%kernel.project_dir%/assets/styles/admin.scss'

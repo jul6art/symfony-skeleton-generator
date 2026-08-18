@@ -1,31 +1,27 @@
 {% extends '@EasyAdmin/page/content.html.twig' %}
 
-{% block content_title %}Tableau de bord{% endblock %}
+{% block content_title %}{{ 'admin.dashboard'|trans }}{% endblock %}
 
 {% block main %}
-    <div class="row">
+    <div class="row g-4">
         <div class="col-md-6">
-            <div class="content-panel p-4">
-                <h2 class="h5 mb-3">
-                    <i class="fa fa-users text-primary me-2"></i> Comptes
+            <div class="app-card">
+                <h2 class="app-card-title">
+                    <i class="fa fa-users"></i> {{ 'admin.cards.accounts.title'|trans }}
                 </h2>
-                <p class="text-muted mb-3">
-                    {{ user_count }} compte{{ user_count > 1 ? 's' : '' }} enregistré{{ user_count > 1 ? 's' : '' }}.
-                </p>
+                <p class="app-card-body">{{ 'admin.cards.accounts.count'|trans({'%count%': user_count}) }}</p>
                 <a class="btn btn-primary" href="{{ ea_url().setController('App\\Controller\\Admin\\UserCrudController').setAction('index') }}">
-                    Gérer les comptes
+                    {{ 'admin.cards.accounts.manage'|trans }}
                 </a>
             </div>
         </div>
         <div class="col-md-6">
-            <div class="content-panel p-4">
-                <h2 class="h5 mb-3">
-                    <i class="fa fa-arrow-left text-primary me-2"></i> Le site
+            <div class="app-card">
+                <h2 class="app-card-title">
+                    <i class="fa fa-arrow-left"></i> {{ 'admin.cards.site.title'|trans }}
                 </h2>
-                <p class="text-muted mb-3">
-                    Le back-office et le site partagent les mêmes comptes et la même palette.
-                </p>
-                <a class="btn btn-outline-secondary" href="{{ path('app_home') }}">Retour au site</a>
+                <p class="app-card-body">{{ 'admin.cards.site.body'|trans }}</p>
+                <a class="btn btn-outline-secondary" href="{{ path('app_home') }}">{{ 'admin.back_to_site'|trans }}</a>
             </div>
         </div>
     </div>

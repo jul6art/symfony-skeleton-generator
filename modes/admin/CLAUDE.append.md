@@ -37,6 +37,32 @@ front que le mode web ; le back-office est rendu par EasyAdmin.
   le reste de l'interface. Déjà en place sur la suppression d'un compte et sur
   la déconnexion.
 
+### Thème du back-office
+
+EasyAdmin est habillé par `assets/styles/admin.scss`, compilé par
+`symfonycasts/sass-bundle` (binaire Dart Sass local, aucun Node) : `make sass`,
+`make sass-watch` en développement, et `make start` / `make test` le compilent
+au besoin. Le point d'entrée `assets/admin.js` l'importe, et
+`DashboardController::configureAssets()` déclare cette entrée.
+
+Deux règles à respecter quand on retouche le thème :
+
+- **Passer par les jetons.** EasyAdmin 5 expose tout son design en propriétés
+  CSS (`--ea-primary`, `--ea-radius`, `--gray-*`, `--sidebar-*`, `--table-*`,
+  `--form-*`) : les redéfinir suffit presque toujours et survit aux montées de
+  version, contrairement aux sélecteurs internes. Les jetons maison
+  (`--app-panel-*`, `--app-thead-bg`) dessinent les panneaux, qu'EasyAdmin 5 ne
+  fournit plus — les classes `.content-panel` / `.form-panel` d'EasyAdmin 4
+  n'existent plus, ne pas les réutiliser.
+- **Ne pas mettre `!important`.** EasyAdmin range ses règles dans des couches
+  (`@layer ea…`) et cette feuille n'est dans aucune : elle l'emporte déjà, quelle
+  que soit la spécificité.
+
+Le schéma sombre est géré par EasyAdmin (classe `.ea-dark-scheme` sur `<body>`,
+suivant la préférence système) : toute couleur ajoutée doit avoir sa contrepartie
+dans le bloc `.ea-dark-scheme` de la feuille, sinon elle ne survit pas au
+basculement. Les cartes du tableau de bord utilisent `.app-card`.
+
 ### Base de données
 
 Les entités sont livrées sans migration : après `make db-create`, lancer

@@ -77,6 +77,14 @@ admin:
     section:
         accounts: Accounts
         site: Site
+    cards:
+        accounts:
+            title: Accounts
+            count: '{0}No account yet.|{1}One account registered.|]1,Inf[ %count% accounts registered.'
+            manage: Manage accounts
+        site:
+            title: The site
+            body: 'The back office and the front share the same accounts and the same palette.'
     users:
         singular: account
         title: Users

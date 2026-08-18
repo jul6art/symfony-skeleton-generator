@@ -83,11 +83,19 @@ rather than reinventing their pieces:
 ### `admin` — back office
 
 The public side (home, sign in, forgotten password, profile) is the `web` front;
-the back office is EasyAdmin, themed to match through its CSS custom properties
-(`assets/styles/admin.css`). The dashboard and the user CRUD are wired to the
-same `UserManagerInterface` as everything else, and the password field maps to
-the bundle transient `plainPassword`, hashed by the controller. Accounts are the
-subject of this mode, so `--no-user` is refused there.
+the back office is EasyAdmin, themed to match. The dashboard and the user CRUD
+are wired to the same `UserManagerInterface` as everything else, and the password
+field maps to the bundle transient `plainPassword`, hashed by the controller.
+Accounts are the subject of this mode, so `--no-user` is refused there.
+
+The theme lives in `assets/styles/admin.scss`, compiled by
+`symfonycasts/sass-bundle` — a standalone Dart Sass binary, so still no Node in
+the project (`make sass`, `make sass-watch`). It rewrites EasyAdmin's design
+tokens rather than its selectors: the slate/indigo palette of the front, softer
+radii, a sidebar whose active item carries an accent bar, list tables set in a
+panel with a sticky header, inputs with a real focus ring, dashboard cards
+(`.app-card`) — and the same care given to the dark scheme, which EasyAdmin
+switches on from the system preference.
 
 ### `api-platform` — declarative API
 

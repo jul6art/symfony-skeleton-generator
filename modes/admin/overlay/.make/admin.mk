@@ -2,17 +2,17 @@ FONTAWESOME_VERSION ?= 7.3.1
 FA_DIR  := assets/fontawesome
 FA_BASE := https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@$(FONTAWESOME_VERSION)
 
-.PHONY: assets tailwind tailwind-watch fontawesome importmap-update worker admin
+.PHONY: assets tailwind tailwind-watch sass sass-watch fontawesome importmap-update worker admin
 
 # `make install` récupère aussi les polices : elles ne sont pas versionnées.
 install: fontawesome
 
 # Les templates référencent la feuille compilée par Tailwind : sans elle,
 # AssetMapper ne sait pas résoudre `@import "tailwindcss"` et toute page casse.
-start: tailwind
-test: tailwind
+start: tailwind sass
+test: tailwind sass
 
-assets: tailwind ## Compile les assets (Tailwind puis AssetMapper)
+assets: tailwind sass ## Compile les assets (Tailwind, Sass, puis AssetMapper)
 	$(CONSOLE) asset-map:compile
 
 tailwind: ## Compile la feuille Tailwind (télécharge le binaire au besoin)
@@ -20,6 +20,12 @@ tailwind: ## Compile la feuille Tailwind (télécharge le binaire au besoin)
 
 tailwind-watch: ## Recompile Tailwind à chaque modification
 	$(CONSOLE) tailwind:build --watch
+
+sass: ## Compile le thème SCSS du back-office (télécharge le binaire Dart Sass au besoin)
+	$(CONSOLE) sass:build
+
+sass-watch: ## Recompile le SCSS à chaque modification
+	$(CONSOLE) sass:build --watch
 
 fontawesome: ## (Ré)installe Font Awesome Free en local dans assets/fontawesome/
 	@mkdir -p "$(FA_DIR)/css" "$(FA_DIR)/webfonts"

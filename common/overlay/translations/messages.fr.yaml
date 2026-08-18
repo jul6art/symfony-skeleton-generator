@@ -77,6 +77,14 @@ admin:
     section:
         accounts: Comptes
         site: Site
+    cards:
+        accounts:
+            title: Comptes
+            count: "{0}Aucun compte pour l'instant.|{1}Un compte enregistré.|]1,Inf[ %count% comptes enregistrés."
+            manage: Gérer les comptes
+        site:
+            title: Le site
+            body: 'Le back-office et le front partagent les mêmes comptes et la même palette.'
     users:
         singular: compte
         title: Utilisateurs

@@ -4,6 +4,7 @@
 # Ici : uniquement les ajouts maison.
 
 symfonycasts/tailwind-bundle        # binaire Tailwind local, aucun build Node
+symfonycasts/sass-bundle            # binaire Dart Sass local, pour le thème du back-office
 easycorp/easyadmin-bundle           # le back-office
 
 # Suggestions :
