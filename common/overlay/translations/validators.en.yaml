@@ -3,10 +3,10 @@ user:
     email:
         not_blank: Please enter an email address.
         invalid: This email address is not valid.
-        unique: An account already exists with this email address.
+        unique: An account with this email address already exists.
 password:
     not_blank: Please enter a password.
     too_short: The password must be at least {{ limit }} characters long.
-    too_weak: 'This password is too weak: make it longer or vary the characters.'
+    too_weak: 'This password is too weak — make it longer or mix in different characters.'
     mismatch: Both passwords must match.
-    current_invalid: This does not match your current password.
+    current_invalid: That is not your current password.

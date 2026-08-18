@@ -10,11 +10,11 @@ nav:
 home:
     subtitle: 'Project generated from the in-house skeleton (%mode%).'
     tailwind:
-        title: Local Tailwind
-        body: 'Tailwind binary downloaded by <code>make tailwind</code>, CSS compiled inside the project. No remote asset at runtime.'
+        title: Tailwind, served locally
+        body: 'The Tailwind binary is downloaded by <code>make tailwind</code> and the CSS is compiled inside the project — nothing is fetched from a CDN at runtime.'
     accounts:
         title: Accounts out of the box
-        body: 'Registration, sign in, forgotten password, password change and account administration.'
+        body: 'Sign-up, sign-in, forgotten password, password change and account administration.'
 
 login:
     title: Sign in
@@ -26,14 +26,14 @@ login:
 
 register:
     title: Create an account
-    submit: Create my account
-    already: 'Already registered?'
+    submit: Create account
+    already: 'Already have an account?'
 
 profile:
     title: My account
     email: Email address
     roles: Roles
-    change_password: Change my password
+    change_password: Change password
     password:
         title: Change password
         current: Current password
@@ -41,21 +41,21 @@ profile:
 
 reset:
     request:
-        title: Forgotten password
-        help: 'Enter your email address: if an account matches, you will receive a reset link.'
-        submit: Send the link
+        title: Reset your password
+        help: 'Enter your email address — if an account matches, we will send you a reset link.'
+        submit: Send reset link
         back: Back to sign in
     check_email:
         title: Check your email
         body: 'If an account matches that address, a reset link has just been sent. It expires in %duration%.'
-        spam: 'Remember to look in your spam folder. You can %link% if needed.'
-        again: make another request
+        spam: 'Remember to check your spam folder. You can %link% if needed.'
+        again: request another link
     new:
         title: New password
         submit: Save
     email:
         subject: Reset your password
-        body: 'A password reset was requested for your %app% account. If you did not ask for it, simply ignore this email.'
+        body: 'A password reset was requested for your %app% account. If you did not request it, simply ignore this email.'
         cta: Choose a new password
         expires: 'This link expires in %duration%.'
 
@@ -65,10 +65,10 @@ user:
     role:
         admin: Administrator
         user: User
-    roles_help: 'Every account has ROLE_USER implicitly.'
+    roles_help: 'ROLE_USER is implicit — every account has it.'
     password: Password
     password_new: New password
-    password_confirm: Confirm the password
+    password_confirm: Confirm password
     password_keep: Leave empty to keep the current password.
 
 admin:
@@ -81,16 +81,16 @@ admin:
         singular: account
         title: Users
         new: New account
-        empty: No account yet.
-        created: Created on
+        empty: No accounts yet.
+        created: Created
         actions: Actions
         show: View
         edit: Edit
         delete: Delete
         delete_label: 'Delete %email%'
-        create_submit: Create the account
+        create_submit: Create account
         back: Back to the list
-        id: Identifier
+        id: ID
 
 action:
     save: Save
@@ -116,5 +116,5 @@ flash:
         changed: Your password has been changed.
         reset: 'Password changed: you can now sign in.'
     reset:
-        invalid: 'This link is no longer valid (%reason%). Please make a new request.'
+        invalid: 'This link is no longer valid (%reason%). Please request a new one.'
     csrf: Invalid CSRF token.
