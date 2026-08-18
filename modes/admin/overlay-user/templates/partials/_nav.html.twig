@@ -13,8 +13,11 @@
     <a href="{{ path('app_profile') }}" class="nav-link">
         <i class="fa-solid fa-user"></i> {{ app.user.userIdentifier }}
     </a>
-    {# Déconnexion en POST + CSRF : un lien GET part au moindre préchargement. #}
-    <form method="post" action="{{ logout_path() }}"
+    {# Déconnexion en POST + CSRF : un lien GET part au moindre préchargement.
+       data-turbo="false" : la déconnexion change la session, on veut une vraie
+       navigation plutôt qu'un échange fetch et un instantané Turbo périmé — la
+       barre de navigation resterait sinon celle d'un utilisateur connecté. #}
+    <form method="post" action="{{ logout_path() }}" data-turbo="false"
           data-controller="confirm" data-action="submit->confirm#request">
         <button type="submit" class="nav-link">
             <i class="fa-solid fa-right-from-bracket"></i> {{ 'nav.logout'|trans }}
