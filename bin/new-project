@@ -297,6 +297,12 @@ if [ "$NO_EXTRAS" = 0 ]; then
     if [ -n "$PKGS_DEV" ]; then
         run symfony composer require --dev --no-interaction $PKGS_DEV
     fi
+
+    # Paquets du squelette de base dont on ne veut pas (Flex les déconfigure).
+    PKGS_OUT="$(read_packages "$MODES_DIR/$MODE/packages-remove.txt")"
+    if [ -n "$PKGS_OUT" ]; then
+        run symfony composer remove --no-interaction $PKGS_OUT
+    fi
 fi
 
 log "Fichiers du skeleton"

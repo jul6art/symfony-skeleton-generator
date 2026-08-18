@@ -54,11 +54,7 @@ final class ResetPasswordController extends AbstractController
             return $this->sendPasswordResetEmail($email, $mailer);
         }
 
-        return $this->render(
-            'reset_password/request.html.twig',
-            ['requestForm' => $form],
-            new Response(null, $form->isSubmitted() ? Response::HTTP_UNPROCESSABLE_ENTITY : Response::HTTP_OK),
-        );
+        return $this->render('reset_password/request.html.twig', ['requestForm' => $form]);
     }
 
     #[Route('/check-email', name: 'app_check_email', methods: ['GET'])]
@@ -114,11 +110,7 @@ final class ResetPasswordController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
 
-        return $this->render(
-            'reset_password/reset.html.twig',
-            ['resetForm' => $form],
-            new Response(null, $form->isSubmitted() ? Response::HTTP_UNPROCESSABLE_ENTITY : Response::HTTP_OK),
-        );
+        return $this->render('reset_password/reset.html.twig', ['resetForm' => $form]);
     }
 
     private function sendPasswordResetEmail(string $emailAddress, MailerInterface $mailer): RedirectResponse

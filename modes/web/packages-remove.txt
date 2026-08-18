@@ -1,0 +1,4 @@
+# Paquets installés par `symfony new --webapp` dont ce mode ne veut pas.
+# `composer remove` laisse Flex déconfigurer proprement (bundle, config, importmap).
+
+symfony/ux-turbo                    # navigation par fetch : plus de surprises que de gains

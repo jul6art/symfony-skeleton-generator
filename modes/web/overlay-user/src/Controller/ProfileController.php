@@ -62,10 +62,6 @@ final class ProfileController extends AbstractController
             return $this->redirectToRoute('app_profile');
         }
 
-        return $this->render(
-            'profile/change_password.html.twig',
-            ['changePasswordForm' => $form],
-            new Response(null, $form->isSubmitted() ? Response::HTTP_UNPROCESSABLE_ENTITY : Response::HTTP_OK),
-        );
+        return $this->render('profile/change_password.html.twig', ['changePasswordForm' => $form]);
     }
 }

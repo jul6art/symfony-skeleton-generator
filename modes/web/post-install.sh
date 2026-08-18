@@ -23,3 +23,11 @@ printf '    Tailwind (binaire + première compilation)…\n'
 if ! symfony console tailwind:build --minify >/dev/null 2>&1; then
     printf '/!\\ compilation Tailwind impossible — relancer « make tailwind ».\n' >&2
 fi
+
+# `composer remove symfony/ux-turbo` déconfigure le bundle mais laisse son entrée
+# dans l'importmap : sans ça, Turbo continue d'être téléchargé et servi.
+if [ -f importmap.php ] && grep -q '@hotwired/turbo' importmap.php; then
+    printf '    importmap.php → retrait de @hotwired/turbo\n'
+    symfony console importmap:remove @hotwired/turbo >/dev/null 2>&1 \
+        || printf '/!\\ retrait de @hotwired/turbo impossible — le faire à la main dans importmap.php\n' >&2
+fi

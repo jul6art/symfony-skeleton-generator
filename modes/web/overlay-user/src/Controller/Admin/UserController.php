@@ -62,11 +62,7 @@ final class UserController extends AbstractController
             return $this->redirectToRoute('app_admin_user_index');
         }
 
-        return $this->render(
-            'admin/user/new.html.twig',
-            ['user' => $user, 'form' => $form],
-            new Response(null, $form->isSubmitted() ? Response::HTTP_UNPROCESSABLE_ENTITY : Response::HTTP_OK),
-        );
+        return $this->render('admin/user/new.html.twig', ['user' => $user, 'form' => $form]);
     }
 
     #[Route('/{id}', name: 'app_admin_user_show', methods: ['GET'], requirements: ['id' => '\d+'])]
@@ -95,11 +91,7 @@ final class UserController extends AbstractController
             return $this->redirectToRoute('app_admin_user_index');
         }
 
-        return $this->render(
-            'admin/user/edit.html.twig',
-            ['user' => $user, 'form' => $form],
-            new Response(null, $form->isSubmitted() ? Response::HTTP_UNPROCESSABLE_ENTITY : Response::HTTP_OK),
-        );
+        return $this->render('admin/user/edit.html.twig', ['user' => $user, 'form' => $form]);
     }
 
     #[Route('/{id}/delete', name: 'app_admin_user_delete', methods: ['POST'], requirements: ['id' => '\d+'])]

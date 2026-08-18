@@ -42,6 +42,12 @@ rather than reinventing their pieces:
 
 ### `web` — web application
 
+- **No Turbo**: `symfony/ux-turbo`, pulled in by the `--webapp` pack, is removed
+  at generation time (`packages-remove.txt`). It imposed its rules on the whole
+  project — 422 on invalid forms, redirect-only submissions, a snapshot cache
+  that can repaint a stale navigation bar — for no gain on server-rendered
+  pages. Add it back with `symfony composer require symfony/ux-turbo` if a
+  project wants it. Stimulus stays: it drives the confirmation modals.
 - **Tailwind** through `symfonycasts/tailwind-bundle`: a standalone binary, no
   Node build. **Font Awesome Free** is downloaded into `assets/fontawesome/` by
   `make fontawesome` (run by `make install`). Nothing is loaded from a CDN at
@@ -217,6 +223,7 @@ optional except `mode.conf`:
 | `mode.conf` | `DESCRIPTION` (shown by `--list`), `SYMFONY_NEW_FLAGS`, `NEXT_STEPS` / `NEXT_STEPS_USER` printed once the project is generated, optional `REQUIRES_USER=1` |
 | `packages.txt` | `composer require`, on top of `common/packages.txt` |
 | `packages-dev.txt` | `composer require --dev` |
+| `packages-remove.txt` | `composer remove` — drops packages the base skeleton installs but the mode does not want |
 | `gitignore.append` | appended to the `.gitignore` written by Flex |
 | `CLAUDE.append.md` | appended to the project's `CLAUDE.md` |
 | `overlay/` | files copied into the project (placeholders included) |

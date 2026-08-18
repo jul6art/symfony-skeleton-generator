@@ -63,11 +63,6 @@ final class RegistrationController extends AbstractController
             return $security->login($user, 'form_login') ?? $this->redirectToRoute('app_home');
         }
 
-        return $this->render(
-            'registration/register.html.twig',
-            ['registrationForm' => $form],
-            // Turbo attend un 4xx quand un formulaire est renvoyé en erreur.
-            new Response(null, $form->isSubmitted() ? Response::HTTP_UNPROCESSABLE_ENTITY : Response::HTTP_OK),
-        );
+        return $this->render('registration/register.html.twig', ['registrationForm' => $form]);
     }
 }

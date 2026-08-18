@@ -19,8 +19,13 @@
 - Les formulaires sont rendus par le thème maison `templates/form/theme.html.twig`
   (déclaré dans `config/packages/twig.yaml`) : ne pas remettre de classes Tailwind
   sur chaque `form_row`.
-- Turbo est actif : un formulaire invalide doit être renvoyé en **422**
-  (`Response::HTTP_UNPROCESSABLE_ENTITY`), sinon Turbo ignore la réponse.
+- **Pas de Turbo** : `symfony/ux-turbo`, installé par le pack `--webapp`, est
+  retiré à la génération (`packages-remove.txt`). Il imposait ses règles à tout
+  le projet — 422 obligatoire sur formulaire invalide, redirections, cache
+  d'instantanés qui repeint une barre de navigation périmée — pour un gain nul
+  sur des pages rendues côté serveur. Un projet qui en a besoin le réinstalle
+  avec `symfony composer require symfony/ux-turbo`, et applique alors ces
+  règles. Stimulus, lui, reste : c'est lui qui porte les modales.
 - Toute action sensible passe par le contrôleur Stimulus `confirm`
   (`assets/controllers/confirm_controller.js`) : le formulaire porte
   `data-controller="confirm" data-action="submit->confirm#request"` et inclut
