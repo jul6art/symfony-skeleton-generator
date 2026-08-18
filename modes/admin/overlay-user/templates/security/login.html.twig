@@ -35,7 +35,12 @@
                     <span>{{ 'login.remember_me'|trans }}</span>
                 </label>
 
-                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+                {# Jeton CSRF « stateless » (config/packages/csrf.yaml) : la valeur rendue est le nom
+                   du cookie, pas un jeton. C'est csrf_protection_controller.js qui la remplace par
+                   une valeur aléatoire et pose le cookie de double soumission — et Stimulus ne le
+                   charge que si data-controller est présent, d'où cet attribut sur un champ caché. #}
+                <input type="hidden" name="_csrf_token" data-controller="csrf-protection"
+                       value="{{ csrf_token('authenticate') }}">
 
                 <button type="submit" class="btn btn-primary w-full">
                     <i class="fa-solid fa-arrow-right-to-bracket"></i> {{ 'login.submit'|trans }}

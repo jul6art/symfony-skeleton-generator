@@ -38,6 +38,20 @@ final class SmokeTest extends WebTestCase
         yield 'mot de passe oublié' => ['/reset-password'];
     }
 
+    /**
+     * Le champ CSRF écrit à la main doit porter data-controller="csrf-protection".
+     * Sans cet attribut Stimulus ne charge pas le contrôleur, la valeur rendue —
+     * le nom du cookie, pas un jeton — part telle quelle, et la connexion est
+     * rejetée dès qu'une soumission précédente a utilisé le double envoi.
+     */
+    public function testLoginCsrfFieldCarriesTheStimulusController(): void
+    {
+        $client = static::createClient();
+        $crawler = $client->request('GET', '/login');
+
+        self::assertCount(1, $crawler->filter('input[name="_csrf_token"][data-controller="csrf-protection"]'));
+    }
+
     public function testBackOfficeRequiresAuthentication(): void
     {
         $client = static::createClient();

@@ -18,7 +18,10 @@
        une URL se recopie, se garde en historique et fuit par le Referer. #}
     <form method="post" action="{{ path('app_logout') }}"
           data-controller="confirm" data-action="submit->confirm#request">
-        <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
+        {# data-controller : sans lui, Stimulus ne charge pas le contrôleur CSRF et la valeur
+           rendue (le nom du cookie) part telle quelle — le pare-feu la rejette. #}
+        <input type="hidden" name="_csrf_token" data-controller="csrf-protection"
+               value="{{ csrf_token('logout') }}">
 
         <button type="submit" class="nav-link">
             <i class="fa-solid fa-right-from-bracket"></i> {{ 'nav.logout'|trans }}

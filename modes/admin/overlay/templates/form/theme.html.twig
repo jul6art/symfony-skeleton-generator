@@ -16,7 +16,10 @@
 {% endblock %}
 
 {% block form_widget_simple %}
-    {%- set attr = attr|merge({class: (attr.class|default('') ~ ' block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none')|trim}) -%}
+    {# Un champ caché (le jeton CSRF, par exemple) ne prend pas les classes de saisie. #}
+    {%- if type is not defined or type != 'hidden' -%}
+        {%- set attr = attr|merge({class: (attr.class|default('') ~ ' block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none')|trim}) -%}
+    {%- endif -%}
     {{- parent() -}}
 {% endblock %}
 

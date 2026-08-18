@@ -22,7 +22,18 @@
   `config/packages/security.yaml` **et** dans un `#[IsGranted]` sur le contrôleur.
 - La déconnexion est en **POST + CSRF** (`enable_csrf`, route `app_logout`
   limitée à POST) : le lien GET historique se déclenchait sur un préchargement
-  ou une image tierce. Toujours utiliser `logout_path()` dans un formulaire.
+  ou une image tierce. Le jeton va dans un champ caché, pas dans l'URL — donc
+  `path('app_logout')` et non `logout_path()`, qui l'écrirait dans la query.
+- **Jeton CSRF écrit à la main : toujours `data-controller="csrf-protection"`
+  sur le champ caché.** La protection est « stateless »
+  (`config/packages/csrf.yaml`) : `csrf_token()` ne rend pas un jeton mais le nom
+  du cookie, et c'est `assets/controllers/csrf_protection_controller.js` qui le
+  remplace par une valeur aléatoire et pose le cookie de double envoi. Stimulus
+  ne charge ce contrôleur que si l'attribut est présent — les champs rendus par
+  le composant Form le portent déjà, un `<input>` écrit à la main non. Sans lui
+  la soumission passe tant que l'en-tête `Origin` suffit, puis échoue avec
+  « Jeton CSRF invalide » dès qu'une soumission précédente de la session a
+  utilisé le double envoi (Symfony refuse le retour en arrière).
 - L'inscription publique est pilotée par `APP_REGISTRATION_ENABLED` (`.env`) :
   à 0, `/register` répond 404 et les liens « Créer un compte » disparaissent
   (variable Twig globale `registration_enabled`, paramètre
