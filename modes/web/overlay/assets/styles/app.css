@@ -7,8 +7,11 @@
 @source "../controllers/**/*.js";
 
 @layer components {
+    /* Tailwind v4 laisse les <button> avec `cursor: default` : les classes qui
+       habillent un bouton (poubelle, déconnexion, actions des modales) doivent
+       donc demander le curseur main explicitement. */
     .btn {
-        @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition focus:ring-2 focus:ring-offset-2 focus:outline-none;
+        @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition focus:ring-2 focus:ring-offset-2 focus:outline-none;
     }
 
     .btn-primary {
@@ -24,7 +27,7 @@
     }
 
     .nav-link {
-        @apply inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900;
+        @apply inline-flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900;
     }
 
     .card {
