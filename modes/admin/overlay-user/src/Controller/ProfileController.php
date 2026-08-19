@@ -6,6 +6,7 @@ namespace App\Controller;
 
 use App\Event\UserEvent;
 use App\Form\ChangePasswordFormType;
+use App\Security\Voter\UserVoter;
 use Jul6Art\AuthBundle\Entity\User;
 use Jul6Art\AuthBundle\Manager\Interfaces\UserManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -17,8 +18,10 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+// Le rôle ferme la porte, le voter décide action par action : les deux, pas l'un
+// à la place de l'autre.
 #[Route('/profile')]
-#[IsGranted('ROLE_USER')]
+#[IsGranted(User::ROLE_USER)]
 final class ProfileController extends AbstractController
 {
     public function __construct(
@@ -30,6 +33,8 @@ final class ProfileController extends AbstractController
     #[Route('', name: 'app_profile', methods: ['GET'])]
     public function show(): Response
     {
+        $this->denyAccessUnlessGranted(UserVoter::VIEW, $this->getUser());
+
         return $this->render('profile/show.html.twig');
     }
 
@@ -41,6 +46,8 @@ final class ProfileController extends AbstractController
     ): Response {
         /** @var User $user */
         $user = $this->getUser();
+
+        $this->denyAccessUnlessGranted(UserVoter::EDIT, $user);
 
         $form = $this->createForm(ChangePasswordFormType::class);
         $form->handleRequest($request);

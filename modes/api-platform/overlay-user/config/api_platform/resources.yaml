@@ -3,6 +3,11 @@
 #
 # Le mot de passe n'appartient à aucun groupe de sérialisation
 # (config/serializer/user.yaml) : il ne peut pas sortir.
+#
+# Chaque opération porte sa décision d'accès, et cette décision nomme un
+# attribut d'`App\Security\Voter\UserVoter` — jamais un rôle, jamais une
+# comparaison écrite dans l'expression. `security:` est évalué après la lecture,
+# `object` est donc le compte concerné.
 resources:
     Jul6Art\AuthBundle\Entity\User:
         shortName: User
@@ -13,13 +18,13 @@ resources:
             # L'opération d'item canonique vient en premier : c'est elle qui
             # sert de gabarit aux IRI (@id) de la ressource.
             ApiPlatform\Metadata\Get:
-                security: "is_granted('ROLE_ADMIN') or object == user"
+                security: "is_granted('USER_VIEW', object)"
             ApiPlatform\Metadata\GetCollection:
-                security: "is_granted('ROLE_ADMIN')"
+                security: "is_granted('USER_LIST')"
             me:
                 class: ApiPlatform\Metadata\Get
                 uriTemplate: /me
                 description: 'Compte associé au jeton présenté.'
-                security: "is_granted('ROLE_USER')"
+                security: "is_granted('USER_VIEW', object)"
                 provider: App\State\MeProvider
                 read: true

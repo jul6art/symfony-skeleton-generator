@@ -13,6 +13,9 @@ use Symfony\Component\Routing\Attribute\Route;
  * La requête est interceptée par la clé `json_login` du pare-feu, qui répond
  * avec le JWT ; ce contrôleur n'est jamais exécuté — il n'existe que pour que
  * la route existe.
+ *
+ * Seule famille de routes sans décision d'accès dans le code, et pour cause :
+ * rien de ce qui est écrit ici ne tourne. La règle d'accès, c'est le pare-feu.
  */
 final class LoginController
 {

@@ -119,7 +119,6 @@ flash:
         updated: 'Account “%email%” updated.'
         admin_created: 'Account “%email%” created.'
         deleted: Account deleted.
-        self_delete: You cannot delete your own account.
     password:
         changed: Your password has been changed.
         reset: 'Password changed: you can now sign in.'

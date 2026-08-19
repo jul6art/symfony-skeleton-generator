@@ -1,0 +1,55 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Security\Voter;
+
+use Jul6Art\AuthBundle\Entity\User;
+use Symfony\Component\Security\Core\User\UserInterface;
+
+/**
+ * Décisions d'accès portant sur un compte.
+ *
+ * Un attribut par action exposée : c'est ce vocabulaire que citent les
+ * contrôleurs et les gabarits, jamais un rôle. Les cinq attributs sont déclarés
+ * même si le projet n'expose pas encore toutes les actions — une nouvelle route
+ * nomme un attribut existant plutôt que d'en inventer un.
+ */
+final class UserVoter extends AbstractVoter
+{
+    public const LIST = 'USER_LIST';
+
+    public const VIEW = 'USER_VIEW';
+
+    public const CREATE = 'USER_CREATE';
+
+    public const EDIT = 'USER_EDIT';
+
+    public const DELETE = 'USER_DELETE';
+
+    protected function attributes(): array
+    {
+        return [self::LIST, self::VIEW, self::CREATE, self::EDIT, self::DELETE];
+    }
+
+    protected function decide(string $attribute, mixed $subject, UserInterface $user): bool
+    {
+        $isAdmin = $this->hasRole(User::ROLE_ADMIN);
+
+        return match ($attribute) {
+            // Parcourir l'annuaire et créer un compte : l'administration.
+            self::LIST, self::CREATE => $isAdmin,
+            // Sa propre fiche, ou n'importe laquelle pour un administrateur.
+            self::VIEW, self::EDIT => $isAdmin || $this->isSelf($subject, $user),
+            // On ne supprime pas le compte avec lequel on est connecté : la
+            // règle vit ici, pas dans le contrôleur ni dans le gabarit.
+            self::DELETE => $isAdmin && $subject instanceof User && !$this->isSelf($subject, $user),
+            default => false,
+        };
+    }
+
+    private function isSelf(mixed $subject, UserInterface $user): bool
+    {
+        return $subject instanceof User && $subject->getUserIdentifier() === $user->getUserIdentifier();
+    }
+}

@@ -8,11 +8,14 @@ use LogicException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Core\Authorization\Voter\AuthenticatedVoter;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 final class SecurityController extends AbstractController
 {
     #[Route('/login', name: 'app_login', methods: ['GET', 'POST'])]
+    #[IsGranted(AuthenticatedVoter::PUBLIC_ACCESS)]
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
         if (null !== $this->getUser()) {
@@ -25,6 +28,11 @@ final class SecurityController extends AbstractController
         ]);
     }
 
+    /**
+     * Seule famille de routes sans décision d'accès dans le code, et pour cause :
+     * la clé `logout` du pare-feu intercepte la requête, cette action n'est
+     * jamais exécutée. La règle d'accès, c'est le pare-feu.
+     */
     #[Route('/logout', name: 'app_logout', methods: ['POST'])]
     public function logout(): never
     {

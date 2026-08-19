@@ -40,7 +40,8 @@ security:
     role_hierarchy:
         ROLE_ADMIN: ROLE_USER
 
-    # Ceinture et bretelles : les contrôleurs portent déjà #[IsGranted].
+    # Ceinture grossière : la décision fine est portée par les voters, action par
+    # action (règle n°1). Ces deux lignes ne font que fermer les zones d'un bloc.
     access_control:
         - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/profile, roles: ROLE_USER }

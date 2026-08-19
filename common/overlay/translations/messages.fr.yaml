@@ -119,7 +119,6 @@ flash:
         updated: 'Compte « %email% » mis à jour.'
         admin_created: 'Compte « %email% » créé.'
         deleted: Compte supprimé.
-        self_delete: Vous ne pouvez pas supprimer votre propre compte.
     password:
         changed: Votre mot de passe a été modifié.
         reset: 'Mot de passe modifié : vous pouvez vous connecter.'

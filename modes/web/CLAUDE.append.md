@@ -1,5 +1,17 @@
 ## Spécificités du mode web
 
+### Autorisation
+
+La règle n°1 s'applique telle quelle aux pages Twig : la décision est portée par
+l'action, jamais par le gabarit. `/` est publique et le déclare
+(`#[IsGranted(AuthenticatedVoter::PUBLIC_ACCESS)]`) ; toute page ajoutée déclare
+la sienne de la même façon.
+
+Un gabarit ne recopie pas la règle : il demande l'attribut
+(`{% if is_granted('USER_DELETE', user) %}`). Un lien affiché que le voter refuse
+est un bug d'interface ; une condition sur `'ROLE_ADMIN' in user.roles` pour
+décider d'un accès en est un autre — ce test ne sert qu'à *afficher* le rôle.
+
 ### Front
 
 - **Aucune ressource distante** : ni CDN, ni `<script src="https://…">`. Tailwind

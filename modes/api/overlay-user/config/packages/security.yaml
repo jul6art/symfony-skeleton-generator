@@ -46,6 +46,8 @@ security:
     role_hierarchy:
         ROLE_ADMIN: ROLE_USER
 
+    # Ceinture grossière : la décision fine est portée par les voters, action par
+    # action (règle n°1).
     access_control:
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }

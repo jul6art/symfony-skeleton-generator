@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller\Admin;
 
 use App\Event\UserEvent;
+use App\Security\Voter\UserVoter;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
@@ -27,6 +28,11 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
  *
  * Le mot de passe est saisi en clair dans `plainPassword` (non persisté) puis
  * haché ici : l'entité ne voit jamais passer un mot de passe en clair en base.
+ *
+ * Les routes de ce CRUD sont celles d'EasyAdmin : leur décision d'accès se
+ * déclare avec `setPermission()` (une action, un attribut de voter) et
+ * `setEntityPermission()` pour la fiche elle-même. EasyAdmin refuse la page
+ * quand le voter dit non, et masque le bouton correspondant.
  */
 final class UserCrudController extends AbstractCrudController
 {
@@ -48,14 +54,22 @@ final class UserCrudController extends AbstractCrudController
             ->setEntityLabelInSingular('admin.users.singular')
             ->setEntityLabelInPlural('admin.users.title')
             ->setDefaultSort(['email' => 'ASC'])
-            ->setPaginatorPageSize(30);
+            ->setPaginatorPageSize(30)
+            // Vérifié sur l'instance : le voter reçoit le compte concerné.
+            ->setEntityPermission(UserVoter::VIEW);
     }
 
     public function configureActions(Actions $actions): Actions
     {
         return $actions
             ->add(Crud::PAGE_INDEX, Action::DETAIL)
-            ->setPermission(Action::DELETE, User::ROLE_ADMIN);
+            ->setPermission(Action::INDEX, UserVoter::LIST)
+            ->setPermission(Action::NEW, UserVoter::CREATE)
+            ->setPermission(Action::DETAIL, UserVoter::VIEW)
+            ->setPermission(Action::EDIT, UserVoter::EDIT)
+            // USER_DELETE refuse le compte connecté : le bouton disparaît de sa
+            // propre ligne, et la route répond 403 si on la force.
+            ->setPermission(Action::DELETE, UserVoter::DELETE);
     }
 
     public function configureFields(string $pageName): iterable

@@ -1,19 +1,26 @@
-{# Suppression d'un compte : confirmation par modale (voir assets/controllers/confirm_controller.js). #}
-<form method="post" action="{{ path('app_admin_user_delete', {id: user.id}) }}"
-      data-controller="confirm" data-action="submit->confirm#request">
-    <input type="hidden" name="_token" value="{{ csrf_token('delete-user-' ~ user.id) }}">
+{# Suppression d'un compte : le bouton n'apparaît que si le voter l'autorise
+   (USER_DELETE refuse le compte connecté), et la confirmation passe par la
+   modale (voir assets/controllers/confirm_controller.js). #}
+{% if is_granted('USER_DELETE', user) %}
+    <form method="post" action="{{ path('app_admin_user_delete', {id: user.id}) }}"
+          data-controller="confirm" data-action="submit->confirm#request">
+        {# Jeton classique (« delete-user-<id> » n'est pas dans
+           framework.csrf_protection.stateless_token_ids) : pas de contrôleur
+           Stimulus ici, la valeur rendue est déjà un vrai jeton. #}
+        <input type="hidden" name="_token" value="{{ csrf_token('delete-user-' ~ user.id) }}">
 
-    <button type="submit" class="nav-link text-red-600 hover:bg-red-50 hover:text-red-700" title="{{ 'admin.users.delete'|trans }}">
-        <i class="fa-solid fa-trash"></i>
-        <span class="sr-only">{{ 'admin.users.delete_label'|trans({'%email%': user.email}) }}</span>
-    </button>
+        <button type="submit" class="nav-link text-red-600 hover:bg-red-50 hover:text-red-700" title="{{ 'admin.users.delete'|trans }}">
+            <i class="fa-solid fa-trash"></i>
+            <span class="sr-only">{{ 'admin.users.delete_label'|trans({'%email%': user.email}) }}</span>
+        </button>
 
-    {{ include('partials/_confirm_dialog.html.twig', {
-        dialog_id: 'confirm-delete-user-' ~ user.id,
-        title: 'confirm.delete_user.title'|trans,
-        highlight: user.email,
-        message: 'confirm.delete_user.body'|trans,
-        confirm_label: 'admin.users.delete'|trans,
-        confirm_icon: 'fa-trash',
-    }, with_context = false) }}
-</form>
+        {{ include('partials/_confirm_dialog.html.twig', {
+            dialog_id: 'confirm-delete-user-' ~ user.id,
+            title: 'confirm.delete_user.title'|trans,
+            highlight: user.email,
+            message: 'confirm.delete_user.body'|trans,
+            confirm_label: 'admin.users.delete'|trans,
+            confirm_icon: 'fa-trash',
+        }, with_context = false) }}
+    </form>
+{% endif %}

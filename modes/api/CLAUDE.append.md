@@ -2,6 +2,11 @@
 
 ### Conventions
 
+- **Règle n°1, sans exception** : `denyAccessUnlessGranted` dès qu'il y a un
+  sujet, `#[IsGranted]` sinon, et `AuthenticatedVoter::PUBLIC_ACCESS` pour ce
+  qui est volontairement ouvert. `access_control` ferme grossièrement, le voter
+  décide finement — les deux, pas l'un à la place de l'autre. Corollaire :
+  `symfony/security-bundle` est installé dans tous les cas, `--no-user` compris.
 - Pas de Twig, pas d'assets : toute réponse est du JSON.
 - Contrôleurs invocables (`__invoke`) sous `src/Controller/`, une action par
   classe, préfixe de route `/api` sauf pour `/health`.

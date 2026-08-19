@@ -48,7 +48,7 @@ Accept: application/ld+json
     });
 %}
 
-### Liste des comptes (réservée à ROLE_ADMIN) — retient le premier identifiant
+### Liste des comptes (USER_LIST, réservé à l'administration) — retient le premier identifiant
 # @name users
 GET {{host}}/api/users
 Authorization: Bearer {{token}}

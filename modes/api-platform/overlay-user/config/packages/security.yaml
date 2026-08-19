@@ -47,7 +47,8 @@ security:
         ROLE_ADMIN: ROLE_USER
 
     # La sécurité fine est portée par les opérations (`security:` des
-    # #[ApiResource]) ; ces règles ne font qu'ouvrir ce qui doit l'être.
+    # #[ApiResource]), et leurs expressions citent un attribut de voter ; ces
+    # règles ne font qu'ouvrir ou fermer grossièrement.
     access_control:
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
         # Documentation ouverte : à fermer si l'API n'est pas publique.

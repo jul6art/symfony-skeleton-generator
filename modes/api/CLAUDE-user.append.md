@@ -9,7 +9,13 @@
   `config/validator/user.yaml`, groupes de sérialisation dans
   `config/serializer/user.yaml`. Le mot de passe n'est dans aucun groupe, il ne
   sort donc jamais de l'API.
-- Rôles : `User::ROLE_USER` et `User::ROLE_ADMIN`, jamais de chaîne littérale.
+- Rôles : `User::ROLE_USER` et `User::ROLE_ADMIN`, jamais de chaîne littérale —
+  et jamais dans un contrôleur : ils se lisent dans `UserVoter`.
+- Les accès aux comptes passent par `App\Security\Voter\UserVoter` :
+  `USER_LIST`, `USER_VIEW`, `USER_CREATE`, `USER_EDIT`, `USER_DELETE`. Un
+  administrateur voit tout, un porteur de jeton ne voit que son propre compte.
+  `GET /api/me` cite `USER_VIEW` (`denyAccessUnlessGranted`), et
+  `tests/Security/UserVoterTest.php` fige ces cas.
 
 ### Authentification (JWT)
 
@@ -19,8 +25,9 @@
 - La route `api_login` n'a pas de code : elle est interceptée par la clé
   `json_login` du pare-feu (`config/packages/security.yaml`).
 - Trois pare-feux : `login` (échange des identifiants), `api` (jetons, tout est
-  `stateless`), `main` (le reste, dont `/health`). Toute nouvelle règle d'accès
-  va dans `access_control` **et** dans un `#[IsGranted]` sur le contrôleur.
+  `stateless`), `main` (le reste, dont `/health`). `access_control` ne fait
+  qu'ouvrir ou fermer grossièrement ; la règle fine s'écrit dans un voter et se
+  cite sur l'action.
 - Les clés vivent dans `config/jwt/` (non versionnées) :
   `make jwt-keypair` les régénère, la passphrase est dans `.env`.
 - Pas d'inscription publique : les comptes se créent en console

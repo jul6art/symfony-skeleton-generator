@@ -9,7 +9,12 @@
   `config/validator/user.yaml`, groupes de sérialisation dans
   `config/serializer/user.yaml`. Le mot de passe n'est dans aucun groupe, il ne
   sort donc jamais de l'API.
-- Rôles : `User::ROLE_USER` et `User::ROLE_ADMIN`, jamais de chaîne littérale.
+- Rôles : `User::ROLE_USER` et `User::ROLE_ADMIN`, jamais de chaîne littérale —
+  et jamais dans une expression `security:` : ils se lisent dans `UserVoter`.
+- Les accès aux comptes passent par `App\Security\Voter\UserVoter` :
+  `USER_LIST`, `USER_VIEW`, `USER_CREATE`, `USER_EDIT`, `USER_DELETE`. Un
+  administrateur voit tout, un porteur de jeton ne voit que son propre compte.
+  `tests/Security/UserVoterTest.php` fige ces cas.
 
 ### Authentification (JWT)
 
@@ -33,8 +38,11 @@
   design » (`make assets`).
 - `GET /api/me` est une opération `Get` alimentée par `App\State\MeProvider` :
   le compte porté par le jeton, sans identifiant dans l'URL.
-- `/api/users` est réservé à `ROLE_ADMIN` ; une fiche n'est lisible que par son
-  propriétaire ou un administrateur (`security: "… or object == user"`).
+- Les trois opérations exposées citent leur attribut de voter dans
+  `config/api_platform/resources.yaml` : `GetCollection` → `USER_LIST` (réservé
+  à l'administration), `Get` et `me` → `is_granted('USER_VIEW', object)`, donc le
+  propriétaire de la fiche ou un administrateur. Plus de comparaison
+  `object == user` écrite dans l'expression : la règle est dans le voter.
 - Le mot de passe n'appartient à aucun groupe de sérialisation : il ne peut pas
   sortir. Pas d'inscription publique : les comptes se créent en console
   (`make user-create ARGS="moi@exemple.com --admin"`).

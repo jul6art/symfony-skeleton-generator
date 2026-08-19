@@ -6,6 +6,7 @@ namespace App\Controller\Admin;
 
 use App\Event\UserEvent;
 use App\Form\UserType;
+use App\Security\Voter\UserVoter;
 use Jul6Art\AuthBundle\Entity\User;
 use Jul6Art\AuthBundle\Factory\UserFactory;
 use Jul6Art\AuthBundle\Manager\Interfaces\UserManagerInterface;
@@ -21,8 +22,14 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 use function is_string;
 
+/**
+ * Administration des comptes.
+ *
+ * Le rôle de classe ferme la porte ; c'est `UserVoter` qui décide action par
+ * action — y compris la règle « on ne supprime pas son propre compte ».
+ */
 #[Route('/admin/users')]
-#[IsGranted('ROLE_ADMIN')]
+#[IsGranted(User::ROLE_ADMIN)]
 final class UserController extends AbstractController
 {
     public function __construct(
@@ -35,6 +42,7 @@ final class UserController extends AbstractController
     }
 
     #[Route('', name: 'app_admin_user_index', methods: ['GET'])]
+    #[IsGranted(UserVoter::LIST)]
     public function index(): Response
     {
         return $this->render('admin/user/index.html.twig', [
@@ -43,6 +51,7 @@ final class UserController extends AbstractController
     }
 
     #[Route('/new', name: 'app_admin_user_new', methods: ['GET', 'POST'])]
+    #[IsGranted(UserVoter::CREATE)]
     public function new(Request $request): Response
     {
         $user = UserFactory::create();
@@ -68,12 +77,16 @@ final class UserController extends AbstractController
     #[Route('/{id}', name: 'app_admin_user_show', methods: ['GET'], requirements: ['id' => '\d+'])]
     public function show(User $user): Response
     {
+        $this->denyAccessUnlessGranted(UserVoter::VIEW, $user);
+
         return $this->render('admin/user/show.html.twig', ['user' => $user]);
     }
 
     #[Route('/{id}/edit', name: 'app_admin_user_edit', methods: ['GET', 'POST'], requirements: ['id' => '\d+'])]
     public function edit(Request $request, User $user): Response
     {
+        $this->denyAccessUnlessGranted(UserVoter::EDIT, $user);
+
         $form = $this->createForm(UserType::class, $user);
         $form->handleRequest($request);
 
@@ -97,11 +110,9 @@ final class UserController extends AbstractController
     #[Route('/{id}/delete', name: 'app_admin_user_delete', methods: ['POST'], requirements: ['id' => '\d+'])]
     public function delete(Request $request, User $user): Response
     {
-        if ($user === $this->getUser()) {
-            $this->addFlash('error', 'flash.account.self_delete');
-
-            return $this->redirectToRoute('app_admin_user_index');
-        }
+        // Le voter porte aussi le refus de l'auto-suppression : le gabarit
+        // n'affiche donc pas le bouton, et une requête forgée reçoit un 403.
+        $this->denyAccessUnlessGranted(UserVoter::DELETE, $user);
 
         if (!$this->isCsrfTokenValid('delete-user-'.(string) $user->getId(), $request->getPayload()->getString('_token'))) {
             $this->addFlash('error', 'flash.csrf');

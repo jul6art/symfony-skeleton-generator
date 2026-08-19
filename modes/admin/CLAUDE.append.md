@@ -1,5 +1,25 @@
 ## Spécificités du mode admin
 
+### Autorisation
+
+La règle n°1 vaut aussi pour les routes qu'EasyAdmin génère, qui n'ont pas
+d'`#[Route]` à décorer. Elles se déclarent dans le CRUD :
+
+- `configureActions()` — `->setPermission(Action::EDIT, UserVoter::EDIT)` : une
+  action, un attribut. EasyAdmin vérifie l'attribut **à l'entrée de la page**
+  (403 sinon) et masque le bouton correspondant. Le sujet transmis au voter est
+  l'instance de l'entité pour les actions de ligne (`DETAIL`, `EDIT`, `DELETE`),
+  et la classe pour les actions globales (`INDEX`, `NEW`) : un voter doit donc
+  accepter les deux.
+- `configureCrud()` — `->setEntityPermission(UserVoter::VIEW)` : la fiche
+  elle-même, vérifiée sur l'instance.
+- `configureMenuItems()` — `->setPermission(UserVoter::LIST)` sur l'entrée de
+  menu qui ouvre le CRUD : le menu ne montre que ce qui est autorisé.
+
+Le tableau de bord, lui, est une porte sans sujet : sa décision est
+`AdminVoter::ACCESS`, prise dans `index()`. Le front public suit la règle
+générale — `/` est publique et le déclare.
+
 ### Front public
 
 Le site public (accueil, connexion, mot de passe oublié, profil) utilise le même

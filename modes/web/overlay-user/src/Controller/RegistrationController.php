@@ -16,6 +16,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Core\Authorization\Voter\AuthenticatedVoter;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 final class RegistrationController extends AbstractController
 {
@@ -27,7 +29,9 @@ final class RegistrationController extends AbstractController
     ) {
     }
 
+    // Inscription ouverte à tous — mais la route le déclare, comme les autres.
     #[Route('/register', name: 'app_register', methods: ['GET', 'POST'])]
+    #[IsGranted(AuthenticatedVoter::PUBLIC_ACCESS)]
     public function __invoke(
         Request $request,
         UserPasswordHasherInterface $passwordHasher,

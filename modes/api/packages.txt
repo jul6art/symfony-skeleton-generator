@@ -1,6 +1,7 @@
 # Le skeleton nu ne contient que framework-bundle, console, dotenv, flex,
 # runtime et yaml : tout le reste est explicite ici.
 
+symfony/security-bundle                # règle n°1 : chaque route porte sa décision d'accès
 symfony/orm-pack
 doctrine/doctrine-migrations-bundle
 symfony/serializer-pack

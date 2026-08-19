@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
+use App\Security\Voter\AdminVoter;
+use App\Security\Voter\UserVoter;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
@@ -21,6 +23,10 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
  *
  * La palette d'EasyAdmin est alignée sur celle du front dans
  * assets/styles/admin.css : le back-office doit ressembler au site.
+ *
+ * La route du tableau de bord vient d'`#[AdminDashboard]` et non d'`#[Route]`,
+ * mais la règle est la même : elle porte sa décision d'accès, ici l'entrée dans
+ * le back-office (`AdminVoter`). Les entités administrées gardent la leur.
  */
 #[AdminDashboard(routePath: '/admin', routeName: 'admin')]
 #[IsGranted(User::ROLE_ADMIN)]
@@ -32,6 +38,8 @@ final class DashboardController extends AbstractDashboardController
 
     public function index(): Response
     {
+        $this->denyAccessUnlessGranted(AdminVoter::ACCESS);
+
         return $this->render('admin/dashboard.html.twig', [
             'user_count' => $this->users->count([]),
         ]);
@@ -62,10 +70,15 @@ final class DashboardController extends AbstractDashboardController
 
     public function configureMenuItems(): iterable
     {
-        yield MenuItem::linkToDashboard('admin.dashboard', 'fa fa-gauge');
+        yield MenuItem::linkToDashboard('admin.dashboard', 'fa fa-gauge')
+            ->setPermission(AdminVoter::ACCESS);
 
         yield MenuItem::section('admin.section.accounts');
-        yield MenuItem::linkTo(UserCrudController::class, 'nav.users', 'fa fa-users');
+
+        // Un menu ne montre que ce que le voter autorise : même attribut que
+        // l'action qu'il ouvre.
+        yield MenuItem::linkTo(UserCrudController::class, 'nav.users', 'fa fa-users')
+            ->setPermission(UserVoter::LIST);
 
         yield MenuItem::section('admin.section.site');
         yield MenuItem::linkToRoute('admin.back_to_site', 'fa fa-arrow-left', 'app_home');

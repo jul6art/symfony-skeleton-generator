@@ -38,6 +38,45 @@ rather than reinventing their pieces:
   `App\Entity\User`; validation and serialization rules for that vendor entity
   live in `config/validator/` and `config/serializer/`.
 
+## One rule across every mode: no route without a voter action
+
+Every generated project carries the same first rule, stated at the top of its
+`CLAUDE.md`: **each route carries an explicit access decision, and that decision
+lives in a voter.** A route with no decision is a bug, even a public one — silence
+does not authorise, it forgets to refuse.
+
+- Controllers: `$this->denyAccessUnlessGranted(UserVoter::EDIT, $user)` as the
+  first statement whenever there is a subject, `#[IsGranted(UserVoter::LIST)]` on
+  the action when there is none, and
+  `#[IsGranted(AuthenticatedVoter::PUBLIC_ACCESS)]` for what is deliberately open.
+- API Platform: the decision belongs to the operation (`security:`,
+  `securityPostDenormalize:`), and its expression names a voter attribute rather
+  than a role. `api_platform.defaults.security` closes anything that forgets to
+  declare its own.
+- EasyAdmin: `setPermission()` per action and `setEntityPermission()` on the CRUD
+  — the generated routes have no `#[Route]` to decorate, so this is where their
+  decision goes.
+- Roles are the *matter* of a decision, never its *expression*: `ROLE_ADMIN` is
+  read inside the voter, `access_control` and a class-level `#[IsGranted]` stay
+  the coarse belt.
+
+`App\Security\Voter\AbstractVoter` (shipped in every mode) carries the plumbing:
+one attribute per exposed action listed by `attributes()`, the decision in
+`decide()`, which only ever sees authenticated accounts. Modes with the accounts
+brick ship `UserVoter` (`USER_LIST`, `USER_VIEW`, `USER_CREATE`, `USER_EDIT`,
+`USER_DELETE`) and its unit test; the `admin` mode adds `AdminVoter` for the
+back-office door itself.
+
+The rule is enforced, not merely written down: every project ships
+`tests/Security/RouteAccessDecisionTest.php`, which walks the router and fails
+when an `App\` action carries neither a method-level `#[IsGranted]` nor a
+`denyAccessUnlessGranted()` call — so a route added without a decision turns
+`make qa` red. Firewall-intercepted routes (`app_logout`, `api_login`) are the
+one documented exception, listed in the test itself.
+
+Because of that rule `symfony/security-bundle` is installed in every mode,
+including `api --no-user`: a route without an access decision is not an option.
+
 ## What each mode ships
 
 ### `web` — web application
@@ -145,7 +184,9 @@ up, forgotten password, profile and user CRUD live in `overlay-user/`,
 `CLAUDE-user.append.md`. With `--no-user` none of it is copied and none of the
 related packages (`jul6art/auth-bundle`, the reset-password bundle, the JWT
 bundle…) are installed — the project keeps its layout, its front and its quality
-gate, and `make qa` stays green. A mode whose subject *is* accounts declares
+gate, and `make qa` stays green. What does *not* go away is the access-decision
+rule: `symfony/security-bundle` and `AbstractVoter` are still there, and the
+remaining routes still declare their decision (a public one, in that case). A mode whose subject *is* accounts declares
 `REQUIRES_USER=1` in its `mode.conf` and rejects the flag (`admin` does).
 
 ## Translations

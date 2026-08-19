@@ -13,6 +13,10 @@ api_platform:
         json: ['application/json']
 
     defaults:
+        # Filet de la règle n°1 : une opération qui oublie sa clé `security:` est
+        # fermée au lieu d'être ouverte. Ce n'est qu'un filet — chaque opération
+        # déclare sa décision, nommée sur un attribut de voter.
+        security: "is_granted('ROLE_ADMIN')"
         # Pas de session ni d'état serveur : l'API est cacheable.
         stateless: true
         cache_headers:

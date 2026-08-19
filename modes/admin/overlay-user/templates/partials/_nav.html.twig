@@ -5,7 +5,9 @@
 </a>
 
 {% if app.user %}
-    {% if is_granted('ROLE_ADMIN') %}
+    {# Le lien porte l'attribut de l'action qu'il ouvre, pas le rôle : la règle
+       reste dans le voter. #}
+    {% if is_granted('ADMIN_ACCESS') %}
         <a href="{{ path('admin') }}" class="nav-link">
             <i class="fa-solid fa-gauge"></i> {{ 'nav.admin'|trans }}
         </a>

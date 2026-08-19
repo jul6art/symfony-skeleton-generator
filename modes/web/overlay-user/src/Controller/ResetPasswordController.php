@@ -17,6 +17,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Core\Authorization\Voter\AuthenticatedVoter;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use SymfonyCasts\Bundle\ResetPassword\Controller\ResetPasswordControllerTrait;
 use SymfonyCasts\Bundle\ResetPassword\Exception\ResetPasswordExceptionInterface;
@@ -26,7 +28,8 @@ use SymfonyCasts\Bundle\ResetPassword\ResetPasswordHelperInterface;
  * Parcours « mot de passe oublié ».
  *
  * Principe : aucune réponse ne permet de savoir si une adresse est connue —
- * la page de confirmation est toujours la même.
+ * la page de confirmation est toujours la même. Le parcours est ouvert à tous,
+ * et chaque action le déclare : pas de route sans décision d'accès.
  */
 #[Route('/reset-password')]
 final class ResetPasswordController extends AbstractController
@@ -42,6 +45,7 @@ final class ResetPasswordController extends AbstractController
     }
 
     #[Route('', name: 'app_forgot_password_request', methods: ['GET', 'POST'])]
+    #[IsGranted(AuthenticatedVoter::PUBLIC_ACCESS)]
     public function request(Request $request, MailerInterface $mailer): Response
     {
         $form = $this->createForm(ResetPasswordRequestFormType::class);
@@ -58,6 +62,7 @@ final class ResetPasswordController extends AbstractController
     }
 
     #[Route('/check-email', name: 'app_check_email', methods: ['GET'])]
+    #[IsGranted(AuthenticatedVoter::PUBLIC_ACCESS)]
     public function checkEmail(): Response
     {
         // Jeton factice quand on arrive ici sans demande : la page reste
@@ -68,6 +73,7 @@ final class ResetPasswordController extends AbstractController
     }
 
     #[Route('/reset/{token}', name: 'app_reset_password', methods: ['GET', 'POST'])]
+    #[IsGranted(AuthenticatedVoter::PUBLIC_ACCESS)]
     public function reset(Request $request, UserPasswordHasherInterface $passwordHasher, ?string $token = null): Response
     {
         if (null !== $token) {

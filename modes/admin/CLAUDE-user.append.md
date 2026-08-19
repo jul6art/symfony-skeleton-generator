@@ -1,4 +1,4 @@
-## Comptes (mode web)
+## Comptes (mode admin)
 
 ### Comptes et sécurité
 
@@ -17,9 +17,17 @@
 - Parcours livrés : inscription (`/register`), connexion (`/login`), mot de passe
   oublié (`/reset-password`, `symfonycasts/reset-password-bundle`), changement de
   mot de passe (`/profile/password`), administration des comptes (`/admin/users`).
+- Les accès aux comptes passent par `App\Security\Voter\UserVoter` :
+  `USER_LIST`, `USER_VIEW`, `USER_CREATE`, `USER_EDIT`, `USER_DELETE`. Un
+  administrateur voit tout, un membre ne voit et ne modifie que son propre
+  compte, et `USER_DELETE` refuse le compte avec lequel on est connecté — cette
+  règle vit dans le voter, pas dans le contrôleur ni dans le gabarit (qui se
+  contente de `is_granted('USER_DELETE', user)` pour afficher le bouton).
+  `tests/Security/UserVoterTest.php` fige ces cas.
 - Le pare-feu utilise `form_login` (pas d'authenticator maison) avec CSRF,
-  `remember_me` et `login_throttling`. Toute nouvelle règle d'accès va dans
-  `config/packages/security.yaml` **et** dans un `#[IsGranted]` sur le contrôleur.
+  `remember_me` et `login_throttling`. Une nouvelle règle d'accès s'écrit dans le
+  voter ; `config/packages/security.yaml` (`access_control`) et le
+  `#[IsGranted(User::ROLE_…)]` de classe restent la ceinture grossière.
 - La déconnexion est en **POST + CSRF** (`enable_csrf`, route `app_logout`
   limitée à POST) : le lien GET historique se déclenchait sur un préchargement
   ou une image tierce. Le jeton va dans un champ caché, pas dans l'URL — donc
@@ -53,8 +61,11 @@
 ### Back-office EasyAdmin
 
 - Une seule porte d'entrée : `App\Controller\Admin\DashboardController`
-  (`#[AdminDashboard(routePath: '/admin')]`, réservé à `ROLE_ADMIN`). Toute
-  nouvelle entité s'expose par un `*CrudController` déclaré dans son menu.
+  (`#[AdminDashboard(routePath: '/admin')]`), dont la décision d'accès est
+  `AdminVoter::ACCESS`. Toute nouvelle entité s'expose par un `*CrudController`
+  déclaré dans son menu — et déclare ses permissions (`setPermission()`,
+  `setEntityPermission()`, cf. « Autorisation » plus haut) : un CRUD sans
+  permissions est un CRUD ouvert à quiconque entre dans le back-office.
 - Le CRUD des comptes passe par `UserManagerInterface` (comme le reste du
   projet) : `persistEntity()` / `updateEntity()` / `deleteEntity()` sont
   surchargés pour cela et pour dispatcher `App\Event\UserEvent`.
