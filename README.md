@@ -202,7 +202,7 @@ instead, since they have no session.
 To have it at hand everywhere, add this to `~/.zshrc`:
 
 ```bash
-sfnew() { /var/www/PRIVATE/symfony-skeleton/bin/new-project "$@"; }
+sfnew() { /PATH/TO/symfony-skeleton/bin/new-project "$@"; }
 ```
 
 ## What the generator does
