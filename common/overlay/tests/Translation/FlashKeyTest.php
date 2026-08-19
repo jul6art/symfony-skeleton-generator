@@ -1,0 +1,77 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Tests\Translation;
+
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Finder\Finder;
+use Symfony\Component\Translation\TranslatorBagInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
+
+/**
+ * Les flashes sortent des contrôleurs **déjà traduits** : `addSuccessFlash('flash.x')` passe par
+ * `Jul6Art\CoreBundle\Service\FlashTranslator`.
+ *
+ * Une clé absente du catalogue ne lève rien — le traducteur rend la clé, et c'est la clé que
+ * l'utilisateur lit. Ce test compare donc les clés écrites dans les contrôleurs au catalogue.
+ */
+final class FlashKeyTest extends KernelTestCase
+{
+    public function testEveryFlashKeyExistsInTheCatalogue(): void
+    {
+        self::bootKernel();
+
+        $translator = static::getContainer()->get(TranslatorInterface::class);
+        self::assertInstanceOf(TranslatorBagInterface::class, $translator);
+
+        $locale = static::getContainer()->getParameter('kernel.default_locale');
+        self::assertIsString($locale);
+
+        $catalogue = $translator->getCatalogue($locale);
+        $missing = [];
+
+        foreach ($this->flashKeys() as $file => $keys) {
+            foreach ($keys as $key) {
+                if (!$catalogue->has($key, 'messages')) {
+                    $missing[] = \sprintf('%s : « %s »', $file, $key);
+                }
+            }
+        }
+
+        // Un squelette d'API n'émet aucun flash : rien à vérifier n'est un succès, pas un échec.
+        self::assertSame([], $missing, "Clés de flash absentes du catalogue :\n".implode("\n", $missing));
+    }
+
+    /**
+     * @return array<string, list<string>> fichier → clés littérales
+     */
+    private function flashKeys(): array
+    {
+        $directory = \dirname(__DIR__, 2).'/src/Controller';
+
+        if (!is_dir($directory)) {
+            return [];
+        }
+
+        $keys = [];
+
+        foreach (Finder::create()->files()->in($directory)->name('*.php') as $file) {
+            $source = $file->getContents();
+
+            // La quote fermante suivie d'une virgule ou d'une parenthèse : une clé concaténée
+            // ('advertisement.'.$status) n'est pas lisible statiquement et reste hors de portée.
+            preg_match_all(
+                '/\$this->add(?:Success|Error|Warning)Flash\(\s*\'([^\']+)\'\s*[,)]/',
+                $source,
+                $matches,
+            );
+
+            if ([] !== $matches[1]) {
+                $keys[$file->getRelativePathname()] = array_values(array_unique($matches[1]));
+            }
+        }
+
+        return $keys;
+    }
+}

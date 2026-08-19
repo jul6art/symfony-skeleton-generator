@@ -48,6 +48,19 @@ core:
     captcha:
         operations: ['+']
 
+    # Domaine de traduction des flashes émis par `Controller\AbstractController`. Ce squelette
+    # range tous les siens sous `flash.` dans `messages`, donc le défaut suffit et la carte
+    # reste vide. Deux conventions, exclusives :
+    #   * par préfixe de clé — `domain_map`, le premier préfixe qui correspond gagne, donc
+    #     déclarer le plus long d'abord ;
+    #   * par contrôleur — surcharger `translationDomain()`, ce qui gagne sur la carte, pour des
+    #     catalogues nommés par écran dont les clés ne portent aucun préfixe.
+    flash:
+        default_domain: 'messages'
+        # domain_map:
+        #     'organization.domain.': 'domain'   # le préfixe le plus long d'abord
+        #     'organization.': 'organization'
+
     # Nombre de lignes vidées d'un coup par `core:purge`. À baisser si les
     # entités purgées sont lourdes.
     purge:

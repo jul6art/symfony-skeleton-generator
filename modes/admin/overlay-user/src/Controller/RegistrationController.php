@@ -8,7 +8,7 @@ use App\Event\UserEvent;
 use App\Form\RegistrationFormType;
 use Jul6Art\AuthBundle\Factory\UserFactory;
 use Jul6Art\AuthBundle\Manager\Interfaces\UserManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Jul6Art\CoreBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -60,7 +60,7 @@ final class RegistrationController extends AbstractController
             $this->userManager->save($user);
             $this->eventDispatcher->dispatch(new UserEvent($user), UserEvent::CREATED);
 
-            $this->addFlash('success', 'flash.account.created');
+            $this->addSuccessFlash('flash.account.created');
 
             // Connexion immédiate ; l'authentificateur est nommé explicitement
             // car le pare-feu en compte plusieurs (form_login + remember_me).

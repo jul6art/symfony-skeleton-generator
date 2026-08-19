@@ -10,7 +10,7 @@ use Jul6Art\AuthBundle\Entity\User;
 use Jul6Art\AuthBundle\Manager\Interfaces\UserManagerInterface;
 use Jul6Art\AuthBundle\Repository\Interfaces\UserRepositoryInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Jul6Art\CoreBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,7 +19,6 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Authorization\Voter\AuthenticatedVoter;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Symfony\Contracts\Translation\TranslatorInterface;
 use SymfonyCasts\Bundle\ResetPassword\Controller\ResetPasswordControllerTrait;
 use SymfonyCasts\Bundle\ResetPassword\Exception\ResetPasswordExceptionInterface;
 use SymfonyCasts\Bundle\ResetPassword\ResetPasswordHelperInterface;
@@ -40,7 +39,6 @@ final class ResetPasswordController extends AbstractController
         private readonly ResetPasswordHelperInterface $resetPasswordHelper,
         private readonly UserRepositoryInterface $users,
         private readonly UserManagerInterface $userManager,
-        private readonly TranslatorInterface $translator,
     ) {
     }
 
@@ -93,7 +91,7 @@ final class ResetPasswordController extends AbstractController
             /** @var User $user */
             $user = $this->resetPasswordHelper->validateTokenAndFetchUser($token);
         } catch (ResetPasswordExceptionInterface $exception) {
-            $this->addFlash('error', $this->translator->trans('flash.reset.invalid', ['%reason%' => $exception->getReason()]));
+            $this->addErrorFlash('flash.reset.invalid', ['%reason%' => $exception->getReason()]);
 
             return $this->redirectToRoute('app_forgot_password_request');
         }
@@ -111,7 +109,7 @@ final class ResetPasswordController extends AbstractController
             $this->userManager->save($user);
 
             $this->cleanSessionAfterReset();
-            $this->addFlash('success', 'flash.password.reset');
+            $this->addSuccessFlash('flash.password.reset');
 
             return $this->redirectToRoute('app_login');
         }
@@ -137,7 +135,7 @@ final class ResetPasswordController extends AbstractController
         $mailer->send(
             (new TemplatedEmail())
                 ->to((string) $user->getEmail())
-                ->subject($this->translator->trans('reset.email.subject'))
+                ->subject($this->trans('reset.email.subject'))
                 ->htmlTemplate('reset_password/email.html.twig')
                 ->context(['resetToken' => $resetToken])
         );

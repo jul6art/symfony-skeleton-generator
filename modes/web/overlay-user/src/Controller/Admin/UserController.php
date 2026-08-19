@@ -11,14 +11,13 @@ use Jul6Art\AuthBundle\Entity\User;
 use Jul6Art\AuthBundle\Factory\UserFactory;
 use Jul6Art\AuthBundle\Manager\Interfaces\UserManagerInterface;
 use Jul6Art\AuthBundle\Repository\Interfaces\UserRepositoryInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Jul6Art\CoreBundle\Controller\AbstractController;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 use function is_string;
 
@@ -37,7 +36,6 @@ final class UserController extends AbstractController
         private readonly UserManagerInterface $userManager,
         private readonly UserPasswordHasherInterface $passwordHasher,
         private readonly EventDispatcherInterface $eventDispatcher,
-        private readonly TranslatorInterface $translator,
     ) {
     }
 
@@ -66,7 +64,7 @@ final class UserController extends AbstractController
             $this->userManager->save($user);
             $this->eventDispatcher->dispatch(new UserEvent($user), UserEvent::CREATED);
 
-            $this->addFlash('success', $this->translator->trans('flash.account.admin_created', ['%email%' => (string) $user->getEmail()]));
+            $this->addSuccessFlash('flash.account.admin_created', ['%email%' => (string) $user->getEmail()]);
 
             return $this->redirectToRoute('app_admin_user_index');
         }
@@ -99,7 +97,7 @@ final class UserController extends AbstractController
             $this->userManager->save($user);
             $this->eventDispatcher->dispatch(new UserEvent($user), UserEvent::EDITED);
 
-            $this->addFlash('success', $this->translator->trans('flash.account.updated', ['%email%' => (string) $user->getEmail()]));
+            $this->addSuccessFlash('flash.account.updated', ['%email%' => (string) $user->getEmail()]);
 
             return $this->redirectToRoute('app_admin_user_index');
         }
@@ -115,7 +113,7 @@ final class UserController extends AbstractController
         $this->denyAccessUnlessGranted(UserVoter::DELETE, $user);
 
         if (!$this->isCsrfTokenValid('delete-user-'.(string) $user->getId(), $request->getPayload()->getString('_token'))) {
-            $this->addFlash('error', 'flash.csrf');
+            $this->addErrorFlash('flash.csrf');
 
             return $this->redirectToRoute('app_admin_user_index');
         }
@@ -123,7 +121,7 @@ final class UserController extends AbstractController
         $this->eventDispatcher->dispatch(new UserEvent($user), UserEvent::DELETED);
         $this->userManager->delete($user);
 
-        $this->addFlash('success', 'flash.account.deleted');
+        $this->addSuccessFlash('flash.account.deleted');
 
         return $this->redirectToRoute('app_admin_user_index');
     }

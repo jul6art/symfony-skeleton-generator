@@ -9,7 +9,7 @@ use App\Form\ChangePasswordFormType;
 use App\Security\Voter\UserVoter;
 use Jul6Art\AuthBundle\Entity\User;
 use Jul6Art\AuthBundle\Manager\Interfaces\UserManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Jul6Art\CoreBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -60,7 +60,7 @@ final class ProfileController extends AbstractController
             $this->userManager->save($user);
             $this->eventDispatcher->dispatch(new UserEvent($user), UserEvent::EDITED);
 
-            $this->addFlash('success', 'flash.password.changed');
+            $this->addSuccessFlash('flash.password.changed');
 
             // Le jeton de session porte l'ancien hash : on le régénère pour
             // éviter une déconnexion au prochain appel.
