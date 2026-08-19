@@ -2,7 +2,8 @@
 # Un paquet par ligne, # pour commenter.
 
 symfony/monolog-bundle
-jul6art/core-bundle                 # abstractions maison : manager, repository, événements, traits
+symfony/lock                        # verrou des commandes planifiées + active la commande core:purge du core-bundle
+jul6art/core-bundle                 # abstractions maison : manager, repository, voter, purge, événements, traits
 
 # Suggestions :
 # symfony/uid

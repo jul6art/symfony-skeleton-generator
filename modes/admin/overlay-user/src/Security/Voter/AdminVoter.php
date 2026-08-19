@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Security\Voter;
 
 use Jul6Art\AuthBundle\Entity\User;
+use Jul6Art\CoreBundle\Security\Voter\AbstractVoter;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
@@ -21,6 +22,12 @@ final class AdminVoter extends AbstractVoter
     protected function attributes(): array
     {
         return [self::ACCESS];
+    }
+
+    /** Aucun sujet : la décision ne porte que sur l'attribut et les rôles. */
+    protected function subjects(): array
+    {
+        return [];
     }
 
     protected function decide(string $attribute, mixed $subject, UserInterface $user): bool

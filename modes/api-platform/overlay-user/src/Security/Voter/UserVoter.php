@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Security\Voter;
 
 use Jul6Art\AuthBundle\Entity\User;
+use Jul6Art\CoreBundle\Security\Voter\AbstractVoter;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
@@ -30,6 +31,11 @@ final class UserVoter extends AbstractVoter
     protected function attributes(): array
     {
         return [self::LIST, self::VIEW, self::CREATE, self::EDIT, self::DELETE];
+    }
+
+    protected function subjects(): array
+    {
+        return [User::class];
     }
 
     protected function decide(string $attribute, mixed $subject, UserInterface $user): bool
