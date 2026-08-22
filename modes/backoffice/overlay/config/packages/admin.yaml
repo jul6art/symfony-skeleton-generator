@@ -8,6 +8,13 @@ admin:
 
     # Une route vide MASQUE le lien correspondant, elle ne casse pas le rendu. C'est ainsi qu'on
     # ferme l'inscription publique : on retire `register`.
+    #
+    # ⚠️ Cette table est GLOBALE : une route par entrée, pour toute l'application. Le jour où ce
+    # projet gagne un second espace où le même écran existe en double — `/admin/account/appearance`
+    # et `/portail/account/appearance` — il faut laisser l'entrée VIDE et poser le lien dans le
+    # bloc `admin_account_menu_extra` de chaque layout. Une valeur unique enverrait tout le monde
+    # au même endroit, et le public de l'autre espace sur un 403 : la page marche, c'est le LIEN
+    # qui est faux, et aucun test de contrôleur ne regarde les liens.
     routes:
         login: admin_security_login
         logout: admin_security_logout
