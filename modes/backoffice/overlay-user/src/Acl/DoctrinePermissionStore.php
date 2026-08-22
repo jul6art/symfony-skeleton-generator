@@ -13,6 +13,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use Jul6Art\AclBundle\Contract\AclTenantInterface;
 use Jul6Art\AclBundle\Contract\AclUserInterface;
 use Jul6Art\AclBundle\Contract\PermissionStoreInterface;
+use Override;
+
+use function in_array;
 
 /**
  * Le côté écriture : ce que l'écran de gestion des rôles et la délégation de permissions utilisent.
@@ -35,19 +38,19 @@ final readonly class DoctrinePermissionStore implements PermissionStoreInterface
     ) {
     }
 
-    #[\Override]
+    #[Override]
     public function grantToUser(AclUserInterface $target, string $permission): bool
     {
         return $this->setUserOverride($target, $permission, true);
     }
 
-    #[\Override]
+    #[Override]
     public function denyToUser(AclUserInterface $target, string $permission): bool
     {
         return $this->setUserOverride($target, $permission, false);
     }
 
-    #[\Override]
+    #[Override]
     public function removeUserOverride(AclUserInterface $target, string $permission): bool
     {
         if (!$target instanceof User) {
@@ -67,13 +70,13 @@ final readonly class DoctrinePermissionStore implements PermissionStoreInterface
     /**
      * @param list<string> $roles
      */
-    #[\Override]
+    #[Override]
     public function isGrantedForRoles(array $roles, string $permission, ?AclTenantInterface $tenant): bool
     {
-        return \in_array($permission, $this->rolePermissions->findGrantedForRoles($roles), true);
+        return in_array($permission, $this->rolePermissions->findGrantedForRoles($roles), true);
     }
 
-    #[\Override]
+    #[Override]
     public function grantToRole(string $roleCode, string $permission, ?AclTenantInterface $tenant): bool
     {
         $existing = $this->rolePermissions->findOneForRole($roleCode, $permission);
@@ -95,7 +98,7 @@ final readonly class DoctrinePermissionStore implements PermissionStoreInterface
         return true;
     }
 
-    #[\Override]
+    #[Override]
     public function revokeFromRole(string $roleCode, string $permission, ?AclTenantInterface $tenant): bool
     {
         $existing = $this->rolePermissions->findOneForRole($roleCode, $permission);

@@ -34,8 +34,9 @@ final class RouteAccessDecisionTest extends KernelTestCase
      * @var list<string>
      */
     private const FIREWALL_ROUTES = [
-        'app_logout', // clé `logout` du pare-feu (modes web et admin)
-        'api_login',  // clé `json_login` du pare-feu (modes api)
+        'app_logout',            // clé `logout` du pare-feu (modes web et admin)
+        'api_login',             // clé `json_login` du pare-feu (modes api)
+        'admin_security_logout', // clé `logout` du pare-feu (mode backoffice)
     ];
 
     public function testEveryRouteCarriesAnAccessDecision(): void

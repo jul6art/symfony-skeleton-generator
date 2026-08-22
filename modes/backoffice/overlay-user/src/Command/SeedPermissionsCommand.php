@@ -7,11 +7,14 @@ namespace App\Command;
 use App\Acl\DoctrinePermissionStore;
 use App\Security\DefaultRolePermissions;
 use Doctrine\ORM\EntityManagerInterface;
+use Override;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+
+use function sprintf;
 
 /**
  * Pose les permissions par défaut de chaque rôle, telles que `DefaultRolePermissions` les décrit.
@@ -30,7 +33,7 @@ final class SeedPermissionsCommand extends Command
         parent::__construct();
     }
 
-    #[\Override]
+    #[Override]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
@@ -46,7 +49,7 @@ final class SeedPermissionsCommand extends Command
 
         $this->entityManager->flush();
 
-        $io->success(\sprintf('%d permission(s) ajoutée(s).', $granted));
+        $io->success(sprintf('%d permission(s) ajoutée(s).', $granted));
 
         return Command::SUCCESS;
     }

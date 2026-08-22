@@ -9,6 +9,7 @@ use App\Repository\RolePermissionRepository;
 use App\Repository\UserPermissionOverrideRepository;
 use Jul6Art\AclBundle\Contract\AclUserInterface;
 use Jul6Art\AclBundle\Contract\PermissionSetProviderInterface;
+use Override;
 
 /**
  * D'où le moteur de permissions lit — la seule chose qu'`acl-bundle` ne peut pas fournir, parce que
@@ -33,7 +34,7 @@ final readonly class DoctrinePermissionSetProvider implements PermissionSetProvi
     /**
      * @return array<string, bool>
      */
-    #[\Override]
+    #[Override]
     public function overridesFor(AclUserInterface $user): array
     {
         return $user instanceof User ? $this->overrides->findMapForUser($user) : [];
@@ -42,7 +43,7 @@ final readonly class DoctrinePermissionSetProvider implements PermissionSetProvi
     /**
      * @return list<string>
      */
-    #[\Override]
+    #[Override]
     public function grantedByRolesFor(AclUserInterface $user): array
     {
         return $this->rolePermissions->findGrantedForRoles($user->getRoles());

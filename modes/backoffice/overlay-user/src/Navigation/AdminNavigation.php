@@ -8,6 +8,7 @@ use App\Security\PermissionCodes;
 use Jul6Art\AdminBundle\Navigation\NavigationProviderInterface;
 use Jul6Art\AdminBundle\Navigation\NavItem;
 use Jul6Art\AdminBundle\Navigation\NavSection;
+use Override;
 
 /**
  * Le menu de la barre latérale.
@@ -22,7 +23,7 @@ use Jul6Art\AdminBundle\Navigation\NavSection;
  */
 final class AdminNavigation implements NavigationProviderInterface
 {
-    #[\Override]
+    #[Override]
     public function sections(): iterable
     {
         yield new NavSection('admin.main', 'nav.section.main', 'fa-solid fa-gauge-high', [

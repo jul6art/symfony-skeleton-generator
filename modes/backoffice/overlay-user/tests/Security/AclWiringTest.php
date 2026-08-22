@@ -6,8 +6,11 @@ namespace App\Tests\Security;
 
 use App\Security\DefaultRolePermissions;
 use App\Security\PermissionCodes;
+use App\Security\UserRoles;
 use Jul6Art\AclBundle\Security\PermissionCodeParser;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+
+use function sprintf;
 
 /**
  * La couture entre le catalogue de ce projet et le moteur du bundle.
@@ -50,7 +53,7 @@ final class AclWiringTest extends KernelTestCase
 
         foreach (DefaultRolePermissions::map() as $role => $permissions) {
             foreach ($permissions as $permission) {
-                self::assertContains($permission, $catalogue, \sprintf('%s accorde un code inconnu : %s', $role, $permission));
+                self::assertContains($permission, $catalogue, sprintf('%s accorde un code inconnu : %s', $role, $permission));
             }
         }
     }
@@ -65,14 +68,44 @@ final class AclWiringTest extends KernelTestCase
         self::assertArrayNotHasKey('ROLE_SUPER_ADMIN', DefaultRolePermissions::map());
     }
 
-    /** Le fournisseur de permissions du projet est bien celui que le moteur interroge. */
+    /**
+     * Le fournisseur de permissions du projet est bien celui que le moteur interroge — prouvé par
+     * le COMPORTEMENT, pas par l'existence d'un service : une permission accordée à un rôle en
+     * base doit être lue par le moteur. Sans fournisseur branché, ce test répond faux et la
+     * défaillance silencieuse (« seul un super-admin passe ») devient visible.
+     */
     public function testThePermissionStorageIsWired(): void
     {
         self::bootKernel();
 
+        $entityManager = static::getContainer()->get(\Doctrine\ORM\EntityManagerInterface::class);
+        $metadata = $entityManager->getMetadataFactory()->getAllMetadata();
+        $schemaTool = new \Doctrine\ORM\Tools\SchemaTool($entityManager);
+        $schemaTool->dropSchema($metadata);
+        $schemaTool->createSchema($metadata);
+
+        $store = static::getContainer()->get(\App\Acl\DoctrinePermissionStore::class);
+        $store->grantToRole(UserRoles::ROLE_ADMIN, PermissionCodes::USER_READ, null);
+        $entityManager->flush();
+
+        $decision = static::getContainer()->get(\Jul6Art\AclBundle\Security\PermissionDecisionService::class);
+
+        // ⚠️ PERSISTÉ, et ce n'est pas un détail de fixture : le cache de lecture du moteur
+        // refuse tout utilisateur sans id — un compte non persisté n'a pas d'identité stable à
+        // mettre en cache, et n'a par construction aucune permission stockée. Un `new User()`
+        // jamais flushé serait refusé quel que soit le câblage, et ce test ne prouverait rien.
+        $user = new \App\Entity\User()->setEmail('wired@test.test')->setRoles([UserRoles::ROLE_ADMIN])->setIsActive(true);
+        $user->setPassword('irrelevant');
+        $entityManager->persist($user);
+        $entityManager->flush();
+
         self::assertTrue(
-            static::getContainer()->has(\Jul6Art\AclBundle\Contract\PermissionSetProviderInterface::class),
-            'Sans fournisseur enregistré, seul un super-admin passe — et la suite reste verte.',
+            $decision->isGranted($user, PermissionCodes::USER_READ),
+            'Le moteur ne lit pas le stockage du projet : vérifier les alias des contrats dans services.yaml.',
+        );
+        self::assertFalse(
+            $decision->isGranted($user, PermissionCodes::USER_DELETE),
+            'Une permission jamais accordée doit rester refusée.',
         );
     }
 }

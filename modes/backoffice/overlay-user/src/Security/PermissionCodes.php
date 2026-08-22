@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Security;
 
+use ReflectionClass;
+
 /**
  * Le catalogue des permissions de l'application.
  *
@@ -49,7 +51,7 @@ final class PermissionCodes
     public static function all(): array
     {
         /** @var list<string> $codes */
-        $codes = array_values(new \ReflectionClass(self::class)->getConstants());
+        $codes = array_values(new ReflectionClass(self::class)->getConstants());
 
         sort($codes);
 

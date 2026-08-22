@@ -8,6 +8,7 @@ use App\Entity\User;
 use App\Security\PermissionCodes;
 use Jul6Art\AclBundle\Security\PermissionDecisionService;
 use Jul6Art\DatatableBundle\DataTable\AbstractDataTableConfigProvider;
+use Override;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
@@ -29,7 +30,7 @@ final class UserDataTableConfigProvider extends AbstractDataTableConfigProvider
     /**
      * @return list<array<string, mixed>>
      */
-    #[\Override]
+    #[Override]
     public function getColumns(): array
     {
         return [
@@ -47,7 +48,7 @@ final class UserDataTableConfigProvider extends AbstractDataTableConfigProvider
     /**
      * @return list<array<string, mixed>>
      */
-    #[\Override]
+    #[Override]
     public function getFilters(): array
     {
         return [

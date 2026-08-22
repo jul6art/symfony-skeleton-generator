@@ -9,6 +9,9 @@ use Symfony\Component\Finder\Finder;
 use Symfony\Component\Translation\TranslatorBagInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+use function dirname;
+use function sprintf;
+
 /**
  * Les flashes sortent des contrôleurs **déjà traduits** : `addSuccessFlash('flash.x')` passe par
  * `Jul6Art\CoreBundle\Service\FlashTranslator`.
@@ -25,8 +28,9 @@ final class FlashKeyTest extends KernelTestCase
         $translator = static::getContainer()->get(TranslatorInterface::class);
         self::assertInstanceOf(TranslatorBagInterface::class, $translator);
 
-        $locale = static::getContainer()->getParameter('kernel.default_locale');
-        self::assertIsString($locale);
+        // Pas d'`assertIsString` : l'extension Symfony de PHPStan lit le conteneur compilé et
+        // connaît déjà le type du paramètre — l'assertion serait toujours vraie, donc du bruit.
+        $locale = (string) static::getContainer()->getParameter('kernel.default_locale');
 
         $catalogue = $translator->getCatalogue($locale);
         $missing = [];
@@ -34,7 +38,7 @@ final class FlashKeyTest extends KernelTestCase
         foreach ($this->flashKeys() as $file => $keys) {
             foreach ($keys as $key) {
                 if (!$catalogue->has($key, 'messages')) {
-                    $missing[] = \sprintf('%s : « %s »', $file, $key);
+                    $missing[] = sprintf('%s : « %s »', $file, $key);
                 }
             }
         }
@@ -48,7 +52,7 @@ final class FlashKeyTest extends KernelTestCase
      */
     private function flashKeys(): array
     {
-        $directory = \dirname(__DIR__, 2).'/src/Controller';
+        $directory = dirname(__DIR__, 2).'/src/Controller';
 
         if (!is_dir($directory)) {
             return [];

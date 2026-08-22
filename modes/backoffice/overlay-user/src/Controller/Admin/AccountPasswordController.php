@@ -27,11 +27,13 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class AccountPasswordController extends AbstractController
 {
     #[Route('', name: 'edit', methods: ['GET', 'POST'])]
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function edit(
         Request $request,
         EntityManagerInterface $entityManager,
         UserPasswordHasherInterface $hasher,
-        #[CurrentUser] User $user,
+        #[CurrentUser]
+        User $user,
     ): Response {
         $form = $this->createForm(ChangePasswordFormType::class, null, ['current_user' => $user]);
         $form->handleRequest($request);

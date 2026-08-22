@@ -19,6 +19,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class DashboardController extends AbstractController
 {
     #[Route('', name: 'dashboard', methods: ['GET'])]
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function __invoke(UserRepository $users): Response
     {
         return $this->render('admin/dashboard.html.twig', [

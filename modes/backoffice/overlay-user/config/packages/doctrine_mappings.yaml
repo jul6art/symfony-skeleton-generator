@@ -1,0 +1,15 @@
+# ⚠️ Les mappings Doctrine des bundles maison restent DÉSACTIVÉS — la règle n°1 de cet
+# écosystème, apprise sur le premier projet qui l'a violée.
+#
+# `doctrine.orm.auto_mapping` mappe toute entité d'un bundle enregistré : celle d'`auth-bundle`
+# est un `#[ORM\Entity]` CONCRET nommé `user`, et l'auto-mapping crée alors une seconde entité
+# sur la même table que `App\Entity\User`. Le symptôme n'est pas un message clair : c'est
+# `SchemaTool` qui lève « The table with name "user" already exists » au premier test qui
+# construit le schéma, ou une migration qui veut créer une table déjà là.
+#
+# L'entité du projet implémente les CONTRATS des bundles (AclUserInterface,
+# AppearanceAwareInterface…) ; elle n'hérite jamais de leurs entités.
+doctrine:
+    orm:
+        mappings:
+            AuthBundle: false

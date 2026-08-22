@@ -16,6 +16,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+use function in_array;
+
 /**
  * Qui a le droit de faire quoi : une grille rôles × permissions.
  *
@@ -67,7 +69,7 @@ final class RolePermissionController extends AbstractController
         foreach (self::EDITABLE_ROLES as $role) {
             $checked = array_keys($submitted[$role] ?? []);
             foreach (PermissionCodes::all() as $permission) {
-                \in_array($permission, $checked, true)
+                in_array($permission, $checked, true)
                     ? $this->store->grantToRole($role, $permission, null)
                     : $this->store->revokeFromRole($role, $permission, null);
             }

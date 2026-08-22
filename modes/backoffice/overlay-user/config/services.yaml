@@ -1,0 +1,37 @@
+# yaml-language-server: $schema=../vendor/symfony/dependency-injection/Loader/schema/services.schema.json
+
+# Point d'entrée de la configuration des services du projet. Les fichiers de `packages/`
+# configurent les dépendances ; ici ne vivent que les services de `src/` et les scalaires que
+# l'autowire ne sait pas résoudre.
+parameters:
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    App\:
+        resource: '../src/'
+
+    # ⚠️ Un argument scalaire non typé-service ne s'autowire pas : tout `bool`/`string` de
+    # constructeur doit être câblé ici explicitement, via `%env(...)%`. L'oublier ne se voit qu'au
+    # boot — « Cannot autowire … you should configure its value explicitly » — donc jamais dans un
+    # simple `php -l`.
+    App\Controller\RegistrationController:
+        arguments:
+            $registrationEnabled: '%env(bool:APP_REGISTRATION_ENABLED)%'
+
+    # L'adresse d'expédition des mails transactionnels (réinitialisation de mot de passe).
+    App\Controller\ResetPasswordController:
+        arguments:
+            $mailerFrom: '%env(MAILER_FROM)%'
+
+    # ── Les contrats de l'acl-bundle, branchés sur le stockage de CE projet ─────────────────────
+    #
+    # ⚠️ Les alias sont OBLIGATOIRES, pas décoratifs. Les passes de compilation du bundle testent
+    # `$container->has(<Interface>)` : sans alias, elles concluent « pas de stockage » et le moteur
+    # ne laisse passer qu'un super-admin — silencieusement, dans une suite verte. C'est le sens de
+    # défaillance voulu du bundle, et c'est `AclWiringTest::testThePermissionStorageIsWired()` qui
+    # le rend visible ici.
+    Jul6Art\AclBundle\Contract\PermissionSetProviderInterface: '@App\Acl\DoctrinePermissionSetProvider'
+    Jul6Art\AclBundle\Contract\PermissionStoreInterface: '@App\Acl\DoctrinePermissionStore'

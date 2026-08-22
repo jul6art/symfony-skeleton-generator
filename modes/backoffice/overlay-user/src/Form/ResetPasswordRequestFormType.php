@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Form;
 
 use Jul6Art\UiBundle\Form\Type\CustomEmailType;
+use Override;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -20,7 +21,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 final class ResetPasswordRequestFormType extends AbstractType
 {
-    #[\Override]
+    #[Override]
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add('email', CustomEmailType::class, [
@@ -32,7 +33,7 @@ final class ResetPasswordRequestFormType extends AbstractType
         ]);
     }
 
-    #[\Override]
+    #[Override]
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults(['translation_domain' => 'security']);

@@ -4,13 +4,17 @@ declare(strict_types=1);
 
 namespace App\Tests\Controller;
 
+use App\Acl\DoctrinePermissionStore;
 use App\Entity\User;
+use App\Security\DefaultRolePermissions;
 use App\Security\UserRoles;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+
+use function sprintf;
 
 /**
  * Le parcours minimal : les pages publiques répondent, les pages d'administration sont fermées, et
@@ -94,24 +98,40 @@ final class BackofficeSmokeTest extends WebTestCase
 
         $html = (string) $client->getResponse()->getContent();
         foreach (['user.field.', 'user.list.', 'datatable.filter.', 'nav.'] as $prefix) {
-            self::assertStringNotContainsString($prefix, $html, \sprintf('Clé de traduction brute « %s… » dans la page.', $prefix));
+            self::assertStringNotContainsString($prefix, $html, sprintf('Clé de traduction brute « %s… » dans la page.', $prefix));
         }
     }
 
     private function createSchema(): void
     {
         $entityManager = static::getContainer()->get(EntityManagerInterface::class);
-        \assert($entityManager instanceof EntityManagerInterface);
 
-        new SchemaTool($entityManager)->createSchema($entityManager->getMetadataFactory()->getAllMetadata());
+        // Drop puis create, et pas create seul : selon le pilote et la façon dont le kernel est
+        // rebooté, la connexion — donc la base — peut survivre d'un test à l'autre, et un
+        // `createSchema` sur un schéma déjà en place échoue sur `TableAlreadyExists`. Le drop est
+        // un no-op sur une base vierge, et rend le helper idempotent partout.
+        $schemaTool = new SchemaTool($entityManager);
+        $metadata = $entityManager->getMetadataFactory()->getAllMetadata();
+        $schemaTool->dropSchema($metadata);
+        $schemaTool->createSchema($metadata);
+
+        // Les permissions par défaut des rôles — ce que `app:permissions:seed` fait au premier
+        // déploiement. Sans elles, un `ROLE_ADMIN` tout neuf n'a AUCUNE permission : le moteur
+        // refuse tout ce que le stockage n'accorde pas, et ces tests vérifieraient un 403 qui ne
+        // dit rien du câblage.
+        $store = static::getContainer()->get(DoctrinePermissionStore::class);
+        foreach (DefaultRolePermissions::map() as $role => $permissions) {
+            foreach ($permissions as $permission) {
+                $store->grantToRole($role, $permission, null);
+            }
+        }
+        $entityManager->flush();
     }
 
     private function createUser(KernelBrowser $client, string $role): User
     {
         $entityManager = static::getContainer()->get(EntityManagerInterface::class);
-        \assert($entityManager instanceof EntityManagerInterface);
         $hasher = static::getContainer()->get(UserPasswordHasherInterface::class);
-        \assert($hasher instanceof UserPasswordHasherInterface);
 
         $user = new User()
             ->setEmail(uniqid('admin', false).'@example.test')

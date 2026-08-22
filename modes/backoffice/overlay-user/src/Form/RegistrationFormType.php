@@ -6,6 +6,7 @@ namespace App\Form;
 
 use App\Entity\User;
 use Jul6Art\UiBundle\Form\Type\CustomEmailType;
+use Override;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
@@ -25,7 +26,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 final class RegistrationFormType extends AbstractType
 {
-    #[\Override]
+    #[Override]
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -46,7 +47,7 @@ final class RegistrationFormType extends AbstractType
             ]);
     }
 
-    #[\Override]
+    #[Override]
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([

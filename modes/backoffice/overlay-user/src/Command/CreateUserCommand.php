@@ -7,6 +7,7 @@ namespace App\Command;
 use App\Entity\User;
 use App\Security\UserRoles;
 use Doctrine\ORM\EntityManagerInterface;
+use Override;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -15,6 +16,8 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+
+use function sprintf;
 
 /**
  * Crée un compte depuis la console — le premier administrateur, typiquement, puisque l'inscription
@@ -35,7 +38,7 @@ final class CreateUserCommand extends Command
         parent::__construct();
     }
 
-    #[\Override]
+    #[Override]
     protected function configure(): void
     {
         $this
@@ -45,14 +48,14 @@ final class CreateUserCommand extends Command
             ->addOption('last-name', null, InputOption::VALUE_REQUIRED, 'Nom', '');
     }
 
-    #[\Override]
+    #[Override]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
         $email = (string) $input->getArgument('email');
 
         if (null !== $this->entityManager->getRepository(User::class)->findOneBy(['email' => mb_strtolower($email)])) {
-            $io->error(\sprintf('Un compte existe déjà pour « %s ».', $email));
+            $io->error(sprintf('Un compte existe déjà pour « %s ».', $email));
 
             return Command::FAILURE;
         }
@@ -79,7 +82,7 @@ final class CreateUserCommand extends Command
         $this->entityManager->persist($user);
         $this->entityManager->flush();
 
-        $io->success(\sprintf('Compte « %s » créé.', $email));
+        $io->success(sprintf('Compte « %s » créé.', $email));
 
         return Command::SUCCESS;
     }

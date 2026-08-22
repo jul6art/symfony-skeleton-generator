@@ -1,0 +1,10 @@
+# SQLite en mémoire pour la suite : elle crée son schéma par `SchemaTool` à chaque test, donc elle
+# n'a besoin ni d'un serveur ni d'un état entre deux exécutions — `make qa` tourne sans que la
+# stack Docker soit levée. Le jour où une requête spécifique à PostgreSQL apparaît (jsonb,
+# DISTINCT ON…), ce choix se revoit : un test qui passe sur SQLite ne prouve rien d'une requête
+# que seule la production exécute.
+doctrine:
+    dbal:
+        driver: pdo_sqlite
+        memory: true
+        url: null

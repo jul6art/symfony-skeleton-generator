@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use Jul6Art\AclBundle\Attribute\CheckPermission;
+use LogicException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -40,6 +41,6 @@ final class SecurityController extends AbstractController
     #[CheckPermission('auth:logout')]
     public function logout(): never
     {
-        throw new \LogicException('Interceptée par le pare-feu : cette méthode ne doit jamais être exécutée.');
+        throw new LogicException('Interceptée par le pare-feu : cette méthode ne doit jamais être exécutée.');
     }
 }

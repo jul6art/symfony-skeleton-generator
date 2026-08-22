@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
-use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use App\Repository\UserRepository;
 use App\Security\PermissionCodes;
 use App\Security\UserRoles;
@@ -26,10 +26,13 @@ use Jul6Art\CoreBundle\Entity\Traits\SoftDeletableTrait;
 use Jul6Art\CoreBundle\Entity\Traits\TimestampableTrait;
 use Jul6Art\CoreBundle\Util\Strings;
 use Jul6Art\PushBundle\Attribute\BroadcastableEntity;
+use Override;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+
+use function in_array;
 
 /**
  * Le compte.
@@ -68,15 +71,15 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ApiFilter(OrderFilter::class, properties: ['id', 'email', 'firstName', 'lastName', 'createdAt'])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface, AclUserInterface, AdminUserInterface, AppearanceAwareInterface
 {
-    use IdTrait;
-    use TimestampableTrait;
-    use SoftDeletableTrait;
-
     /**
      * Les cinq colonnes `appearance_*`, livrées par `admin-bundle`. Elles ne sont volontairement
      * exposées par aucun groupe de sérialisation : ce sont des préférences, pas des données.
      */
     use AppearancePreferencesTrait;
+    use IdTrait;
+    use SoftDeletableTrait;
+
+    use TimestampableTrait;
 
     #[ORM\Column(length: 180, unique: true)]
     #[Assert\NotBlank]
@@ -123,6 +126,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, AclUser
     /** Transitoire : le formulaire l'écrit, le contrôleur le hache. Jamais mappé. */
     private ?string $plainPassword = null;
 
+    public function __toString(): string
+    {
+        return $this->getDisplayName();
+    }
+
     public function getEmail(): string
     {
         return $this->email;
@@ -137,16 +145,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, AclUser
         return $this;
     }
 
-    #[\Override]
+    #[Override]
     public function getUserIdentifier(): string
     {
-        return $this->email;
+        // `UserInterface` promet une chaîne non vide ; la propriété, elle, a un défaut vide pour
+        // qu'un `new User()` soit constructible dans un test ou une fixture.
+        return '' === $this->email ? 'anonymous' : $this->email;
     }
 
     /**
      * @return list<string>
      */
-    #[\Override]
+    #[Override]
     public function getRoles(): array
     {
         $roles = $this->roles;
@@ -165,7 +175,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, AclUser
         return $this;
     }
 
-    #[\Override]
+    #[Override]
     public function getPassword(): string
     {
         return $this->password;
@@ -230,7 +240,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, AclUser
         return trim($this->firstName.' '.$this->lastName);
     }
 
-    #[\Override]
+    #[Override]
     public function isActive(): bool
     {
         return $this->isActive;
@@ -243,29 +253,29 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, AclUser
         return $this;
     }
 
-    #[\Override]
+    #[Override]
     public function isSuperAdmin(): bool
     {
-        return \in_array(UserRoles::ROLE_SUPER_ADMIN, $this->getRoles(), true);
+        return in_array(UserRoles::ROLE_SUPER_ADMIN, $this->getRoles(), true);
     }
 
     /**
      * Pas de locataires dans cette application. Le contrat le prévoit depuis le premier jour, et
      * `acl.multi_tenant: false` dit au moteur de ne pas exiger ce qui n'existe pas.
      */
-    #[\Override]
+    #[Override]
     public function getTenant(): ?AclTenantInterface
     {
         return null;
     }
 
-    #[\Override]
+    #[Override]
     public function getColorMode(): ColorMode
     {
         return ColorMode::fromStorage($this->theme);
     }
 
-    #[\Override]
+    #[Override]
     public function setColorMode(ColorMode $mode): static
     {
         $this->theme = $mode->value;
@@ -273,13 +283,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, AclUser
         return $this;
     }
 
-    #[\Override]
+    #[Override]
     public function getDisplayName(): string
     {
         return '' !== $this->getFullName() ? $this->getFullName() : $this->email;
     }
 
-    #[\Override]
+    #[Override]
     public function getInitials(): string
     {
         $initials = mb_substr($this->firstName, 0, 1).mb_substr($this->lastName, 0, 1);
@@ -287,7 +297,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, AclUser
         return '' !== $initials ? mb_strtoupper($initials) : mb_strtoupper(mb_substr($this->email, 0, 1));
     }
 
-    #[\Override]
+    #[Override]
     public function getAvatarPath(): ?string
     {
         return $this->avatarPath;
@@ -298,10 +308,5 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, AclUser
         $this->avatarPath = $avatarPath;
 
         return $this;
-    }
-
-    public function __toString(): string
-    {
-        return $this->getDisplayName();
     }
 }
