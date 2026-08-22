@@ -1,0 +1,5 @@
+api:
+    # Le nom de l'en-tête de cloisonnement multi-locataire. Sans locataires, il n'est lu par
+    # personne — mais `acl.yaml` le référencerait par ce paramètre plutôt que par un littéral le
+    # jour où l'application en gagne.
+    tenant_header: X-TENANT

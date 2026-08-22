@@ -1,0 +1,23 @@
+acl:
+    super_admin_role: ROLE_SUPER_ADMIN
+    # Aucun locataire ici : ce rôle n'est porté par personne, et la règle « un administrateur de
+    # locataire passe » ne s'applique donc jamais.
+    tenant_admin_role: ROLE_TENANT_ADMIN
+
+    # ⚠️ LE réglage à ne pas oublier dans une application sans locataires.
+    #
+    # Par défaut le moteur refuse toute vérification de permission derrière `/api/` dont le
+    # locataire n'a pas été résolu — une garde juste, et vitale, en multi-locataire : un en-tête
+    # oublié rendrait sinon une collection inter-locataires avec un 200 indiscernable d'une réponse
+    # correcte.
+    #
+    # Ici, il n'y a rien à résoudre : le résolveur répond `null` à tous les coups, et la règle
+    # refuserait donc `/api/*` à tout le monde sauf à un super-admin. Le symptôme est une datatable
+    # vide et un 403 en console pour un administrateur qui détient pourtant la permission — et rien
+    # dans une suite de tests ne le montre.
+    multi_tenant: false
+
+    # Routes dont le contrôleur ne porte pas `#[CheckPermission]`.
+    route_permissions:
+        admin_security_login: 'auth:login'
+        admin_security_logout: 'auth:logout'

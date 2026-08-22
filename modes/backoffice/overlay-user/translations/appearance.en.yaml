@@ -1,0 +1,52 @@
+# The keys of the appearance template shipped by `admin-bundle`. The bundle cannot know whether
+# they exist here: that is the seam, and a project test checks it.
+appearance:
+    title: Appearance
+    subtitle: Tune the interface to your liking.
+    section:
+        theme: Theme
+        display: Display
+        accessibility: Accessibility
+    form:
+        mode: Mode
+        accent: Accent colour
+        density: Density
+        font_scale: Text size
+        high_contrast: High contrast
+        reduced_motion: Reduce motion
+    mode:
+        light: Light
+        dark: Dark
+        system: System
+    accent:
+        indigo: Indigo
+        emerald: Emerald
+        rose: Rose
+        amber: Amber
+        sky: Sky
+        violet: Violet
+        teal: Teal
+    density:
+        comfortable: Comfortable
+        cozy: Cozy
+        compact: Compact
+    font_scale:
+        sm: Small
+        md: Normal
+        lg: Large
+        xl: Extra large
+    preview:
+        title: Preview
+        heading: Sample heading
+        body: A paragraph to judge readability by.
+        button: Button
+        badge: Active
+        link: A link
+        table:
+            col_name: Name
+            col_status: Status
+            row1: First row
+            row2: Second row
+            row3: Third row
+    flash:
+        saved: Preferences saved.

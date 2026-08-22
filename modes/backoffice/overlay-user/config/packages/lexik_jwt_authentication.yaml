@@ -1,0 +1,7 @@
+lexik_jwt_authentication:
+    secret_key: '%env(resolve:JWT_SECRET_KEY)%'
+    public_key: '%env(resolve:JWT_PUBLIC_KEY)%'
+    pass_phrase: '%env(JWT_PASSPHRASE)%'
+    # Les datatables rechargent souvent : un jeton d'une heure évite qu'une page ouverte le matin
+    # tombe en 401 l'après-midi, sans pour autant survivre à une journée.
+    token_ttl: 3600

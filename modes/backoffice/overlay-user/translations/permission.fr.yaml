@@ -1,0 +1,10 @@
+permission:
+    title: Permissions
+    subtitle: Ce que chaque rôle a le droit de faire
+    column:
+        code: Code
+    confirm:
+        title: Enregistrer les permissions
+        message: Les accès des comptes concernés changeront immédiatement.
+    flash:
+        saved: Permissions enregistrées.

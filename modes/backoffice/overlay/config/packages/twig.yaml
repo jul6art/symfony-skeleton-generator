@@ -1,0 +1,13 @@
+twig:
+    file_name_pattern: '*.twig'
+    form_themes:
+        # ⚠️ L'ordre décide : Symfony retient la dernière définition d'un bloc. Le thème du bundle
+        # vient d'abord, celui du projet ensuite, pour qu'un bloc redéclaré ici gagne.
+        - '@Ui/form/input_group_addon.html.twig'
+        - 'form/theme.html.twig'
+    globals:
+        mercure_public_url: '%env(MERCURE_PUBLIC_URL)%'
+
+when@test:
+    twig:
+        strict_variables: true

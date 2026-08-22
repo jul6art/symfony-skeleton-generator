@@ -1,0 +1,21 @@
+# jul6art/push-bundle — le fil temps réel Mercure.
+#
+# Une entité portant `#[BroadcastableEntity]` émet une petite mise à jour à chaque insertion,
+# modification ou suppression. La charge utile ne contient AUCUNE donnée métier : un abonné reçoit
+# tout ce qui passe sur son canal sans repasser par un voter, et va rechercher la ligne par l'API.
+push:
+    # ⚠️ Le côté Messenger du bundle est éteint. Avec `async: true` (son défaut), les mises à jour
+    # sont routées vers le transport `async_priority_high` : si le projet ne consomme pas ce
+    # transport-là, le fil s'arrête EN SILENCE en production. Le remettre à `true` suppose d'avoir
+    # vérifié qu'un worker le vide.
+    async: false
+
+    mercure:
+        # Mono-locataire : tous les changements partent sur un seul canal. C'est le défaut du
+        # bundle, et il est juste ici — il ne le serait plus au deuxième locataire, où chaque
+        # abonné d'un canal reçoit tout ce qui y passe.
+        topic_resolver: Jul6Art\PushBundle\Mercure\GlobalFeedTopicResolver
+
+        # Secret avec lequel le hub valide les jetons d'abonnement. Sans lui, la fabrique de cookie
+        # n'est pas enregistrée — plutôt que de signer des jetons que le hub rejettera.
+        jwt_secret: '%env(MERCURE_JWT_SECRET)%'

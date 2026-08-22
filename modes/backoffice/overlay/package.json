@@ -1,0 +1,31 @@
+{
+    "name": "{{PROJECT_SLUG}}",
+    "license": "UNLICENSED",
+    "private": true,
+    "dependencies": {
+        "@fortawesome/fontawesome-free": "^7.2.0",
+        "@hotwired/stimulus": "^3.2.2",
+        "datatables.net-dt": "^2.3.7",
+        "datatables.net-responsive-dt": "^3.0.8",
+        "jquery": "^4.0.0",
+        "select2": "^4.1.0-rc.0"
+    },
+    "devDependencies": {
+        "@babel/core": "^7.17.0",
+        "@babel/preset-env": "^7.16.0",
+        "@symfony/webpack-encore": "^6.0.0",
+        "autoprefixer": "^10.4.20",
+        "core-js": "^3.38.0",
+        "postcss": "^8.4.47",
+        "postcss-import": "^16.1.1",
+        "postcss-loader": "^8.1.1",
+        "tailwindcss": "^3.4.17",
+        "webpack": "^5.72",
+        "webpack-cli": "^6.0.0"
+    },
+    "scripts": {
+        "dev": "encore dev",
+        "watch": "encore dev --watch",
+        "build": "encore production --progress"
+    }
+}

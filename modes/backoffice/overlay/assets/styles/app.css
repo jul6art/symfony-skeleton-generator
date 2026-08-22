@@ -1,0 +1,48 @@
+/* ⚠️ TOUS les `@import` sont ici, en tête, et les directives Tailwind en sont.
+ *
+ * `postcss-import` inline les imports AVANT que Tailwind ne tourne — c'est ce qui permet à une
+ * feuille de bundle d'écrire `@layer components` et `@apply` : elle voit alors les directives.
+ * Mais il exige que les imports précèdent toute autre instruction, d'où `@import
+ * 'tailwindcss/base'` à la place de `@tailwind base`. Les deux formes sont équivalentes ; seule
+ * la seconde cohabite avec un import.
+ *
+ * L'ORDRE fait les couches : ce qui vient entre `components` et `utilities` est surchargeable par
+ * une classe utilitaire, ce qui vient après ne l'est plus. Déplacer une ligne d'ici change la
+ * spécificité de tout ce qu'elle apporte. */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import '@fortawesome/fontawesome-free/css/all.min.css';
+
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+
+/* La coquille : jetons de thème (accents, densité, contraste, motion) et composants
+ * (`.panel`, `.btn-*`, `.badge-*`, `.form-*`). */
+@import '@jul6art/admin-bundle/styles/components.css';
+@import '@jul6art/admin-bundle/styles/tokens.css';
+@import '@jul6art/admin-bundle/styles/cookie-consent.css';
+
+/* Le socle de tableau : table, filtres, Select2, tooltip, overlay de chargement. */
+@import '@jul6art/datatable-bundle/styles/datatable.css';
+@import '@jul6art/datatable-bundle/styles/datatable-custom.css';
+@import '@jul6art/datatable-bundle/styles/select2.css';
+@import '@jul6art/datatable-bundle/styles/tooltip.css';
+@import '@jul6art/datatable-bundle/styles/blockui.css';
+
+@import 'tailwindcss/utilities';
+
+@layer base {
+    html.fixed-html {
+        max-height: 100vh;
+        overflow-y: hidden;
+    }
+
+    /* Un anneau de focus unique et lisible sur les deux thèmes. Sans lui, Chrome peint son
+     * `outline: auto` en bleu-sur-blanc, illisible sur fond sombre. */
+    button:focus-visible,
+    [role='button']:focus-visible,
+    a[href]:focus-visible,
+    summary:focus-visible {
+        outline: 2px solid rgb(var(--accent-500));
+        outline-offset: 2px;
+    }
+}

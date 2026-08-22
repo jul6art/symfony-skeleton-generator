@@ -1,0 +1,32 @@
+{% extends '@Admin/layout.html.twig' %}
+{% trans_default_domain 'user' %}
+
+{% block title %}{{ user.displayName }} · {{ admin_branding().name }}{% endblock %}
+
+{% block content %}
+    <div class="flex items-center justify-between mb-6">
+        <h1 class="text-2xl font-bold text-slate-900 dark:text-slate-100">{{ user.displayName }}</h1>
+        {% if is_granted(constant('App\\Security\\PermissionCodes::USER_UPDATE')) %}
+            <a href="{{ path('admin_user_edit', {id: user.id}) }}" class="btn-secondary">
+                <i class="fa-solid fa-pen-to-square"></i> {{ 'action.edit'|trans({}, 'messages') }}
+            </a>
+        {% endif %}
+    </div>
+
+    <div class="panel p-6 max-w-2xl space-y-4">
+        <div>
+            <p class="form-label">{{ 'user.field.email'|trans }}</p>
+            <p class="text-sm text-slate-800 dark:text-slate-200">{{ user.email }}</p>
+        </div>
+        <div>
+            <p class="form-label">{{ 'user.field.roles'|trans }}</p>
+            <p class="text-sm text-slate-800 dark:text-slate-200">{{ user.roles|join(', ') }}</p>
+        </div>
+        <div>
+            <p class="form-label">{{ 'user.field.status'|trans }}</p>
+            <span class="{{ user.isActive ? 'badge-active' : 'badge-inactive' }}">
+                {{ (user.isActive ? 'datatable.status.active' : 'datatable.status.inactive')|trans({}, 'messages') }}
+            </span>
+        </div>
+    </div>
+{% endblock %}

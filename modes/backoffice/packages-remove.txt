@@ -1,0 +1,7 @@
+# Paquets installés par `symfony new --webapp` dont ce mode ne veut pas.
+
+symfony/ux-turbo                    # navigation par fetch : perd les handlers des datatables,
+                                    # des Select2 et des EventSource Mercure. Décision reprise
+                                    # de `superp` (2026-04-05), qui l'a retiré après en avoir
+                                    # écrit tous les contournements.
+symfony/asset-mapper                # ce mode compile avec Webpack Encore, cf. CLAUDE.append.md

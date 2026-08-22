@@ -1,0 +1,69 @@
+{#
+    La grille rôles × permissions.
+
+    Un `<form>` unique : cinquante cases enregistrées d'un coup, en une transaction. Un formulaire
+    par ligne produirait cinquante requêtes dont la moitié survivrait à une erreur au milieu.
+
+    ⚠️ `ROLE_SUPER_ADMIN` n'est pas dans les colonnes : le moteur le laisse passer avant de
+    consulter le stockage, donc une case décochée ne lui retirerait rien tout en le laissant croire.
+#}
+{% extends '@Admin/layout.html.twig' %}
+{% trans_default_domain 'permission' %}
+
+{% block title %}{{ 'permission.title'|trans }} · {{ admin_branding().name }}{% endblock %}
+{% block container_class %}max-w-5xl{% endblock %}
+
+{% block content %}
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold text-slate-900 dark:text-slate-100">{{ 'permission.title'|trans }}</h1>
+        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">{{ 'permission.subtitle'|trans }}</p>
+    </div>
+
+    <form method="post"
+          data-controller="ui--modal"
+          data-action="submit->ui--modal#intercept"
+          data-ui--modal-title-value="{{ 'permission.confirm.title'|trans }}"
+          data-ui--modal-message-value="{{ 'permission.confirm.message'|trans }}"
+          data-ui--modal-confirm-label-value="{{ 'action.save'|trans({}, 'messages') }}"
+          data-ui--modal-cancel-label-value="{{ 'action.cancel'|trans({}, 'messages') }}"
+          data-ui--modal-confirm-variant-value="primary">
+        <input type="hidden" name="_token" value="{{ csrf_token('role_permissions') }}">
+
+        {% for resource, codes in grouped %}
+            <div class="panel p-5 mb-4">
+                <h2 class="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-3">{{ resource }}</h2>
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="text-left text-xs uppercase tracking-wide text-slate-400">
+                            <th class="py-2">{{ 'permission.column.code'|trans }}</th>
+                            {% for role in roles %}<th class="py-2 text-center">{{ role }}</th>{% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
+                        {% for code in codes %}
+                            <tr>
+                                <td class="py-2 font-mono text-xs text-slate-700 dark:text-slate-300">{{ code }}</td>
+                                {% for role in roles %}
+                                    <td class="py-2 text-center">
+                                        <input type="checkbox"
+                                               name="permissions[{{ role }}][{{ code }}]"
+                                               value="1"
+                                               class="rounded border-slate-300 text-accent-600 focus:ring-accent-500"
+                                               {{ code in granted[role] ? 'checked' : '' }}
+                                               {{ is_granted(constant('App\\Security\\PermissionCodes::PERMISSION_UPDATE')) ? '' : 'disabled' }}>
+                                    </td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endfor %}
+
+        {% if is_granted(constant('App\\Security\\PermissionCodes::PERMISSION_UPDATE')) %}
+            <div class="form-actions">
+                <button type="submit" class="btn-primary">{{ 'action.save'|trans({}, 'messages') }}</button>
+            </div>
+        {% endif %}
+    </form>
+{% endblock %}

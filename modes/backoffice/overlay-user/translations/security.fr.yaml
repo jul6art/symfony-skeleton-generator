@@ -1,0 +1,66 @@
+security:
+    login:
+        title: Connexion
+        subtitle: Accédez à votre espace
+        email: Adresse e-mail
+        password: Mot de passe
+        show_password: Afficher le mot de passe
+        remember_me: Se souvenir de moi
+        forgot_password: Mot de passe oublié ?
+        submit: Se connecter
+        no_account: Pas encore de compte ?
+        create_account: Créer un compte
+    register:
+        title: Créer un compte
+        subtitle: Votre compte sera activé par un administrateur
+        first_name: Prénom
+        last_name: Nom
+        email: Adresse e-mail
+        password: Mot de passe
+        password_confirm: Confirmation
+        password_mismatch: Les deux mots de passe ne correspondent pas.
+        submit: Créer le compte
+        have_account: Déjà un compte ?
+        sign_in: Se connecter
+        flash:
+            pending: Compte créé. Un administrateur doit l'activer avant votre première connexion.
+    password:
+        not_blank: Renseignez un mot de passe.
+        too_short: Le mot de passe doit faire au moins {{ limit }} caractères.
+    email:
+        not_blank: Renseignez une adresse e-mail.
+        invalid: Cette adresse e-mail n'est pas valide.
+    reset_password:
+        back_to_login: Retour à la connexion
+        request:
+            title: Mot de passe oublié
+            subtitle: Nous vous enverrons un lien de réinitialisation.
+            email: Adresse e-mail
+            submit: Envoyer le lien
+        check_email:
+            title: Vérifiez votre boîte mail
+            # Volontairement muet sur l'existence du compte : un message différent transformerait
+            # le formulaire en oracle d'énumération d'adresses.
+            body: Si un compte correspond à cette adresse, un lien de réinitialisation vient d'être envoyé.
+        reset:
+            title: Nouveau mot de passe
+            subtitle: Choisissez un mot de passe d'au moins 12 caractères.
+            password: Nouveau mot de passe
+            password_confirm: Confirmation
+            submit: Changer le mot de passe
+        email:
+            subject: Réinitialisation de votre mot de passe
+            intro: Vous avez demandé la réinitialisation de votre mot de passe.
+            cta: Choisir un nouveau mot de passe
+            expires: Ce lien expire dans %duration%.
+        flash:
+            invalid_token: Ce lien de réinitialisation est invalide ou a expiré.
+            changed: Mot de passe modifié, vous pouvez vous connecter.
+    change_password:
+        title: Changer mon mot de passe
+        current: Mot de passe actuel
+        new: Nouveau mot de passe
+        confirm: Confirmation
+        wrong_current: Le mot de passe actuel est incorrect.
+        flash:
+            changed: Mot de passe modifié.

@@ -1,0 +1,66 @@
+{#
+    Le thème de formulaire du projet.
+
+    Il vient APRÈS celui d'`ui-bundle` dans `twig.form_themes` : Symfony retient la dernière
+    définition d'un bloc, donc tout ce qui est redéclaré ici gagne. L'ordre inverse rendrait ce
+    fichier inerte, sans erreur.
+
+    Les classes viennent d'`admin-bundle` (`.form-control`, `.form-label`, `.form-error`…) : les
+    redéfinir ici ferait diverger les formulaires du reste de la coquille.
+#}
+{% use 'form_div_layout.html.twig' %}
+
+{% block form_row %}
+    <div class="form-field">
+        {{ form_label(form) }}
+        {{ form_widget(form) }}
+        {{ form_help(form) }}
+        {{ form_errors(form) }}
+    </div>
+{% endblock %}
+
+{% block form_label %}
+    {% if label is not same as(false) %}
+        {% set label_attr = label_attr|merge({ class: (label_attr.class|default('') ~ ' form-label')|trim }) %}
+        {{ parent() }}
+    {% endif %}
+{% endblock %}
+
+{% block form_widget_simple %}
+    {% set attr = attr|merge({ class: (attr.class|default('') ~ ' form-control')|trim }) %}
+    {{ parent() }}
+{% endblock %}
+
+{% block textarea_widget %}
+    {% set attr = attr|merge({ class: (attr.class|default('') ~ ' form-control')|trim }) %}
+    {{ parent() }}
+{% endblock %}
+
+{% block choice_widget_collapsed %}
+    {% set attr = attr|merge({ class: (attr.class|default('') ~ ' form-control')|trim }) %}
+    {{ parent() }}
+{% endblock %}
+
+{% block checkbox_widget %}
+    <label class="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
+        {% set attr = attr|merge({ class: (attr.class|default('') ~ ' rounded border-slate-300 text-accent-600 focus:ring-accent-500')|trim }) %}
+        <input type="checkbox" {{ block('widget_attributes') }}{% if value is defined %} value="{{ value }}"{% endif %}{% if checked %} checked="checked"{% endif %}>
+        <span>{{ form.vars.label|default('')|trans({}, form.vars.translation_domain) }}</span>
+    </label>
+{% endblock %}
+
+{% block form_errors %}
+    {% if errors|length > 0 %}
+        <ul class="mt-1 space-y-0.5">
+            {% for error in errors %}
+                <li class="form-error">{{ error.message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}
+
+{% block form_help %}
+    {% if help is not empty %}
+        <p class="form-help">{{ help|trans({}, translation_domain) }}</p>
+    {% endif %}
+{% endblock %}

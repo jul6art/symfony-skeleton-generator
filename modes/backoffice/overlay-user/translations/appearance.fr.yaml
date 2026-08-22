@@ -1,0 +1,52 @@
+# Les clés du gabarit d'apparence livré par `admin-bundle`. Le bundle ne peut pas savoir si elles
+# existent ici : c'est la couture, et un test du projet la vérifie.
+appearance:
+    title: Apparence
+    subtitle: Réglez l'affichage à votre convenance.
+    section:
+        theme: Thème
+        display: Affichage
+        accessibility: Accessibilité
+    form:
+        mode: Mode
+        accent: Couleur d'accent
+        density: Densité
+        font_scale: Taille du texte
+        high_contrast: Contraste élevé
+        reduced_motion: Réduire les animations
+    mode:
+        light: Clair
+        dark: Sombre
+        system: Système
+    accent:
+        indigo: Indigo
+        emerald: Émeraude
+        rose: Rose
+        amber: Ambre
+        sky: Ciel
+        violet: Violet
+        teal: Sarcelle
+    density:
+        comfortable: Confortable
+        cozy: Compacte
+        compact: Dense
+    font_scale:
+        sm: Petit
+        md: Normal
+        lg: Grand
+        xl: Très grand
+    preview:
+        title: Aperçu
+        heading: Titre d'exemple
+        body: Un paragraphe pour juger de la lisibilité.
+        button: Bouton
+        badge: Actif
+        link: Un lien
+        table:
+            col_name: Nom
+            col_status: Statut
+            row1: Première ligne
+            row2: Deuxième ligne
+            row3: Troisième ligne
+    flash:
+        saved: Préférences enregistrées.

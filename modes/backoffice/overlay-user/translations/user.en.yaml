@@ -1,0 +1,36 @@
+user:
+    list:
+        title: Users
+        subtitle: Accounts and their access
+        create: New user
+    new:
+        title: New user
+    edit:
+        title: Edit user
+    field:
+        name: Name
+        first_name: First name
+        last_name: Last name
+        email: E-mail address
+        password: Password
+        roles: Roles
+        status: Status
+        active: Active account
+        created_at: Created
+    filter:
+        created: Created between
+    help:
+        password_unchanged: Leave empty to keep the current password.
+    role:
+        admin: Administrator
+        super_admin: Super administrator
+    action:
+        bulk_activate: Activate selection
+        bulk_deactivate: Deactivate selection
+    flash:
+        created: User created.
+        updated: User updated.
+        deleted: User deleted.
+        activated: User activated.
+        deactivated: User deactivated.
+        cannot_delete_self: You cannot delete your own account.

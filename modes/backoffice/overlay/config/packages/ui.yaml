@@ -1,0 +1,7 @@
+ui:
+    # Le jeu d'icônes par défaut est Font Awesome 6, que ce projet charge déjà. Une clé posée ici
+    # se FUSIONNE sur le jeu par défaut (elle ne le remplace pas) ; une valeur vide retire une
+    # icône.
+    #
+    # icons:
+    #     email: '<svg class="icon"><use href="#mail"/></svg>'

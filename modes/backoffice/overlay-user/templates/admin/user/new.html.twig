@@ -1,0 +1,18 @@
+{% extends '@Admin/layout.html.twig' %}
+{% trans_default_domain 'user' %}
+
+{% block title %}{{ 'user.new.title'|trans }} · {{ admin_branding().name }}{% endblock %}
+
+{% block content %}
+    <h1 class="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-6">{{ 'user.new.title'|trans }}</h1>
+
+    <div class="form-panel max-w-2xl">
+        {{ form_start(form, { attr: { class: 'form-grid' } }) }}
+            {{ form_widget(form) }}
+            <div class="form-actions">
+                <button type="submit" class="btn-primary">{{ 'action.save'|trans({}, 'messages') }}</button>
+                <a href="{{ path('admin_user_index') }}" class="btn-secondary">{{ 'action.cancel'|trans({}, 'messages') }}</a>
+            </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

@@ -1,0 +1,24 @@
+datatable:
+    # L'identifiant Stimulus vient du CHEMIN de `assets/controllers/core/datatable_controller.js`,
+    # que `bootstrap.js` traduit en `core--datatable`. Les deux doivent dire la même chose : un
+    # contrôleur Stimulus qui ne reçoit aucune valeur ne lève pas, il rend un tableau vide.
+    stimulus_identifier: 'core--datatable'
+
+    csrf:
+        single: datatable_action
+        bulk: bulk_action
+
+    # Vos types d'action de masse, EN PLUS des treize du bundle (delete, activate, publish…).
+    # Chacun exige ses clés `modal.<type>.*` et `modal.bulk.<type>.*`, sans quoi il est ignoré.
+    bulk_actions: []
+
+    # Les cartes d'énumérations lues par les rendus de badge, exposées aux gabarits par
+    # `datatable_status_map(...)`. `path` vaut `[datatable, <nom>]` par défaut et `key_prefix`
+    # `datatable.<nom>.`.
+    status_maps: []
+        # quote_status:
+        #     keys: [draft, sent, accepted, rejected]
+
+    # Application mono-locataire : pas de colonne inter-tenants, donc pas d'endpoint.
+    tenant:
+        endpoint: ''

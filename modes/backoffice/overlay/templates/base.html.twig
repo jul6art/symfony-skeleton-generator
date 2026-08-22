@@ -1,0 +1,14 @@
+{#
+    La coquille HTML vient d'`admin-bundle` : `<html>` et ses attributs d'apparence, l'anti-FOUC,
+    le favicon, les balises Mercure, le bloc des toasts.
+
+    Ce gabarit n'ajoute que ce que le bundle ne peut pas connaître : la chaîne d'assets.
+
+    ⚠️ C'est `admin.base_template` qui désigne CE fichier comme socle de la coquille. Sans cette
+    clé, `@Admin/layout.html.twig` étendrait la base du bundle et les pages d'administration
+    s'afficheraient sans la moindre feuille de style — sans que rien ne le signale.
+#}
+{% extends '@Admin/base.html.twig' %}
+
+{% block stylesheets %}{{ encore_entry_link_tags('app') }}{% endblock %}
+{% block javascripts %}{{ encore_entry_script_tags('app') }}{% endblock %}

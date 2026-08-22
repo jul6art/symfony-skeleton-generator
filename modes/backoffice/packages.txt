@@ -1,0 +1,20 @@
+# --webapp installe déjà : twig, asset-mapper, stimulus, ux-turbo, form, validator,
+# security-bundle, doctrine + migrations, mailer, messenger…
+#
+# Ici : l'API, le temps réel, et les bundles maison.
+
+api-platform/symfony                # l'API que lisent les datatables (REST + JSON-LD)
+symfony/expression-language         # REQUIS par les expressions `security:` d'API Platform
+symfony/mercure-bundle              # le hub de rafraîchissement temps réel
+symfony/uid
+symfony/rate-limiter                # login_throttling + quotas d'API
+
+jul6art/api-bundle                  # filtres API Platform + AbstractCollectionProvider
+jul6art/ui-bundle                   # types de formulaire + thème Twig
+jul6art/acl-bundle                  # moteur de permissions
+jul6art/push-bundle                 # Mercure : publication, jetons, topics
+jul6art/datatable-bundle            # le socle de tableau
+jul6art/admin-bundle                # la coquille : layout, thème, apparence, pages d'auth
+
+# Suggestions :
+# jul6art/audit-bundle              # journal d'audit — une ligne de composer require

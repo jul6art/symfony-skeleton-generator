@@ -1,0 +1,5 @@
+# Paquets de la brique « comptes » : ignorés avec --no-user (que ce mode refuse de toute façon).
+
+jul6art/auth-bundle                 # contrat UserInterface ; l'entité reste celle du projet
+symfonycasts/reset-password-bundle  # jetons de réinitialisation de mot de passe
+lexik/jwt-authentication-bundle     # JWT pour l'API et pour les widgets Select2 en AJAX

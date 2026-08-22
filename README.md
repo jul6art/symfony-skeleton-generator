@@ -22,6 +22,7 @@ A Symfony project generator with four modes to choose from:
 | `api` | `symfony new` (bare skeleton) | Doctrine, Serializer, Validator, JWT authentication, CORS |
 | `api-platform` | `symfony new --api` | API Platform (REST + JSON-LD/Hydra, OpenAPI docs, JWT authentication, optional GraphQL) |
 | `admin` | `symfony new --webapp` | EasyAdmin back office themed after the `web` front, accounts and user CRUD included |
+| `backoffice` | `symfony new --webapp` | In-house back office: server-driven datatables over API Platform, Mercure live refresh, ACL permission engine, per-user appearance |
 
 This repository **is not a versioned Symfony project**: `symfony new` is what
 creates the project (so Flex recipes always stay up to date), and the skeleton
@@ -37,6 +38,13 @@ rather than reinventing their pieces:
   upgrader), its manager and its factory. No project ever declares its own
   `App\Entity\User`; validation and serialization rules for that vendor entity
   live in `config/validator/` and `config/serializer/`.
+
+The `backoffice` mode adds five more, and that is most of what it *is*:
+`admin-bundle` (the shell, the theme, the appearance screen, the sign-in pages),
+`datatable-bundle` (the table engine), `api-bundle` (the API Platform filters),
+`acl-bundle` (the permission engine) and `push-bundle` (Mercure). It declares
+its own `App\Entity\User`, because a permission engine needs an entity it can
+extend — the auth bundle's is concrete, not a mapped superclass.
 
 ## One rule across every mode: no route without a voter action
 
@@ -136,6 +144,36 @@ panel with a sticky header, inputs with a real focus ring, dashboard cards
 (`.app-card`) — and the same care given to the dark scheme, which EasyAdmin
 switches on from the system preference.
 
+### `backoffice` — in-house back office
+
+The one whose subject is the back office itself: a sidebar shell, tables that
+page, sort, filter and refresh themselves, and a permission engine finer than
+roles.
+
+- **Server-driven datatables.** A `*DataTableConfigProvider` declares columns,
+  filters and row actions in PHP; one Stimulus controller draws them and reads
+  the rows from an API Platform collection. Pagination, sorting, global search
+  and per-column filters are the API's, not a second implementation.
+- **Live refresh over Mercure.** A change that touches a visible row reloads the
+  page of data; a burst shows a "refresh" banner rather than reloading N times.
+  Single-tenant, so the bundle's default topic resolver is the right one.
+- **ACL, not just roles.** `user:read`, `user:delete`… granted per role in a
+  table an admin screen edits, overridable per person in both directions. The
+  catalogue stays in `src/` — it is policy, not infrastructure.
+- **Per-user appearance**: light / dark / system, seven accent colours, three
+  densities, four text sizes, high contrast, reduced motion. Rendered
+  server-side onto `<html>`, so a page never flashes the wrong theme.
+- **Accounts**: sign in (CSRF, remember me, throttling), sign up (closable,
+  creates inactive accounts), forgotten password, change password, user CRUD
+  with bulk actions, and a role × permission grid.
+
+> ⚠️ **This is the only mode that needs Node.** The table engine is DataTables 2
+> + its Responsive plugin + jQuery + Select2, and it is compiled by Webpack
+> Encore — the exact stack these bundles were extracted from, and the only one
+> proven end to end today. `make assets` runs `npm install && npm run build`.
+> The reasoning, and what it would take to move to AssetMapper, are written in
+> the generated `CLAUDE.md`.
+
 ### `api-platform` — declarative API
 
 `symfony new --api` plus house rules: pagination bounds, JSON-LD + JSON formats,
@@ -162,6 +200,7 @@ green on a freshly generated project.
 ./bin/new-project my-api  --api
 ./bin/new-project my-shop --api-platform
 ./bin/new-project my-back  --admin
+./bin/new-project my-desk --backoffice
 ./bin/new-project ~/www/foo --web --version=7.4.* --docker
 ./bin/new-project test --api --dry-run     # prints everything, changes nothing
 ./bin/new-project my-project               # asks for the mode interactively

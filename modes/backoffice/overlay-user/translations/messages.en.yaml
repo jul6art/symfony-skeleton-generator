@@ -1,0 +1,105 @@
+# Interface strings. A displayed text is NEVER hard-coded — not in PHP, not in Twig, not in
+# JavaScript — even while the application is single-language.
+nav:
+    section:
+        main: General
+        access: Access
+    dashboard: Dashboard
+    users: Users
+    role_permissions: Permissions
+    profile: My profile
+    change_password: Password
+    appearance: Appearance
+    logout: Sign out
+
+action:
+    actions: Actions
+    save: Save
+    cancel: Cancel
+    show: View
+    edit: Edit
+    delete: Delete
+    activate: Activate
+    deactivate: Deactivate
+    restore: Restore
+
+dashboard:
+    title: Dashboard
+    subtitle: Overview
+    total_users: Accounts
+    active_users: Active accounts
+
+flash:
+    invalid_csrf: Invalid security token, please try again.
+
+toast:
+    close: Close
+
+cookie_consent:
+    message: This site uses cookies required for it to work.
+    privacy_link: Learn more
+    accept: Accept
+    decline: Decline
+
+# ── The labels the datatable's JavaScript reads ─────────────────────────────
+# Pushed into an attribute by `@Datatable/datatable/_translations.html.twig`, never written in the
+# JS: no user-facing string lives in a `.js` file.
+datatable:
+    filters: Filters
+    filter_apply: Apply
+    filter_reset: Reset
+    filter:
+        input_too_short: Type at least one character
+        searching: Searching…
+        no_results: No result
+    status:
+        active: Active
+        inactive: Inactive
+    confirm:
+        title: Confirm
+        message: Do you confirm this action?
+        confirm: Confirm
+        cancel: Cancel
+    error:
+        loading: Could not load the data
+    coalescence:
+        message: Changes came in
+        refresh: Refresh
+    bulk:
+        selected: selected
+        choose: Choose an action
+        apply: Apply
+        clear: Clear selection
+    col:
+        id: ID
+
+# Confirmation modals per action type. A type declared in `datatable.bulk_actions` without these
+# keys is SKIPPED — better than a raw key as a modal title.
+modal:
+    subject_wrap: '“%subject%”'
+    subject_default: this item
+    delete:
+        title: Delete
+        message: This cannot be undone. Delete %subject%?
+        confirm: Delete
+    activate:
+        title: Activate
+        message: Activate %subject%?
+        confirm: Activate
+    deactivate:
+        title: Deactivate
+        message: Deactivate %subject%?
+        confirm: Deactivate
+    bulk:
+        delete:
+            title: Delete selection
+            message: This cannot be undone. Delete the selected items?
+            confirm: Delete
+        activate:
+            title: Activate selection
+            message: Activate the selected items?
+            confirm: Activate
+        deactivate:
+            title: Deactivate selection
+            message: Deactivate the selected items?
+            confirm: Deactivate

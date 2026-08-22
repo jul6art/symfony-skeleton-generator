@@ -1,0 +1,54 @@
+{#
+    La liste des comptes.
+
+    Rien n'est chargé côté serveur : la table lit `GET /api/users` et c'est API Platform qui
+    pagine, trie, cherche et filtre. Ce gabarit ne pose que la coquille et les trois
+    configurations produites par `UserDataTableConfigProvider`.
+
+    ⚠️ Les deux `include` sont OBLIGATOIRES et vont DANS la balise `<table>` — ils émettent des
+    attributs, pas des éléments. Sans `_csrf`, aucune action POST n'est autorisée ; sans
+    `_translations`, la barre de filtres affiche des clés brutes.
+#}
+{% extends '@Admin/layout.html.twig' %}
+{% trans_default_domain 'user' %}
+
+{% block title %}{{ 'user.list.title'|trans }} · {{ admin_branding().name }}{% endblock %}
+{% block container_class %}max-w-full{% endblock %}
+
+{% block content %}
+    <div class="flex items-start md:items-center justify-between mb-6 flex-col md:flex-row">
+        <div>
+            <h1 class="text-2xl font-bold text-slate-900 dark:text-slate-100">{{ 'user.list.title'|trans }}</h1>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">{{ 'user.list.subtitle'|trans }}</p>
+        </div>
+        {% if is_granted(constant('App\\Security\\PermissionCodes::USER_CREATE')) %}
+            <a href="{{ path('admin_user_new') }}" class="btn-primary mt-2">
+                <i class="fa-solid fa-plus"></i> {{ 'user.list.create'|trans }}
+            </a>
+        {% endif %}
+    </div>
+
+    <div class="panel overflow-x-auto">
+        <table class="min-w-full text-sm"
+               data-controller="{{ datatable_stimulus() }}"
+               data-{{ datatable_stimulus() }}-api-url-value="{{ path('_api_/users{._format}_get_collection') }}"
+               data-{{ datatable_stimulus() }}-columns-value="{{ columns_config|json_encode|e('html_attr') }}"
+               data-{{ datatable_stimulus() }}-filters-value="{{ filters_config|json_encode|e('html_attr') }}"
+               data-{{ datatable_stimulus() }}-actions-value="{{ actions_config|json_encode|e('html_attr') }}"
+               data-{{ datatable_stimulus() }}-actions-display-value="dropdown"
+               data-{{ datatable_stimulus() }}-searchable-fields-value='["email","firstName","lastName"]'
+               data-{{ datatable_stimulus() }}-default-order-value='[[0, "desc"]]'
+               data-{{ datatable_stimulus() }}-page-length-value="25"
+               data-{{ datatable_stimulus() }}-language-value="{{ app.request.locale }}"
+               {{ include('@Datatable/datatable/_csrf.html.twig') }}
+               {{ include('@Datatable/datatable/_translations.html.twig') }}>
+            <thead>
+                <tr>
+                    {% for column in columns_config %}<th>{{ column.title }}</th>{% endfor %}
+                    {% if actions_config is not empty %}<th>{{ 'action.actions'|trans({}, 'messages') }}</th>{% endif %}
+                </tr>
+            </thead>
+            <tbody><!-- DataTables remplit --></tbody>
+        </table>
+    </div>
+{% endblock %}
