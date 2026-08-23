@@ -31,6 +31,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Serializer\Attribute\SerializedName;
 use Symfony\Component\Validator\Constraints as Assert;
 
 use function in_array;
@@ -112,8 +113,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, AclUser
     #[Groups(['user:read'])]
     private string $lastName = '';
 
+    // ⚠️ Pas de `#[Groups]` ICI : pour une propriété nommée `isActive`, Symfony cherche
+    // `getIsActive()`. Le getter s'appelle `isActive()`, qui décrit une propriété « active » —
+    // résultat, le champ n'était sérialisé sous AUCUN des deux noms. Le groupe est donc porté par
+    // le getter, avec le nom que la datatable lit (`row.isActive`).
     #[ORM\Column(options: ['default' => true])]
-    #[Groups(['user:read'])]
     private bool $isActive = true;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -243,6 +247,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, AclUser
     }
 
     #[Override]
+    #[Groups(['user:read'])]
+    #[SerializedName('isActive')]
     public function isActive(): bool
     {
         return $this->isActive;

@@ -1,0 +1,16 @@
+# Les groupes de sérialisation des propriétés qui viennent d'un TRAIT.
+#
+# ⚠️ Un `#[Groups]` ne peut pas vivre dans un trait : l'attribut ne varie pas d'une entité à
+# l'autre, donc le trait porterait l'union des groupes de tous ses consommateurs — c'est écrit
+# dans `IdTrait` et `TimestampableTrait` du core-bundle. Ils se déclarent donc ici, par classe.
+#
+# Sans ce fichier, `GET /api/users` répond 200 sans `id` ni `createdAt` : la colonne ID de la
+# datatable affiche « ? », la colonne date reste vide, et surtout la condition « pas moi »
+# (`row.id !== <moi>`) devient vraie pour tout le monde — « Activer » s'offre sur son propre
+# compte. Rien de tout cela ne lève.
+App\Entity\User:
+    attributes:
+        id:
+            groups: ['user:read']
+        createdAt:
+            groups: ['user:read']
