@@ -24,12 +24,12 @@ final class NewPasswordFormType extends AbstractType
     {
         $builder->add('plainPassword', RepeatedType::class, [
             'type' => PasswordType::class,
-            'invalid_message' => 'security.register.password_mismatch',
+            'invalid_message' => 'password.mismatch',
             'first_options' => ['label' => 'security.reset_password.reset.password'],
             'second_options' => ['label' => 'security.reset_password.reset.password_confirm'],
             'constraints' => [
-                new Assert\NotBlank(message: 'security.password.not_blank'),
-                new Assert\Length(min: 12, max: 4096, minMessage: 'security.password.too_short'),
+                new Assert\NotBlank(message: 'password.not_blank'),
+                new Assert\Length(min: 12, max: 4096, minMessage: 'password.too_short'),
             ],
         ]);
     }

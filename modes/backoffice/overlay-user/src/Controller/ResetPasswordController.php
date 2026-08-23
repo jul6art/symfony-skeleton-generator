@@ -18,6 +18,7 @@ use Symfony\Component\Mime\Address;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use SymfonyCasts\Bundle\ResetPassword\Controller\ResetPasswordControllerTrait;
 use SymfonyCasts\Bundle\ResetPassword\Exception\ResetPasswordExceptionInterface;
 use SymfonyCasts\Bundle\ResetPassword\ResetPasswordHelperInterface;
@@ -38,6 +39,7 @@ final class ResetPasswordController extends AbstractController
         private readonly ResetPasswordHelperInterface $resetPasswordHelper,
         private readonly EntityManagerInterface $entityManager,
         private readonly string $mailerFrom,
+        private readonly TranslatorInterface $translator,
     ) {
     }
 
@@ -130,7 +132,8 @@ final class ResetPasswordController extends AbstractController
                     new TemplatedEmail()
                         ->from(new Address($this->mailerFrom))
                         ->to((string) $user->getEmail())
-                        ->subject('security.reset_password.email.subject')
+                        // ⚠️ Traduit ICI : `->subject('clé')` enverrait la clé telle quelle en objet du mail.
+                        ->subject($this->translator->trans('security.reset_password.email.subject', [], 'security'))
                         ->htmlTemplate('security/reset_password_email.html.twig')
                         ->context(['resetToken' => $resetToken]),
                 );

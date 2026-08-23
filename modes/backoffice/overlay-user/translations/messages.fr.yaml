@@ -1,105 +1,106 @@
-# Les libellés de l'interface. Un texte affiché n'est JAMAIS écrit en dur, ni en PHP, ni en Twig,
-# ni en JavaScript — y compris quand l'application n'est pas encore multilingue.
 nav:
-    section:
-        main: Général
-        access: Accès
-    dashboard: Tableau de bord
-    users: Utilisateurs
-    role_permissions: Permissions
-    profile: Mon profil
-    change_password: Mot de passe
-    appearance: Apparence
-    logout: Déconnexion
-
+  section:
+    main: Général
+    access: Accès
+  dashboard: Tableau de bord
+  users: Utilisateurs
+  role_permissions: Permissions
+  profile: Mon profil
+  change_password: Mot de passe
+  appearance: Apparence
+  logout: Déconnexion
 action:
-    actions: Actions
-    save: Enregistrer
-    cancel: Annuler
-    show: Voir
-    edit: Modifier
-    delete: Supprimer
-    activate: Activer
-    deactivate: Désactiver
-    restore: Restaurer
-
+  actions: Actions
+  save: Enregistrer
+  cancel: Annuler
+  show: Voir
+  edit: Modifier
+  delete: Supprimer
+  activate: Activer
+  deactivate: Désactiver
+  restore: Restaurer
 dashboard:
-    title: Tableau de bord
-    subtitle: Vue d'ensemble
-    total_users: Comptes
-    active_users: Comptes actifs
-
+  title: Tableau de bord
+  subtitle: Vue d'ensemble
+  total_users: Comptes
+  active_users: Comptes actifs
 flash:
-    invalid_csrf: Jeton de sécurité invalide, réessayez.
-
+  invalid_csrf: Jeton de sécurité invalide, réessayez.
 toast:
-    close: Fermer
-
+  close: Fermer
 cookie_consent:
-    message: Ce site utilise des cookies nécessaires à son fonctionnement.
-    privacy_link: En savoir plus
-    accept: Accepter
-    decline: Refuser
-
-# ── Les libellés lus par le JavaScript de la datatable ──────────────────────
-# Ils sont poussés dans un attribut par `@Datatable/datatable/_translations.html.twig`, jamais
-# écrits dans le JS : aucune chaîne visible ne vit dans un fichier `.js`.
+  message: Ce site utilise des cookies nécessaires à son fonctionnement.
+  privacy_link: En savoir plus
+  accept: Accepter
+  decline: Refuser
 datatable:
-    filters: Filtres
-    filter_apply: Appliquer
-    filter_reset: Réinitialiser
-    filter:
-        input_too_short: Saisissez au moins un caractère
-        searching: Recherche…
-        no_results: Aucun résultat
-    status:
-        active: Actif
-        inactive: Inactif
-    confirm:
-        title: Confirmer
-        message: Confirmez-vous cette action ?
-        confirm: Confirmer
-        cancel: Annuler
-    error:
-        loading: Erreur lors du chargement
-    coalescence:
-        message: Des modifications sont arrivées
-        refresh: Rafraîchir
-    bulk:
-        selected: sélectionné(s)
-        choose: Choisir une action
-        apply: Appliquer
-        clear: Tout désélectionner
-    col:
-        id: ID
-
-# Les modales de confirmation par type d'action. Un type déclaré dans `datatable.bulk_actions`
-# sans ces clés est IGNORÉ — ce qui vaut mieux qu'une clé brute en titre de modale.
+  filters: Filtres
+  filter_apply: Appliquer
+  filter_reset: Réinitialiser
+  filter:
+    input_too_short: Saisissez au moins un caractère
+    searching: Recherche…
+    no_results: Aucun résultat
+  status:
+    active: Actif
+    inactive: Inactif
+  confirm:
+    title: Confirmer
+    message: Confirmez-vous cette action ?
+    confirm: Confirmer
+    cancel: Annuler
+  error:
+    loading: Erreur lors du chargement
+  coalescence:
+    message: Des modifications sont arrivées
+    refresh: Rafraîchir
+  bulk:
+    selected: sélectionné(s)
+    choose: Choisir une action
+    apply: Appliquer
+    clear: Tout désélectionner
+  col:
+    id: ID
+  daterange:
+    placeholder: Toutes les dates
+    from: Du
+    to: Au
+    since: depuis le
+    until: jusqu'au
 modal:
-    subject_wrap: '« %subject% »'
-    subject_default: cet élément
+  subject_wrap: « %subject% »
+  subject_default: cet élément
+  delete:
+    title: Supprimer
+    message: Cette action est irréversible. Supprimer %subject% ?
+    confirm: Supprimer
+  activate:
+    title: Activer
+    message: Activer %subject% ?
+    confirm: Activer
+  deactivate:
+    title: Désactiver
+    message: Désactiver %subject% ?
+    confirm: Désactiver
+  bulk:
     delete:
-        title: Supprimer
-        message: Cette action est irréversible. Supprimer %subject% ?
-        confirm: Supprimer
+      title: Supprimer la sélection
+      message: Cette action est irréversible. Supprimer les éléments sélectionnés ?
+      confirm: Supprimer
     activate:
-        title: Activer
-        message: Activer %subject% ?
-        confirm: Activer
+      title: Activer la sélection
+      message: Activer les éléments sélectionnés ?
+      confirm: Activer
     deactivate:
-        title: Désactiver
-        message: Désactiver %subject% ?
-        confirm: Désactiver
-    bulk:
-        delete:
-            title: Supprimer la sélection
-            message: Cette action est irréversible. Supprimer les éléments sélectionnés ?
-            confirm: Supprimer
-        activate:
-            title: Activer la sélection
-            message: Activer les éléments sélectionnés ?
-            confirm: Activer
-        deactivate:
-            title: Désactiver la sélection
-            message: Désactiver les éléments sélectionnés ?
-            confirm: Désactiver
+      title: Désactiver la sélection
+      message: Désactiver les éléments sélectionnés ?
+      confirm: Désactiver
+security.change_password.flash.changed: Mot de passe modifié.
+security.register.flash.pending: Compte créé. Un administrateur doit l'activer avant votre première connexion.
+security.reset_password.flash.invalid_token: Ce lien de réinitialisation est invalide ou a expiré.
+security.reset_password.flash.changed: Mot de passe modifié, vous pouvez vous connecter.
+user.flash.created: Utilisateur créé.
+user.flash.updated: Utilisateur mis à jour.
+user.flash.cannot_delete_self: Vous ne pouvez pas supprimer votre propre compte.
+user.flash.deleted: Utilisateur supprimé.
+permission.flash.saved: Permissions enregistrées.

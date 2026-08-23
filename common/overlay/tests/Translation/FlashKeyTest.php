@@ -65,14 +65,24 @@ final class FlashKeyTest extends KernelTestCase
 
             // La quote fermante suivie d'une virgule ou d'une parenthèse : une clé concaténée
             // ('advertisement.'.$status) n'est pas lisible statiquement et reste hors de portée.
+            // Les deux API coexistent : `addSuccessFlash('clé')` (core-bundle) et le
+            // `addFlash('type', 'clé')` natif de Symfony — la clé est alors le DEUXIÈME argument.
+            // Ne scanner que la première rendait ce test aveugle sur un projet qui n'utilise que
+            // la seconde : zéro clé trouvée, suite verte, clé brute à l'écran (vu le 2026-08-23).
             preg_match_all(
                 '/\$this->add(?:Success|Error|Warning)Flash\(\s*\'([^\']+)\'\s*[,)]/',
                 $source,
                 $matches,
             );
+            preg_match_all(
+                '/\$this->addFlash\(\s*\'[^\']+\'\s*,\s*\'([^\']+)\'\s*\)/',
+                $source,
+                $nativeMatches,
+            );
 
-            if ([] !== $matches[1]) {
-                $keys[$file->getRelativePathname()] = array_values(array_unique($matches[1]));
+            $found = array_merge($matches[1], $nativeMatches[1]);
+            if ([] !== $found) {
+                $keys[$file->getRelativePathname()] = array_values(array_unique($found));
             }
         }
 

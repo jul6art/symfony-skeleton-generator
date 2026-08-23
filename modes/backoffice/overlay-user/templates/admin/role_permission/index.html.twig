@@ -44,13 +44,20 @@
                             <tr>
                                 <td class="py-2 font-mono text-xs text-slate-700 dark:text-slate-300">{{ code }}</td>
                                 {% for role in roles %}
-                                    <td class="py-2 text-center">
-                                        <input type="checkbox"
-                                               name="permissions[{{ role }}][{{ code }}]"
-                                               value="1"
-                                               class="rounded border-slate-300 text-accent-600 focus:ring-accent-500"
-                                               {{ code in granted[role] ? 'checked' : '' }}
-                                               {{ is_granted(constant('App\\Security\\PermissionCodes::PERMISSION_UPDATE')) ? '' : 'disabled' }}>
+                                    <td class="py-2">
+                                        {# L'interrupteur du reste de la coquille (jetons `.toggle-*`
+                                           d'admin-bundle), et non une case système : cinquante cases
+                                           natives au milieu d'un back-office stylé se voient. #}
+                                        <label class="toggle-switch mx-auto block w-fit" title="{{ code }} · {{ role }}">
+                                            <input type="checkbox"
+                                                   class="toggle-switch-input"
+                                                   name="permissions[{{ role }}][{{ code }}]"
+                                                   value="1"
+                                                   aria-label="{{ code }} · {{ role }}"
+                                                   {{ code in granted[role] ? 'checked' : '' }}
+                                                   {{ is_granted(constant('App\\Security\\PermissionCodes::PERMISSION_UPDATE')) ? '' : 'disabled' }}>
+                                            <span class="toggle-switch-track"></span>
+                                        </label>
                                     </td>
                                 {% endfor %}
                             </tr>

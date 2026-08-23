@@ -37,12 +37,12 @@ final class RegistrationFormType extends AbstractType
                 'type' => PasswordType::class,
                 'mapped' => true,
                 // ⚠️ Une clé de traduction, jamais la phrase anglaise par défaut de Symfony.
-                'invalid_message' => 'security.register.password_mismatch',
+                'invalid_message' => 'password.mismatch',
                 'first_options' => ['label' => 'security.register.password'],
                 'second_options' => ['label' => 'security.register.password_confirm'],
                 'constraints' => [
-                    new Assert\NotBlank(message: 'security.password.not_blank'),
-                    new Assert\Length(min: 12, max: 4096, minMessage: 'security.password.too_short'),
+                    new Assert\NotBlank(message: 'password.not_blank'),
+                    new Assert\Length(min: 12, max: 4096, minMessage: 'password.too_short'),
                 ],
             ]);
     }

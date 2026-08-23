@@ -10,6 +10,11 @@ admin:
         logo: 'img/logo.png'
         favicon: 'img/favicon.ico'
         home_route: admin_dashboard
+        # Largeur du logo (px) sur les pages d'authentification et dans les e-mails ; null garde
+        # la hauteur fixe historique. `show_name: false` retire le nom écrit sous le logo (pages
+        # d'auth) et à côté (barre latérale) : le cas d'un logo qui est déjà un wordmark.
+        logo_width: ~
+        show_name: true
 
     # Une route vide MASQUE le lien correspondant, elle ne casse pas le rendu. C'est ainsi qu'on
     # ferme l'inscription publique : on retire `register`.
@@ -27,7 +32,7 @@ admin:
         reset_password_request: admin_reset_password_request
         change_password: admin_account_password_edit
         appearance: admin_account_appearance_edit
-        profile: ''
+        profile: admin_account_profile_edit
         privacy: ''
 
     mercure:

@@ -1,66 +1,57 @@
 security:
-    login:
-        title: Sign in
-        subtitle: Access your workspace
-        email: E-mail address
-        password: Password
-        show_password: Show password
-        remember_me: Remember me
-        forgot_password: Forgot your password?
-        submit: Sign in
-        no_account: No account yet?
-        create_account: Create an account
-    register:
-        title: Create an account
-        subtitle: An administrator will activate your account
-        first_name: First name
-        last_name: Last name
-        email: E-mail address
-        password: Password
-        password_confirm: Confirm
-        password_mismatch: The two passwords do not match.
-        submit: Create the account
-        have_account: Already have an account?
-        sign_in: Sign in
-        flash:
-            pending: Account created. An administrator must activate it before your first sign-in.
-    password:
-        not_blank: Enter a password.
-        too_short: The password must be at least {{ limit }} characters long.
+  login:
+    title: Sign in
+    subtitle: Access your workspace
+    email: E-mail address
+    password: Password
+    show_password: Show password
+    remember_me: Remember me
+    forgot_password: Forgot your password?
+    submit: Sign in
+    no_account: No account yet?
+    create_account: Create an account
+  register:
+    title: Create an account
+    subtitle: An administrator will activate your account
+    first_name: First name
+    last_name: Last name
+    email: E-mail address
+    password: Password
+    password_confirm: Confirm
+    password_mismatch: The two passwords do not match.
+    submit: Create the account
+    have_account: Already have an account?
+    sign_in: Sign in
+  password:
+    not_blank: Enter a password.
+    too_short: The password must be at least {{ limit }} characters long.
+  email:
+    not_blank: Enter an e-mail address.
+    invalid: This e-mail address is not valid.
+  reset_password:
+    back_to_login: Back to sign-in
+    request:
+      title: Forgotten password
+      subtitle: We will send you a reset link.
+      email: E-mail address
+      submit: Send the link
+    check_email:
+      title: Check your mailbox
+      body: If an account matches this address, a reset link has just been sent.
+    reset:
+      title: New password
+      subtitle: Choose a password of at least 12 characters.
+      password: New password
+      password_confirm: Confirm
+      submit: Change the password
     email:
-        not_blank: Enter an e-mail address.
-        invalid: This e-mail address is not valid.
-    reset_password:
-        back_to_login: Back to sign-in
-        request:
-            title: Forgotten password
-            subtitle: We will send you a reset link.
-            email: E-mail address
-            submit: Send the link
-        check_email:
-            title: Check your mailbox
-            # Deliberately silent about whether the account exists: a different message would turn
-            # this form into an account-enumeration oracle.
-            body: If an account matches this address, a reset link has just been sent.
-        reset:
-            title: New password
-            subtitle: Choose a password of at least 12 characters.
-            password: New password
-            password_confirm: Confirm
-            submit: Change the password
-        email:
-            subject: Reset your password
-            intro: You asked to reset your password.
-            cta: Choose a new password
-            expires: This link expires in %duration%.
-        flash:
-            invalid_token: This reset link is invalid or has expired.
-            changed: Password changed, you can sign in.
-    change_password:
-        title: Change my password
-        current: Current password
-        new: New password
-        confirm: Confirm
-        wrong_current: The current password is incorrect.
-        flash:
-            changed: Password changed.
+      subject: Reset your password
+      intro: You asked to reset your password.
+      cta: Choose a new password
+      expires: This link expires in %duration%.
+  change_password:
+    title: Change my password
+    current: Current password
+    new: New password
+    confirm: Confirm
+    wrong_current: The current password is incorrect.

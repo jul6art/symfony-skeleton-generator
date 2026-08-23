@@ -27,8 +27,8 @@ final class ResetPasswordRequestFormType extends AbstractType
         $builder->add('email', CustomEmailType::class, [
             'label' => 'security.reset_password.request.email',
             'constraints' => [
-                new Assert\NotBlank(message: 'security.email.not_blank'),
-                new Assert\Email(message: 'security.email.invalid'),
+                new Assert\NotBlank(message: 'user.email.not_blank'),
+                new Assert\Email(message: 'user.email.invalid'),
             ],
         ]);
     }

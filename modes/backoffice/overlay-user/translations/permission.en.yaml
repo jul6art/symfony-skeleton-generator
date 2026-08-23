@@ -1,10 +1,8 @@
 permission:
-    title: Permissions
-    subtitle: What each role is allowed to do
-    column:
-        code: Code
-    confirm:
-        title: Save permissions
-        message: Access for the affected accounts changes immediately.
-    flash:
-        saved: Permissions saved.
+  title: Permissions
+  subtitle: What each role is allowed to do
+  column:
+    code: Code
+  confirm:
+    title: Save permissions
+    message: Access for the affected accounts changes immediately.

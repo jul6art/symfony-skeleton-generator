@@ -1,0 +1,36 @@
+{#
+    Le profil du compte connecté. Le formulaire porte un fichier : `enctype` est OBLIGATOIRE,
+    sans lui le champ arrive vide côté serveur sans que rien ne le signale.
+#}
+{% extends 'admin/layout.html.twig' %}
+{% trans_default_domain 'user' %}
+
+{% block title %}{{ 'profile.title'|trans }} · {{ admin_branding().name }}{% endblock %}
+{% block container_class %}max-w-3xl{% endblock %}
+
+{% block content %}
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold text-slate-900 dark:text-slate-100">{{ 'profile.title'|trans }}</h1>
+        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">{{ 'profile.subtitle'|trans }}</p>
+    </div>
+
+    <div class="panel p-6">
+        {{ form_start(form, { attr: { enctype: 'multipart/form-data', class: 'space-y-5' } }) }}
+            <div class="flex items-center gap-4">
+                {{ include('@Admin/partials/_avatar.html.twig', { user: app.user, size: 10 }) }}
+                <div class="text-sm text-slate-500 dark:text-slate-400">
+                    <div class="font-medium text-slate-800 dark:text-slate-100">{{ admin_user_label(app.user) }}</div>
+                    <div>{{ app.user.email }}</div>
+                </div>
+            </div>
+
+            {{ form_row(form.firstName) }}
+            {{ form_row(form.lastName) }}
+            {{ form_row(form.avatarFile) }}
+
+            <div class="form-actions">
+                <button type="submit" class="btn-primary">{{ 'action.save'|trans({}, 'messages') }}</button>
+            </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

@@ -35,3 +35,10 @@ services:
     # le rend visible ici.
     Jul6Art\AclBundle\Contract\PermissionSetProviderInterface: '@App\Acl\DoctrinePermissionSetProvider'
     Jul6Art\AclBundle\Contract\PermissionStoreInterface: '@App\Acl\DoctrinePermissionStore'
+
+    # Le répertoire des avatars téléversés. Sous `public/` : le fichier est servi par le serveur
+    # web comme n'importe quel asset — un avatar n'est pas une donnée à protéger, et le faire
+    # passer par un contrôleur coûterait une requête PHP par vignette de la liste des comptes.
+    App\Controller\Admin\AccountProfileController:
+        arguments:
+            $avatarDirectory: '%kernel.project_dir%/public/uploads/avatars'

@@ -32,18 +32,18 @@ final class ChangePasswordFormType extends AbstractType
                 'label' => 'security.change_password.current',
                 'mapped' => false,
                 'constraints' => [
-                    new Assert\NotBlank(message: 'security.password.not_blank'),
-                    new SecurityAssert\UserPassword(message: 'security.change_password.wrong_current'),
+                    new Assert\NotBlank(message: 'password.not_blank'),
+                    new SecurityAssert\UserPassword(message: 'password.current_invalid'),
                 ],
             ])
             ->add('plainPassword', RepeatedType::class, [
                 'type' => PasswordType::class,
-                'invalid_message' => 'security.register.password_mismatch',
+                'invalid_message' => 'password.mismatch',
                 'first_options' => ['label' => 'security.change_password.new'],
                 'second_options' => ['label' => 'security.change_password.confirm'],
                 'constraints' => [
-                    new Assert\NotBlank(message: 'security.password.not_blank'),
-                    new Assert\Length(min: 12, max: 4096, minMessage: 'security.password.too_short'),
+                    new Assert\NotBlank(message: 'password.not_blank'),
+                    new Assert\Length(min: 12, max: 4096, minMessage: 'password.too_short'),
                 ],
             ]);
     }

@@ -16,6 +16,8 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 use function sprintf;
 
+use const JSON_THROW_ON_ERROR;
+
 /**
  * Le parcours minimal : les pages publiques répondent, les pages d'administration sont fermées, et
  * une fois connecté, la liste des comptes s'affiche.
@@ -67,6 +69,74 @@ final class BackofficeSmokeTest extends WebTestCase
         // action POST n'est autorisée, sans le second la barre de filtres rend des clés.
         self::assertNotSame('', $table->attr('data-core--datatable-single-csrf-value'));
         self::assertNotSame('', $table->attr('data-core--datatable-translations-value'));
+    }
+
+    /**
+     * La table des comptes doit porter ses actions PAR LIGNE : sans elles, la liste est un
+     * cul-de-sac — on voit les comptes et on ne peut rien en faire (signalé le 2026-08-23).
+     * Le rendu des boutons est fait par le contrôleur Stimulus ; ce qui se vérifie côté serveur
+     * est que la configuration part remplie, et l'en-tête de colonne avec.
+     */
+    public function testTheUserTableCarriesItsPerRowActions(): void
+    {
+        $client = static::createClient();
+        $client->disableReboot();
+        $this->createSchema();
+
+        $client->loginUser($this->createUser($client, UserRoles::ROLE_ADMIN));
+        $crawler = $client->request('GET', '/admin/users');
+
+        self::assertResponseIsSuccessful();
+
+        $actions = json_decode((string) $crawler->filter('table[data-controller="core--datatable"]')->attr('data-core--datatable-actions-value'), true, 512, JSON_THROW_ON_ERROR);
+        self::assertIsArray($actions);
+        self::assertNotSame([], $actions, 'Un administrateur doit recevoir des actions.');
+
+        $types = array_column($actions, 'type');
+        foreach (['show', 'edit', 'activate', 'deactivate'] as $expected) {
+            self::assertContains($expected, $types, sprintf('L\'action « %s » manque à la table.', $expected));
+        }
+
+        // La suppression n'est PAS dans les permissions par défaut d'un administrateur
+        // (`DefaultRolePermissions`) : son absence ici est la règle qui s'applique, pas un oubli.
+        self::assertNotContains('delete', $types, 'Un rôle sans user:delete ne doit pas voir l\'action.');
+
+        self::assertStringNotContainsString('action.actions', (string) $client->getResponse()->getContent(), 'L\'en-tête des actions doit être traduit.');
+    }
+
+    /** La page de profil : ce que l'utilisateur vient corriger en premier, son nom et son avatar. */
+    public function testAnAccountCanReachItsProfilePage(): void
+    {
+        $client = static::createClient();
+        $client->disableReboot();
+        $this->createSchema();
+
+        $client->loginUser($this->createUser($client, UserRoles::ROLE_ADMIN));
+        $crawler = $client->request('GET', '/admin/account/profile');
+
+        self::assertResponseIsSuccessful();
+        self::assertSame(1, $crawler->filter('input[name="profile_form[firstName]"]')->count());
+        self::assertSame(1, $crawler->filter('input[name="profile_form[avatarFile]"]')->count(), 'Le profil porte l\'avatar.');
+        self::assertStringNotContainsString('profile.', (string) $client->getResponse()->getContent(), 'Aucune clé brute.');
+    }
+
+    /**
+     * La grille rôles × permissions se rend comme le reste de la coquille : un panneau par
+     * ressource, des interrupteurs, pas des cases système au milieu d'un formulaire stylé.
+     */
+    public function testThePermissionGridUsesTheShellVocabulary(): void
+    {
+        $client = static::createClient();
+        $client->disableReboot();
+        $this->createSchema();
+
+        $client->loginUser($this->createUser($client, UserRoles::ROLE_SUPER_ADMIN));
+        $crawler = $client->request('GET', '/admin/role-permissions');
+
+        self::assertResponseIsSuccessful();
+        self::assertGreaterThan(0, $crawler->filter('.toggle-switch')->count(), 'Les cases doivent être des interrupteurs.');
+        self::assertGreaterThan(0, $crawler->filter('.panel')->count());
+        self::assertStringNotContainsString('permission.column.', (string) $client->getResponse()->getContent());
     }
 
     /**

@@ -27,6 +27,7 @@ use Jul6Art\CoreBundle\Entity\Traits\TimestampableTrait;
 use Jul6Art\CoreBundle\Util\Strings;
 use Jul6Art\PushBundle\Attribute\BroadcastableEntity;
 use Override;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Attribute\Groups;
@@ -55,6 +56,7 @@ use function in_array;
  * il ne peut pas fuir.
  */
 #[ORM\Entity(repositoryClass: UserRepository::class)]
+#[UniqueEntity(fields: ['email'], message: 'user.email.unique')]
 #[ORM\Table(name: '`user`')]
 #[ORM\HasLifecycleCallbacks]
 #[BroadcastableEntity]

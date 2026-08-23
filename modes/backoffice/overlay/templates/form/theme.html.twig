@@ -41,12 +41,12 @@
     {{ parent() }}
 {% endblock %}
 
+{#
+    Le widget NU : ni label ni conteneur. C'est `checkbox_row` (plus bas) qui pose l'interrupteur
+    et son libellé. Les deux ensemble écriraient le libellé deux fois.
+#}
 {% block checkbox_widget %}
-    <label class="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
-        {% set attr = attr|merge({ class: (attr.class|default('') ~ ' rounded border-slate-300 text-accent-600 focus:ring-accent-500')|trim }) %}
-        <input type="checkbox" {{ block('widget_attributes') }}{% if value is defined %} value="{{ value }}"{% endif %}{% if checked %} checked="checked"{% endif %}>
-        <span>{{ form.vars.label|default('')|trans({}, form.vars.translation_domain) }}</span>
-    </label>
+    <input type="checkbox" {{ block('widget_attributes') }}{% if value is defined %} value="{{ value }}"{% endif %}{% if checked %} checked="checked"{% endif %}>
 {% endblock %}
 
 {% block form_errors %}
@@ -63,4 +63,31 @@
     {% if help is not empty %}
         <p class="form-help">{{ help|trans({}, translation_domain) }}</p>
     {% endif %}
+{% endblock %}
+
+{#
+    Une case à cocher se rend en interrupteur, pas en carré système : c'est ce que le reste de la
+    coquille montre (les jetons `.toggle-*` viennent d'`admin-bundle`). Sans ce bloc, les réglages
+    d'accessibilité de la page Apparence — contraste élevé, animations réduites — sortaient en
+    cases natives au milieu d'un formulaire stylé.
+#}
+{% block checkbox_row %}
+    {% set labelText = label is not empty
+        ? label|trans({}, translation_domain)
+        : name|humanize %}
+
+    <div class="form-field form-field-checkbox">
+        <label class="toggle-row" for="{{ id }}">
+            <span class="toggle-switch">
+                {{ form_widget(form, { attr: { class: 'toggle-switch-input' } }) }}
+                <span class="toggle-switch-track"></span>
+            </span>
+            <span class="toggle-label">
+                {{ labelText }}
+                {% if required %}<span class="text-red-500">*</span>{% endif %}
+            </span>
+        </label>
+        {{ form_help(form) }}
+        {{ form_errors(form) }}
+    </div>
 {% endblock %}

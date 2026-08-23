@@ -1,36 +1,32 @@
 user:
-    list:
-        title: Utilisateurs
-        subtitle: Les comptes et leurs accès
-        create: Nouvel utilisateur
-    new:
-        title: Nouvel utilisateur
-    edit:
-        title: Modifier l'utilisateur
-    field:
-        name: Nom
-        first_name: Prénom
-        last_name: Nom
-        email: Adresse e-mail
-        password: Mot de passe
-        roles: Rôles
-        status: Statut
-        active: Compte actif
-        created_at: Créé le
-    filter:
-        created: Créé entre
-    help:
-        password_unchanged: Laisser vide pour ne pas changer le mot de passe.
-    role:
-        admin: Administrateur
-        super_admin: Super administrateur
-    action:
-        bulk_activate: Activer la sélection
-        bulk_deactivate: Désactiver la sélection
-    flash:
-        created: Utilisateur créé.
-        updated: Utilisateur mis à jour.
-        deleted: Utilisateur supprimé.
-        activated: Utilisateur activé.
-        deactivated: Utilisateur désactivé.
-        cannot_delete_self: Vous ne pouvez pas supprimer votre propre compte.
+  list:
+    title: Utilisateurs
+    subtitle: Les comptes et leurs accès
+    create: Nouvel utilisateur
+  new:
+    title: Nouvel utilisateur
+  edit:
+    title: Modifier l'utilisateur
+  field:
+    name: Nom
+    first_name: Prénom
+    last_name: Nom
+    email: Adresse e-mail
+    password: Mot de passe
+    roles: Rôles
+    status: Statut
+    active: Compte actif
+    created_at: Créé le
+  filter:
+    created: Créé entre
+  help:
+    password_unchanged: Laisser vide pour ne pas changer le mot de passe.
+  role:
+    admin: Administrateur
+    super_admin: Super administrateur
+  action:
+    bulk_activate: Activer la sélection
+    bulk_deactivate: Désactiver la sélection
+  flash:
+    activated: Utilisateur activé.
+    deactivated: Utilisateur désactivé.
