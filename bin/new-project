@@ -349,7 +349,9 @@ if [ "$NO_GIT" = 0 ]; then
     # symfony new clone symfony/skeleton : on repart d'un dépôt vierge pour ne
     # pas hériter de l'historique de Symfony (le dossier vient d'être créé ici).
     if [ -d "$PROJECT_DIR/.git" ]; then run rm -rf "$PROJECT_DIR/.git"; fi
-    run git init -q -b main
+    # `master` : la branche par défaut de tous les dépôts de cet écosystème (superp, les neuf
+    # bundles). Un projet généré sur `main` sort du lot et casse chaque URL « blob/master ».
+    run git init -q -b master
     run git add -A
     run git commit -q -m "chore: init $PROJECT_NAME ($MODE, Symfony $SF_VERSION)"
 fi
