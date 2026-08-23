@@ -18,3 +18,7 @@ jul6art/admin-bundle                # la coquille : layout, thème, apparence, p
 
 # Suggestions :
 # jul6art/audit-bundle              # journal d'audit — une ligne de composer require
+# ⚠️ Sans ce bundle, `encore_entry_link_tags()` ne LÈVE PAS : le twig-bridge intercepte la
+# fonction inconnue et la page rend simplement SANS aucune feuille de style. Trouvé sur la
+# première page servie du premier projet généré (wovex, 2026-08-23).
+symfony/webpack-encore-bundle

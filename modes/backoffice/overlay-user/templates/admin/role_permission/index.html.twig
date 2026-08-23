@@ -7,7 +7,7 @@
     ⚠️ `ROLE_SUPER_ADMIN` n'est pas dans les colonnes : le moteur le laisse passer avant de
     consulter le stockage, donc une case décochée ne lui retirerait rien tout en le laissant croire.
 #}
-{% extends '@Admin/layout.html.twig' %}
+{% extends 'admin/layout.html.twig' %}
 {% trans_default_domain 'permission' %}
 
 {% block title %}{{ 'permission.title'|trans }} · {{ admin_branding().name }}{% endblock %}

@@ -1,0 +1,16 @@
+{#
+    Le layout de CE projet : la coquille du bundle, plus ce qu'elle ne peut pas savoir.
+
+    ⚠️ `window.jwtToken` est LA jonction entre les pages et l'API : le contrôleur de datatable et
+    les Select2 AJAX lisent ce global pour s'authentifier (`Authorization: Bearer …`) sur le
+    pare-feu `api`, stateless. Sans lui, chaque tableau reste vide avec un 401 silencieux en
+    console — la page, elle, rend parfaitement. Toute page d'administration étend CE fichier,
+    jamais `@Admin/layout.html.twig` en direct.
+#}
+{% extends '@Admin/layout.html.twig' %}
+
+{% block head %}
+    {% if app.user %}
+        <script>window.jwtToken = "{{ jwt_token() }}";</script>
+    {% endif %}
+{% endblock %}
