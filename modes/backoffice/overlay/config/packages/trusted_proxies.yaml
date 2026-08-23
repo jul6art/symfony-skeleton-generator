@@ -1,0 +1,7 @@
+# Derrière un reverse proxy (Traefik + nginx dans la stack Docker du mode) : sans proxies de
+# confiance, `Request::isSecure()` est faux et TOUTES les URLs absolues — la redirection de
+# connexion comprise — sortent en http://. Fichier séparé pour ne pas écraser le framework.yaml
+# de la recipe.
+framework:
+    trusted_proxies: '127.0.0.1,REMOTE_ADDR'
+    trusted_headers: ['x-forwarded-for', 'x-forwarded-host', 'x-forwarded-proto', 'x-forwarded-port', 'x-forwarded-prefix']
