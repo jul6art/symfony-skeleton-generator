@@ -104,6 +104,44 @@ final class BackofficeSmokeTest extends WebTestCase
         self::assertStringNotContainsString('action.actions', (string) $client->getResponse()->getContent(), 'L\'en-tête des actions doit être traduit.');
     }
 
+    /**
+     * La collection doit porter `id`, `isActive` et `createdAt`.
+     *
+     * ⚠️ Ces trois-là ne sont PAS décoratifs : les colonnes de la table les affichent, et les
+     * `condition` des actions les lisent (`row.isActive`, `row.id !== <moi>`). Absents, la
+     * réponse reste un 200 parfaitement valide, la colonne ID affiche « ? », le badge dit
+     * « Inactive » pour tout le monde et « Activer » s'offre sur son PROPRE compte, puisque
+     * `undefined !== 1` est vrai. Constaté à l'écran le 2026-08-23.
+     *
+     * Deux causes distinctes, d'où ce test : `id` et `createdAt` viennent de traits, dont les
+     * groupes se déclarent dans `config/serializer/` ; `isActive` portait son groupe sur la
+     * PROPRIÉTÉ, alors que Symfony cherche `getIsActive()` pour la nommer ainsi — le getter
+     * s'appelle `isActive()`, qui décrit une propriété « active ».
+     */
+    public function testTheUserCollectionCarriesWhatTheTableDisplays(): void
+    {
+        $client = static::createClient();
+        $client->disableReboot();
+        $this->createSchema();
+
+        $client->loginUser($this->createUser($client, UserRoles::ROLE_ADMIN));
+        $client->request('GET', '/api/users', server: ['HTTP_ACCEPT' => 'application/ld+json']);
+
+        self::assertResponseIsSuccessful();
+
+        $payload = json_decode((string) $client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+        self::assertIsArray($payload);
+        $members = $payload['member'] ?? $payload['hydra:member'] ?? [];
+        self::assertIsArray($members);
+        self::assertNotSame([], $members);
+
+        $first = $members[0];
+        self::assertIsArray($first);
+        foreach (['id', 'isActive', 'createdAt'] as $field) {
+            self::assertArrayHasKey($field, $first, sprintf('« %s » manque : la colonne et les conditions d\'action en dépendent.', $field));
+        }
+    }
+
     /** La page de profil : ce que l'utilisateur vient corriger en premier, son nom et son avatar. */
     public function testAnAccountCanReachItsProfilePage(): void
     {
