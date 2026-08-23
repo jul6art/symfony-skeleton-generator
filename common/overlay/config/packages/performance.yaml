@@ -1,0 +1,28 @@
+# Le profileur de performance de `jul6art/core-bundle` : un middleware DBAL compte les requêtes
+# de chaque requête HTTP, un subscriber en écrit un enregistrement JSONL, un data collector ajoute
+# son panneau à la barre de debug.
+#
+# Il répond à la seule question qui compte pour la vitesse d'une application Symfony : combien de
+# requêtes cette route a-t-elle faites ? Le N+1 ne se voit ni dans les tests ni à l'écran.
+#
+# ⚠️ ÉTEINT hors développement : allumé, il écrit à chaque requête et le store grossit d'autant.
+core:
+    performance:
+        enabled: false
+        path: '%kernel.project_dir%/var/performance'
+        rotation: daily
+        max_records: 100000
+        # Le préfixe des routes de l'écran, exclu de la collecte : sans lui, le tableau de bord
+        # mesurerait sa propre page et chaque visite ajouterait un enregistrement à ce qu'elle
+        # affiche.
+        ignored_route_prefix: 'admin_performance_'
+
+when@dev:
+    core:
+        performance:
+            enabled: true
+
+when@test:
+    core:
+        performance:
+            enabled: false

@@ -71,3 +71,19 @@ La voie AssetMapper reste ouverte : elle demande de lever une inconnue — Selec
 `importmap:require` — et, si elle ne se lève pas, de remplacer Select2 par une autocomplétion sans
 jQuery. Ce jour-là, `webpack.config.js`, `package.json` et `bundle-assets.js` disparaissent ; le
 reste ne bouge pas.
+
+### Le profileur de performance (développement)
+
+`core-bundle` compte les requêtes SQL de chaque requête HTTP et les enregistre ;
+`admin-bundle` en affiche le tableau de bord sur `/admin/performance`, et le menu de compte y
+mène. Les trois pièces ne vivent qu'en développement : le drapeau
+(`config/packages/performance.yaml`), les routes (`config/routes/performance.yaml`) et la clé
+`admin.routes.performance` sont toutes sous `when@dev`.
+
+C'est l'outil qui répond à la seule question qui décide de la vitesse d'une application Symfony :
+**combien de requêtes cette route fait-elle, et ce nombre grandit-il avec les données ?** Le
+panneau de la barre de debug donne la réponse page par page ; le tableau de bord la donne pour
+toutes les routes visitées, triées par coût.
+
+⚠️ Le préfixe de nom `admin_performance_` est un contrat entre les deux bundles : le core l'exclut
+de sa collecte (`ignored_route_prefix`), sans quoi le tableau de bord mesurerait sa propre page.

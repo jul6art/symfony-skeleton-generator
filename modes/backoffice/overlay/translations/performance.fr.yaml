@@ -1,0 +1,51 @@
+performance:
+    dashboard:
+        title: Tableau de bord performance
+        subtitle: Analyse des requêtes API et des performances SQL
+    summary:
+        total_records: Enregistrements totaux
+        loaded_rows: "Lignes chargées (max %max%)"
+        total_queries: Requêtes SQL totales
+        cumulated_duration: Durée cumulée
+    action:
+        export_csv_view: Exporter CSV (vue courante)
+        export_json_view: Exporter JSON (vue courante)
+        raw_csv: "CSV brut ↓"
+        raw_csv_help: Export complet du store en CSV
+        raw_json: "JSON brut ↓"
+        raw_json_help: Export complet du store en JSON
+        clear: Vider le store
+        clear_confirm: Supprimer tous les enregistrements de performance ?
+    tab:
+        requests: Requêtes
+        routes: Routes (agrégées)
+    filter:
+        placeholder: "Filtrer toutes les colonnes…"
+        page_size: Lignes par page
+        all_methods: Toutes les méthodes
+        all_statuses: Tous les statuts
+    pager:
+        prev: Précédent
+        next: Suivant
+        rows_of: "Lignes %start% – %end% sur %total%"
+        no_match: Aucune ligne ne correspond au filtre.
+    empty: Aucun enregistrement pour le moment. Lance quelques requêtes et reviens.
+    empty_routes: Aucune agrégation pour le moment.
+    route:
+        unmatched: "(non routé)"
+    col:
+        time: Horodatage
+        route: Route
+        method: Méthode
+        status: Statut
+        duration_ms: "Durée (ms)"
+        queries: Requêtes
+        distinct: Distinctes
+        db_ms: "DB (ms)"
+        memory_mib: "Mémoire (MiB)"
+        uri: URI
+        hits: Appels
+        avg_queries: Requêtes moy.
+        max_queries: Requêtes max
+        avg_duration_ms: "Durée moy. (ms)"
+        max_duration_ms: "Durée max (ms)"

@@ -9,6 +9,7 @@ nav:
   change_password: Mot de passe
   appearance: Apparence
   logout: Déconnexion
+  performance: Performance
 action:
   actions: Actions
   save: Enregistrer

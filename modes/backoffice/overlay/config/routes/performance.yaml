@@ -1,0 +1,10 @@
+# L'écran du profileur, livré par `admin-bundle`. Les routes n'existent qu'en développement : c'est
+# ici que se décide leur URL, donc aussi le pare-feu qui les entoure.
+#
+# ⚠️ Le préfixe de NOM `admin_performance_` est un contrat avec le core, qui l'exclut de la
+# collecte (`core.performance.ignored_route_prefix`).
+when@dev:
+    admin_performance:
+        resource: '@AdminBundle/Controller/PerformanceController.php'
+        type: attribute
+        prefix: /admin

@@ -9,6 +9,7 @@ nav:
   change_password: Password
   appearance: Appearance
   logout: Sign out
+  performance: Performance
 action:
   actions: Actions
   save: Save

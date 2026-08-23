@@ -3,6 +3,9 @@ admin:
     # d'administration s'affichent sans la moindre feuille de style, sans erreur nulle part.
     # C'est `templates/base.html.twig` qui porte les tags Encore.
     base_template: 'base.html.twig'
+    # Les pages livrées par le bundle (l'écran du profileur) passent par le layout de CE projet :
+    # c'est lui qui expose `window.jwtToken` et le reste de la coquille.
+    layout_template: 'admin/layout.html.twig'
 
     branding:
         name: '{{PROJECT_TITLE}}'
@@ -38,3 +41,11 @@ admin:
     mercure:
         hub_url: '%env(MERCURE_PUBLIC_URL)%'
         token_route: admin_mercure_token
+
+when@dev:
+    admin:
+        routes:
+            # L'écran du profileur n'existe qu'en développement (ses routes ne sont importées que
+            # là) : renseigner la clé ici suffit à ne montrer le lien que dans cet environnement,
+            # une route vide masquant l'entrée ailleurs.
+            performance: admin_performance_dashboard

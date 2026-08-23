@@ -1,0 +1,51 @@
+performance:
+  dashboard:
+    title: Performance dashboard
+    subtitle: API request and SQL performance analysis
+  summary:
+    total_records: Total records
+    loaded_rows: Loaded rows (max %max%)
+    total_queries: Total SQL queries
+    cumulated_duration: Cumulated duration
+  action:
+    export_csv_view: Export CSV (current view)
+    export_json_view: Export JSON (current view)
+    raw_csv: Raw CSV ↓
+    raw_csv_help: Export every stored record, unfiltered.
+    raw_json: Raw JSON ↓
+    raw_json_help: Export every stored record, unfiltered.
+    clear: Clear the store
+    clear_confirm: Clear every stored record?
+  tab:
+    requests: Requests
+    routes: Routes (aggregated)
+  filter:
+    placeholder: Filter every column…
+    page_size: Rows per page
+    all_methods: All methods
+    all_statuses: All statuses
+  pager:
+    prev: Previous
+    next: Next
+    rows_of: Rows %start% – %end% of %total%
+    no_match: No row matches the filter.
+  empty: No record yet. Make a few requests and come back.
+  empty_routes: No aggregate yet.
+  route:
+    unmatched: (unrouted)
+  col:
+    time: Timestamp
+    route: Route
+    method: Method
+    status: Status
+    duration_ms: Duration (ms)
+    queries: Queries
+    distinct: Distinct
+    db_ms: DB (ms)
+    memory_mib: Memory (MiB)
+    uri: URI
+    hits: Hits
+    avg_queries: Avg queries
+    max_queries: Max queries
+    avg_duration_ms: Avg duration (ms)
+    max_duration_ms: Max duration (ms)
