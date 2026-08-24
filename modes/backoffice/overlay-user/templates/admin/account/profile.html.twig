@@ -1,36 +1,52 @@
 {#
     Le profil du compte connecté. Le formulaire porte un fichier : `enctype` est OBLIGATOIRE,
     sans lui le champ arrive vide côté serveur sans que rien ne le signale.
+
+    ⚠️ La largeur se pose DANS le contenu et pas par `{% block container_class %}` : le conteneur
+    du layout porte `mx-auto`, donc restreindre le bloc recentre toute la page — cet écran se
+    retrouvait seul au milieu pendant que /admin/users restait calé à gauche.
 #}
 {% extends 'admin/layout.html.twig' %}
 {% trans_default_domain 'user' %}
 
 {% block title %}{{ 'profile.title'|trans }} · {{ admin_branding().name }}{% endblock %}
-{% block container_class %}max-w-3xl{% endblock %}
 
 {% block content %}
-    <div class="mb-6">
-        <h1 class="text-2xl font-bold text-slate-900 dark:text-slate-100">{{ 'profile.title'|trans }}</h1>
-        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">{{ 'profile.subtitle'|trans }}</p>
-    </div>
+    <div class="max-w-3xl">
+        <div class="mb-6">
+            <h1 class="text-2xl font-bold text-slate-900 dark:text-slate-100">{{ 'profile.title'|trans }}</h1>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">{{ 'profile.subtitle'|trans }}</p>
+        </div>
 
-    <div class="panel p-6">
-        {{ form_start(form, { attr: { enctype: 'multipart/form-data', class: 'space-y-5' } }) }}
-            <div class="flex items-center gap-4">
-                {{ include('@Admin/partials/_avatar.html.twig', { user: app.user, size: 10 }) }}
-                <div class="text-sm text-slate-500 dark:text-slate-400">
-                    <div class="font-medium text-slate-800 dark:text-slate-100">{{ admin_user_label(app.user) }}</div>
-                    <div>{{ app.user.email }}</div>
+        <div class="flex items-center gap-4 mb-6">
+            {{ include('@Admin/partials/_avatar.html.twig', { user: app.user, size: 10 }) }}
+            <div class="text-sm text-slate-500 dark:text-slate-400">
+                <div class="font-medium text-slate-800 dark:text-slate-100">{{ admin_user_label(app.user) }}</div>
+                <div>{{ app.user.email }}</div>
+            </div>
+        </div>
+
+        <div class="form-panel">
+            {{ form_start(form, { attr: { enctype: 'multipart/form-data', class: 'form-grid' } }) }}
+                {{ form_errors(form) }}
+
+                <fieldset class="form-fieldset">
+                    <legend>{{ 'profile.section.identity'|trans }}</legend>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {{ form_row(form.firstName) }}
+                        {{ form_row(form.lastName) }}
+                    </div>
+                </fieldset>
+
+                <fieldset class="form-fieldset">
+                    <legend>{{ 'profile.section.picture'|trans }}</legend>
+                    {{ form_row(form.avatarFile) }}
+                </fieldset>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">{{ 'action.save'|trans({}, 'messages') }}</button>
                 </div>
-            </div>
-
-            {{ form_row(form.firstName) }}
-            {{ form_row(form.lastName) }}
-            {{ form_row(form.avatarFile) }}
-
-            <div class="form-actions">
-                <button type="submit" class="btn-primary">{{ 'action.save'|trans({}, 'messages') }}</button>
-            </div>
-        {{ form_end(form) }}
+            {{ form_end(form) }}
+        </div>
     </div>
 {% endblock %}

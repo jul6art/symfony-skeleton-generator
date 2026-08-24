@@ -30,3 +30,24 @@ user:
   flash:
     activated: Utilisateur activé.
     deactivated: Utilisateur désactivé.
+  show:
+    info_title: Informations
+  confirm:
+    toggle: Confirmer le changement de statut de ce compte ?
+  section:
+    identity: Identité
+    access: Accès
+  locale:
+    switcher_label: Changer de langue
+    en: Anglais
+    fr: Français
+profile:
+  section:
+    identity: Identité
+    picture: Photo
+  title: Mon profil
+  subtitle: Votre nom affiché et votre photo.
+  first_name: Prénom
+  last_name: Nom
+  avatar: Photo de profil
+  avatar_help: JPEG, PNG ou WebP, 2 Mo maximum.

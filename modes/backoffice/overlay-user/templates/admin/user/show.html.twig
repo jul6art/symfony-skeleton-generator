@@ -1,32 +1,100 @@
+{#
+    La fiche d'un compte.
+
+    ⚠️ Le lien « Éditer » distingue SA PROPRE fiche : sur soi il mène au profil (que tout compte
+    peut ouvrir), sur quelqu'un d'autre à l'écran d'administration (gardé par `user:update`).
+    Envoyer tout le monde sur `admin_user_edit` offrait un lien qui répond 403 à la moitié des
+    comptes — un bug d'interface, pas de sécurité, et que seul l'écran montre.
+
+    ⚠️ `ROLE_USER` n'est pas affiché : il vient de la hiérarchie, personne ne peut le retirer, et
+    le montrer dans une liste de rôles laisse croire le contraire.
+#}
 {% extends 'admin/layout.html.twig' %}
 {% trans_default_domain 'user' %}
 
 {% block title %}{{ user.displayName }} · {{ admin_branding().name }}{% endblock %}
 
 {% block content %}
-    <div class="flex items-center justify-between mb-6">
-        <h1 class="text-2xl font-bold text-slate-900 dark:text-slate-100">{{ user.displayName }}</h1>
-        {% if is_granted(constant('App\\Security\\PermissionCodes::USER_UPDATE')) %}
-            <a href="{{ path('admin_user_edit', {id: user.id}) }}" class="btn-secondary">
-                <i class="fa-solid fa-pen-to-square"></i> {{ 'action.edit'|trans({}, 'messages') }}
-            </a>
-        {% endif %}
-    </div>
+    <div class="max-w-3xl">
+        <div class="mb-8">
+            <nav class="text-xs text-slate-400 dark:text-slate-500 mb-3">
+                <a href="{{ path('admin_user_index') }}" class="hover:text-slate-700 dark:hover:text-slate-300">{{ 'user.list.title'|trans }}</a>
+                <span class="mx-2">/</span><span class="text-slate-600 dark:text-slate-400">{{ user.displayName }}</span>
+            </nav>
 
-    <div class="panel p-6 max-w-2xl space-y-4">
-        <div>
-            <p class="form-label">{{ 'user.field.email'|trans }}</p>
-            <p class="text-sm text-slate-800 dark:text-slate-200">{{ user.email }}</p>
+            <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    {# `size: 10` : le partial du bundle ne connaît que 7, 8 et 10 — une autre
+                       valeur retombe silencieusement sur `w-8 h-8`. #}
+                    {{ include('@Admin/partials/_avatar.html.twig', { user: user, size: 10 }) }}
+                    <div>
+                        <div class="flex items-center gap-3">
+                            <h1 class="text-2xl font-bold text-slate-900 dark:text-slate-100">{{ user.displayName }}</h1>
+                            <span class="{{ user.isActive ? 'badge-active' : 'badge-inactive' }}">
+                                {{ (user.isActive ? 'datatable.status.active' : 'datatable.status.inactive')|trans({}, 'messages') }}
+                            </span>
+                        </div>
+                        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">{{ user.email }}</p>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap gap-2">
+                    {% if user.id == app.user.id %}
+                        <a href="{{ path('admin_account_profile_edit') }}" class="btn-secondary">
+                            <i class="fa-solid fa-pen-to-square"></i> {{ 'action.edit'|trans({}, 'messages') }}
+                        </a>
+                    {% elseif is_granted(constant('App\\Security\\PermissionCodes::USER_UPDATE')) %}
+                        <a href="{{ path('admin_user_edit', {id: user.id}) }}" class="btn-secondary">
+                            <i class="fa-solid fa-pen-to-square"></i> {{ 'action.edit'|trans({}, 'messages') }}
+                        </a>
+                    {% endif %}
+
+                    {# Activer / désactiver : sous l'attribut qui les gouverne, et jamais sur soi. #}
+                    {% if is_granted(constant('App\\Security\\PermissionCodes::USER_ACTIVATE')) and user.id != app.user.id %}
+                        {% set toggleRoute = user.isActive ? 'admin_user_deactivate' : 'admin_user_activate' %}
+                        {% set toggleLabel = user.isActive ? 'action.deactivate' : 'action.activate' %}
+                        <form method="post" action="{{ path(toggleRoute, {id: user.id}) }}"
+                              data-controller="ui--modal"
+                              data-action="submit->ui--modal#intercept"
+                              data-ui--modal-title-value="{{ toggleLabel|trans({}, 'messages') }}"
+                              data-ui--modal-message-value="{{ 'user.confirm.toggle'|trans }}"
+                              data-ui--modal-confirm-label-value="{{ toggleLabel|trans({}, 'messages') }}"
+                              data-ui--modal-cancel-label-value="{{ 'action.cancel'|trans({}, 'messages') }}"
+                              data-ui--modal-confirm-variant-value="{{ user.isActive ? 'warning' : 'primary' }}">
+                            <input type="hidden" name="_token" value="{{ csrf_token('datatable_action') }}">
+                            <button type="submit" class="btn-secondary">{{ toggleLabel|trans({}, 'messages') }}</button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
         </div>
-        <div>
-            <p class="form-label">{{ 'user.field.roles'|trans }}</p>
-            <p class="text-sm text-slate-800 dark:text-slate-200">{{ user.roles|join(', ') }}</p>
-        </div>
-        <div>
-            <p class="form-label">{{ 'user.field.status'|trans }}</p>
-            <span class="{{ user.isActive ? 'badge-active' : 'badge-inactive' }}">
-                {{ (user.isActive ? 'datatable.status.active' : 'datatable.status.inactive')|trans({}, 'messages') }}
-            </span>
+
+        <div class="panel p-6">
+            <h2 class="text-sm font-semibold uppercase tracking-wide text-slate-700 dark:text-slate-300 mb-4">{{ 'user.show.info_title'|trans }}</h2>
+            <dl class="space-y-3">
+                <div class="flex justify-between gap-4">
+                    <dt class="form-label">{{ 'user.field.email'|trans }}</dt>
+                    <dd class="text-sm text-slate-800 dark:text-slate-200">{{ user.email }}</dd>
+                </div>
+                <div class="flex justify-between gap-4 items-start">
+                    <dt class="form-label">{{ 'user.field.roles'|trans }}</dt>
+                    <dd class="text-sm flex flex-wrap gap-1 justify-end">
+                        {% for role in user.roles %}
+                            {% if role in roleLabels|keys %}
+                                <span class="px-2 py-0.5 rounded-full text-xs font-medium ring-1 bg-violet-50 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400 ring-violet-200 dark:ring-violet-800">
+                                    {{ roleLabels[role]|trans }}
+                                </span>
+                            {% endif %}
+                        {% else %}
+                            <span class="text-slate-500 dark:text-slate-400">—</span>
+                        {% endfor %}
+                    </dd>
+                </div>
+                <div class="flex justify-between gap-4">
+                    <dt class="form-label">{{ 'user.field.created_at'|trans }}</dt>
+                    <dd class="text-sm text-slate-800 dark:text-slate-200">{{ user.createdAt|date('d/m/Y H:i') }}</dd>
+                </div>
+            </dl>
         </div>
     </div>
 {% endblock %}

@@ -15,9 +15,12 @@ datatable:
     # Les cartes d'énumérations lues par les rendus de badge, exposées aux gabarits par
     # `datatable_status_map(...)`. `path` vaut `[datatable, <nom>]` par défaut et `key_prefix`
     # `datatable.<nom>.`.
-    status_maps: []
-        # quote_status:
-        #     keys: [draft, sent, accepted, rejected]
+    status_maps:
+        # Lue par le rendu `roleBadges` (`assets/datatable/renderers.js`). Les deux vont par
+        # paires : un nom inconnu du registre afficherait la valeur brute, et une carte sans son
+        # rendu ne servirait à personne.
+        user_role:
+            keys: [ROLE_ADMIN, ROLE_SUPER_ADMIN]
 
     # Application mono-locataire : pas de colonne inter-tenants, donc pas d'endpoint.
     tenant:

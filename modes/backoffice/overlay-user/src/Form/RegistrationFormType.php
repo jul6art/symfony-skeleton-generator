@@ -6,9 +6,9 @@ namespace App\Form;
 
 use App\Entity\User;
 use Jul6Art\UiBundle\Form\Type\CustomEmailType;
+use Jul6Art\UiBundle\Form\Type\CustomPasswordType;
 use Override;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -34,7 +34,7 @@ final class RegistrationFormType extends AbstractType
             ->add('lastName', null, ['label' => 'security.register.last_name'])
             ->add('email', CustomEmailType::class, ['label' => 'security.register.email'])
             ->add('plainPassword', RepeatedType::class, [
-                'type' => PasswordType::class,
+                'type' => CustomPasswordType::class,
                 'mapped' => true,
                 // ⚠️ Une clé de traduction, jamais la phrase anglaise par défaut de Symfony.
                 'invalid_message' => 'password.mismatch',

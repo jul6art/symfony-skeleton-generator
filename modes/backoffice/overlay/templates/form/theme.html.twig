@@ -7,16 +7,145 @@
 
     Les classes viennent d'`admin-bundle` (`.form-control`, `.form-label`, `.form-error`…) : les
     redéfinir ici ferait diverger les formulaires du reste de la coquille.
+
+    ⚠️ RÈGLE CENTRALE DE CE FICHIER — la classe passe par les OPTIONS de `form_widget`, jamais
+    par `form_widget_simple`.
+
+    Les `Custom*Type` d'`ui-bundle` (`CustomEmailType`, `CustomPasswordType`, `CustomMoneyType`…)
+    rendent tous par `input_group_addon_widget`, qui écrit son PROPRE `<input>` à partir de
+    `block('widget_attributes')` et ne délègue JAMAIS à `form_widget_simple`. Une classe posée
+    dans ce bloc-là n'atteint donc pas le champ : l'`<input>` sort sans attribut `class`, donc
+    sans bordure ni fond — blanc sur blanc, invisible, et le HTML reste parfaitement valide.
+    Rien ne lève, rien n'apparaît en console.
+
+    En la passant en option (`form_widget(form, { attr: { class: 'form-control' } })`), elle est
+    dans `attr` AVANT que le bloc de widget ne s'exécute : elle arrive donc au champ quel que soit
+    le bloc qui le rend. Constaté à l'écran le 2026-08-23 sur quatre formulaires, réglé ici.
 #}
 {% use 'form_div_layout.html.twig' %}
 
 {% block form_row %}
-    <div class="form-field">
-        {{ form_label(form) }}
+    {% if 'hidden' in form.vars.block_prefixes %}
         {{ form_widget(form) }}
-        {{ form_help(form) }}
-        {{ form_errors(form) }}
+    {% else %}
+        <div class="form-field">
+            {{ form_label(form) }}
+            {% if form.vars.expanded|default(false) %}
+                {{ block('form_choice_grid') }}
+            {% elseif 'file' in form.vars.block_prefixes %}
+                {{ block('form_file_dropzone') }}
+            {% elseif form.vars.compound|default(false) %}
+                {# Un sous-formulaire imbriqué rend ses propres lignes : lui coller `form-control`
+                   décorerait son conteneur, pas ses champs. #}
+                {{ form_widget(form) }}
+            {% else %}
+                {{ block('form_control') }}
+            {% endif %}
+            {{ form_help(form) }}
+            {{ form_errors(form) }}
+        </div>
+    {% endif %}
+{% endblock %}
+
+{#
+    LE point de ce fichier. `form-control-error` existe dans `admin-bundle` et n'était posée nulle
+    part : un champ refusé se rendait exactement comme un champ vierge.
+#}
+{% block form_control %}
+    {% set hasErrors = form.vars.errors|length > 0 %}
+    {{ form_widget(form, { attr: {
+        class: 'form-control' ~ (hasErrors ? ' form-control-error' : ''),
+        'aria-invalid': hasErrors ? 'true' : 'false',
+    } }) }}
+{% endblock %}
+
+{#
+    Un `ChoiceType` `expanded` en cartes cliquables. Sans ce bloc, `choice_widget_expanded` de
+    `form_div_layout` rend des cases système suivies de leurs libellés — au milieu d'un formulaire
+    stylé, ça se voit immédiatement. Les jetons `.role-choice-*` viennent d'`admin-bundle`.
+#}
+{% block form_choice_grid %}
+    <div class="role-choice-grid" role="group">
+        {% for choice in form %}
+            <label class="role-choice-item" for="{{ choice.vars.id }}">
+                {{ form_widget(choice, { attr: { class: 'role-choice-input' } }) }}
+                <span class="role-choice-label">
+                    {{ choice.vars.label|trans({}, choice.vars.translation_domain) }}
+                </span>
+            </label>
+        {% endfor %}
     </div>
+{% endblock %}
+
+{#
+    Zone de dépôt pour un `FileType`, à la place du contrôle système du navigateur — lequel rend
+    son libellé dans la langue du NAVIGATEUR, pas dans celle de l'application.
+
+    L'`<input>` est en `absolute inset-0 opacity-0` : il couvre la zone et reçoit le clic, donc le
+    sélecteur de fichier s'ouvre même sans JavaScript. Le contrôleur `form--dropzone` n'ajoute que
+    l'aperçu et le nom du fichier choisi.
+#}
+{% block form_file_dropzone %}
+    {% set hasErrors = form.vars.errors|length > 0 %}
+
+    <div class="dropzone-area{{ hasErrors ? ' dropzone-area-error' : '' }}"
+         data-controller="form--dropzone"
+         data-form--dropzone-input-id-value="{{ form.vars.id }}"
+         data-form--dropzone-browse-label-value="{{ 'form.file.browse'|trans({}, 'messages') }}"
+         data-form--dropzone-drop-label-value="{{ 'form.file.drop_hint'|trans({}, 'messages') }}"
+         data-form--dropzone-selected-label-value="{{ 'form.file.selected'|trans({}, 'messages') }}"
+         data-form--dropzone-units-value="{{ 'form.file.units'|trans({}, 'messages')|split(',')|json_encode|e('html_attr') }}">
+        <div class="dropzone-body" data-form--dropzone-target="body">
+            <div class="dropzone-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+            <p class="dropzone-text">
+                <span class="dropzone-primary" data-form--dropzone-target="primary">{{ 'form.file.drop_hint'|trans({}, 'messages') }}</span>
+                <span class="dropzone-secondary">{{ 'form.file.browse'|trans({}, 'messages') }}</span>
+            </p>
+        </div>
+        <div class="dropzone-preview hidden" data-form--dropzone-target="preview">
+            <img class="dropzone-preview-img hidden" data-form--dropzone-target="previewImage" alt="">
+            <div class="dropzone-preview-meta">
+                <p class="dropzone-preview-name" data-form--dropzone-target="name"></p>
+                <p class="dropzone-preview-size" data-form--dropzone-target="size"></p>
+            </div>
+            <button type="button" class="dropzone-clear" data-action="form--dropzone#clear">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        {{ form_widget(form, { attr: {
+            class: 'dropzone-input',
+            'data-form--dropzone-target': 'input',
+            'data-action': 'change->form--dropzone#onChange',
+        } }) }}
+    </div>
+{% endblock %}
+
+{#
+    ⚠️ `repeated_row` et non `form_row` : `form_div_layout` définit déjà `repeated_row`, et un
+    préfixe plus spécifique gagne toujours. Redéclarer `form_row` seul laisserait les deux bornes
+    du mot de passe se rendre à plat, sans conteneur.
+#}
+{% block repeated_row %}
+    <div class="password-repeat-grid">
+        {% for child in form %}
+            {{ form_row(child) }}
+        {% endfor %}
+    </div>
+{% endblock %}
+
+{#
+    Le conteneur compound du formulaire RACINE porte l'espacement.
+
+    `form_widget(form)` rend un `<div id="…">` intermédiaire ; un `space-y-*` posé sur le `<form>`
+    est une utilitaire `> * + *`, donc elle ne voit que ce div et le bouton — JAMAIS les lignes.
+    Résultat : un formulaire parfaitement stylé dont les libellés sont collés au champ précédent.
+    Le garde sur `form.parent` évite de doubler l'espacement dans un RepeatedType ou une collection.
+#}
+{% block form_widget_compound %}
+    {% if form.parent is null %}
+        {% set attr = attr|merge({ class: (attr.class|default('') ~ ' form-grid')|trim }) %}
+    {% endif %}
+    {{ parent() }}
 {% endblock %}
 
 {% block form_label %}
@@ -24,21 +153,6 @@
         {% set label_attr = label_attr|merge({ class: (label_attr.class|default('') ~ ' form-label')|trim }) %}
         {{ parent() }}
     {% endif %}
-{% endblock %}
-
-{% block form_widget_simple %}
-    {% set attr = attr|merge({ class: (attr.class|default('') ~ ' form-control')|trim }) %}
-    {{ parent() }}
-{% endblock %}
-
-{% block textarea_widget %}
-    {% set attr = attr|merge({ class: (attr.class|default('') ~ ' form-control')|trim }) %}
-    {{ parent() }}
-{% endblock %}
-
-{% block choice_widget_collapsed %}
-    {% set attr = attr|merge({ class: (attr.class|default('') ~ ' form-control')|trim }) %}
-    {{ parent() }}
 {% endblock %}
 
 {#

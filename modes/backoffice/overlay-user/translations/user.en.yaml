@@ -30,7 +30,21 @@ user:
   flash:
     activated: User activated.
     deactivated: User deactivated.
+  show:
+    info_title: Information
+  confirm:
+    toggle: Confirm the status change for this account?
+  section:
+    identity: Identity
+    access: Access
+  locale:
+    switcher_label: Change language
+    en: English
+    fr: French
 profile:
+  section:
+    identity: Identity
+    picture: Picture
   title: My profile
   subtitle: Your display name and picture.
   first_name: First name

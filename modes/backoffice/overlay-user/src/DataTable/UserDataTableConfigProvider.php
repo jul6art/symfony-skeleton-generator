@@ -40,6 +40,10 @@ final class UserDataTableConfigProvider extends AbstractDataTableConfigProvider
             $this->column('id', 'datatable.col.id', responsivePriority: 10),
             $this->column('fullName', 'user.field.name', 'user', render: 'userNameWithAvatar', responsivePriority: 1),
             $this->column('email', 'user.field.email', 'user', responsivePriority: 2),
+            // ⚠️ `readOnlyColumn` et non `column` : `roles` est une colonne JSON, donc NON
+            // triable. La déclarer triable ferait ignorer le tri côté serveur sans que rien ne le
+            // signale — le piège documenté du mode backoffice.
+            $this->readOnlyColumn('roles', 'user.field.roles', 'user', render: 'roleBadges', responsivePriority: 4),
             $this->readOnlyColumn('isActive', 'user.field.status', 'user', render: 'statusBadge', responsivePriority: 3),
             $this->column('createdAt', 'user.field.created_at', 'user', render: 'date', responsivePriority: 6),
         ];

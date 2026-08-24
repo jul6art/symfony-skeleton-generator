@@ -57,6 +57,52 @@ de filtres affiche des clés.
   pas lire, et une décision où tous les voters s'abstiennent vaut « accordé ».
 - **`npm` est requis dans ce mode**, et seulement dans celui-là — voir ci-dessous.
 
+### Les pièges du THÈME DE FORMULAIRE (appris à l'écran, 2026-08-23/24)
+
+- **La classe d'un champ passe par les OPTIONS de `form_widget`, jamais par `form_widget_simple`.**
+  Les `Custom*Type` d'`ui-bundle` rendent tous par `input_group_addon_widget`, qui écrit son PROPRE
+  `<input>` et ne délègue pas. Une classe posée dans `form_widget_simple` n'atteint donc pas le
+  champ : l'`<input>` sort sans attribut `class`, donc sans bordure ni fond — blanc sur blanc,
+  invisible, HTML parfaitement valide, rien en console. C'est `templates/form/theme.html.twig` qui
+  s'en charge, dans son bloc `form_control`.
+- **Le conteneur compound du formulaire racine porte `form-grid`.** `form_widget(form)` rend un
+  `<div id="…">` intermédiaire ; un `space-y-*` posé sur le `<form>` ne voit que ce div et le
+  bouton, jamais les lignes. Sans ça, tous les libellés sont collés au champ précédent.
+- **Un jeton de composant (`@layer components`) perd contre TOUTE utilitaire Tailwind posée à côté
+  de lui.** `class="toggle-switch block w-fit"` a réduit seize interrupteurs à **0 px de large** —
+  invisibles, non cliquables, gabarit valide. On centre par le PARENT (`text-center` sur la
+  cellule), on n'écrase jamais le composant.
+- **La largeur d'un écran se pose DANS le contenu, jamais par `{% block container_class %}`** : le
+  conteneur du layout porte `mx-auto`, donc restreindre le bloc recentre toute la page.
+- **Un rendu de datatable est CURRIFIÉ** : `(contexte) => (valeur) => html`. L'appeler à plat rend
+  une fonction là où DataTables attend une chaîne, et l'exception avorte le `drawCallback` ENTIER —
+  la colonne ET la ligne de filtres disparaissent, pour une parenthèse mal placée.
+- **`BulkActionRunner::run()` NE FLUSHE PAS.** Il ouvre une transaction, applique l'action et
+  commite ; le flush appartient à l'appelant. Sans lui, une route de masse répond 302, pose son
+  flash de succès et n'écrit rien.
+- **`SendEmailMessage` est routé en `sync` en dev et en test** (`config/packages/messenger.yaml`).
+  Le routage `async` est juste en production, où un worker tourne ; en local la file se remplit et
+  rien n'arrive jamais — et le jour où on la draine, elle livre des messages sérialisés des heures
+  plus tôt, avec des jetons périmés.
+- **Changer la langue demande un écouteur à la priorité 7 ET une rediffusion manuelle**
+  (`src/EventListener/LocaleListener.php`) : le pare-feu remplit `TokenStorage` à 8,
+  `LocaleAwareListener` diffuse la locale à 15 sans repasser. Poser `$request->setLocale()` seul
+  écrit la colonne, écrit la session, et laisse l'écran dans la langue précédente.
+- **La langue voyage dans le CORPS de la requête**, pas dans l'URL : c'est le contrat du
+  contrôleur `ui--locale-switcher` d'`admin-bundle`. Une route `/locale/{locale}` répond 204 et ne
+  change rien.
+
+### Les fixtures font partie du mode
+
+`doctrine:fixtures:load` **PURGE**. Tout ce sans quoi l'application ne démarre pas doit donc vivre
+dans les fixtures et pas seulement dans une commande de seed : `UserFixtures` recrée le premier
+administrateur, `RolePermissionFixtures` repose ce que `app:permissions:seed` avait posé. Sans la
+seconde, un `make fixtures` laisse la base sans aucune permission et tous les écrans gardés
+répondent 403.
+
+**Un fichier de fixtures par classe d'entité**, jamais deux entités dans un même fichier.
+`AppFixtures` reste vide : c'est un vestige du squelette, pas un fourre-tout.
+
 ### Pourquoi ce mode utilise Webpack Encore
 
 Les autres modes du squelette n'ont pas de Node : Tailwind y passe par un binaire autonome et les

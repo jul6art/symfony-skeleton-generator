@@ -105,3 +105,21 @@ user.flash.updated: Utilisateur mis à jour.
 user.flash.cannot_delete_self: Vous ne pouvez pas supprimer votre propre compte.
 user.flash.deleted: Utilisateur supprimé.
 permission.flash.saved: Permissions enregistrées.
+user.profile.flash.saved: Profil enregistré.
+user.profile.flash.upload_failed: La photo n'a pas pu être enregistrée.
+
+# Zone de dépôt de fichier (thème de formulaire, bloc `form_file_dropzone`). Elle remplace le
+# contrôle système du navigateur, lequel rend ses libellés dans la langue du NAVIGATEUR.
+form.file.drop_hint: Glissez un fichier ici
+form.file.browse: ou cliquez pour parcourir
+form.file.selected: Fichier sélectionné
+# Enregistrement des préférences d'apparence. La clé est posée par `admin-bundle`, et le partial
+# de toasts du bundle traduit dans `messages` : sans cette entrée elle s'affiche BRUTE.
+appearance.flash.saved: Préférences enregistrées.
+# Libellés de la carte `user_role` (config/packages/datatable.yaml), lus par le rendu
+# `roleBadges`. Une carte sans ses libellés affiche le code brut dans la cellule.
+datatable.user_role.ROLE_ADMIN: Administrateur
+datatable.user_role.ROLE_SUPER_ADMIN: Super administrateur
+# Unités de taille de fichier, passées au contrôleur `form--dropzone` : un bundle ne connaît
+# pas la langue de l'application qui l'embarque.
+form.file.units: o,Ko,Mo,Go

@@ -8,8 +8,10 @@ use App\DataTable\UserDataTableConfigProvider;
 use App\Entity\User;
 use App\Form\UserType;
 use App\Security\PermissionCodes;
+use App\Security\UserRoles;
 use Doctrine\ORM\EntityManagerInterface;
 use Jul6Art\CoreBundle\Controller\BulkActionRunner;
+use Jul6Art\CoreBundle\Util\Strings;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -81,7 +83,13 @@ final class UserController extends AbstractController
     #[IsGranted(PermissionCodes::USER_READ)]
     public function show(User $user): Response
     {
-        return $this->render('admin/user/show.html.twig', ['user' => $user]);
+        // Le retournement se fait ICI et pas dans le gabarit : `UserRoles::assignable()` est une
+        // méthode statique, que Twig ne sait pas appeler, et une table recopiée dans la vue
+        // divergerait du catalogue au premier rôle ajouté.
+        return $this->render('admin/user/show.html.twig', [
+            'user' => $user,
+            'roleLabels' => array_flip(UserRoles::assignable()),
+        ]);
     }
 
     #[Route('/{id}/edit', name: 'edit', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
@@ -142,7 +150,7 @@ final class UserController extends AbstractController
         // libérée pour que l'adresse soit réutilisable — sans ça, recréer un compte supprimé
         // échoue sur une contrainte, ce qui est incompréhensible côté écran.
         $user->softDelete();
-        $user->setEmail(\Jul6Art\CoreBundle\Util\Strings::markDeleted($user->getEmail()));
+        $user->setEmail(Strings::markDeleted($user->getEmail()));
         $this->entityManager->flush();
 
         $this->addFlash('success', 'user.flash.deleted');
@@ -162,6 +170,42 @@ final class UserController extends AbstractController
     public function bulkDeactivate(Request $request, BulkActionRunner $runner): Response
     {
         return $this->runBulk($request, $runner, false);
+    }
+
+    /**
+     * ⚠️ Cette route existait dans la CONFIGURATION de la table (`bulkDeleteAction` déclare
+     * `/admin/users/bulk-delete`) mais pas dans le routeur : cocher des lignes et lancer la
+     * suppression postait sur un 404. Un bouton offert qui ne peut pas aboutir est un bug
+     * d'interface, et aucun test de contrôleur ne regarde les liens.
+     */
+    #[Route('/bulk-delete', name: 'bulk_delete', methods: ['POST'])]
+    #[IsGranted(PermissionCodes::USER_DELETE)]
+    public function bulkDelete(Request $request, BulkActionRunner $runner, #[CurrentUser] User $actor): Response
+    {
+        $runner->run($request, User::class, PermissionCodes::USER_DELETE, static function (User $user) use ($actor): User {
+            // Jamais soi-même : la même règle que la suppression unitaire, appliquée ligne à ligne
+            // puisque la sélection, elle, peut contenir n'importe quoi.
+            if ($user->getId() === $actor->getId()) {
+                return $user;
+            }
+
+            $user->softDelete();
+
+            // La colonne UNIQUE `email` est libérée : sans ça, recréer un compte supprimé échoue
+            // sur une contrainte, ce qui est incompréhensible depuis l'écran.
+            return $user->setEmail(Strings::markDeleted($user->getEmail()));
+        });
+
+        // ⚠️ Le flush est à la charge de l'APPELANT. `BulkActionRunner::run()` ouvre une
+        // transaction, applique l'action ligne à ligne et commite — mais ne flushe JAMAIS. Sans
+        // cette ligne, la route répond 302, le flash annonce le succès, et rien n'est écrit.
+        // Découvert par le test de la suppression de masse, le 2026-08-24 : `bulk-activate` et
+        // `bulk-deactivate` étaient dans le même cas depuis le premier jour.
+        $this->entityManager->flush();
+
+        $this->addFlash('success', 'user.flash.deleted');
+
+        return $this->redirectToRoute('admin_user_index');
     }
 
     private function toggle(Request $request, User $user, bool $active): Response
@@ -193,6 +237,10 @@ final class UserController extends AbstractController
             PermissionCodes::USER_ACTIVATE,
             static fn (User $user): User => $user->setIsActive($active),
         );
+
+        // Voir `bulkDelete()` : le runner ne flushe pas, et un flush unique ici coûte une écriture
+        // pour toute la sélection au lieu d'une par ligne.
+        $this->entityManager->flush();
 
         // La clé, pas une phrase : le partial des toasts la passe au traducteur. Un contrôleur qui
         // pose du texte tout fait marche — et casse le jour où l'application gagne une langue.

@@ -6,71 +6,95 @@
 
     ⚠️ `ROLE_SUPER_ADMIN` n'est pas dans les colonnes : le moteur le laisse passer avant de
     consulter le stockage, donc une case décochée ne lui retirerait rien tout en le laissant croire.
+
+    ⚠️ Les interrupteurs se centrent par la CELLULE (`text-center`), jamais en ajoutant une
+    utilitaire au composant. `.toggle-switch` vit dans `@layer components` d'`admin-bundle`
+    (`inline-flex h-6 w-11`) et toute utilitaire Tailwind posée à côté de lui gagne : `block w-fit`
+    écrasait `inline-flex w-11`, et comme les deux enfants de l'interrupteur sont hors flux
+    (`absolute` et `sr-only`), la largeur retombait à ZÉRO. Seize interrupteurs invisibles et non
+    cliquables, gabarit parfaitement valide, aucune erreur (mesuré le 2026-08-23).
 #}
 {% extends 'admin/layout.html.twig' %}
 {% trans_default_domain 'permission' %}
 
 {% block title %}{{ 'permission.title'|trans }} · {{ admin_branding().name }}{% endblock %}
-{% block container_class %}max-w-5xl{% endblock %}
 
 {% block content %}
-    <div class="mb-6">
-        <h1 class="text-2xl font-bold text-slate-900 dark:text-slate-100">{{ 'permission.title'|trans }}</h1>
-        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">{{ 'permission.subtitle'|trans }}</p>
-    </div>
+    {# La largeur se pose ICI et pas dans `container_class` : le conteneur du layout porte
+       `mx-auto`, donc restreindre le bloc recentre TOUTE la page — et cet écran se retrouvait
+       seul au milieu pendant que /admin/users restait calé à gauche. #}
+    <div class="max-w-5xl">
+        <div class="mb-6">
+            <h1 class="text-2xl font-bold text-slate-900 dark:text-slate-100">{{ 'permission.title'|trans }}</h1>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">{{ 'permission.subtitle'|trans }}</p>
+        </div>
 
-    <form method="post"
-          data-controller="ui--modal"
-          data-action="submit->ui--modal#intercept"
-          data-ui--modal-title-value="{{ 'permission.confirm.title'|trans }}"
-          data-ui--modal-message-value="{{ 'permission.confirm.message'|trans }}"
-          data-ui--modal-confirm-label-value="{{ 'action.save'|trans({}, 'messages') }}"
-          data-ui--modal-cancel-label-value="{{ 'action.cancel'|trans({}, 'messages') }}"
-          data-ui--modal-confirm-variant-value="primary">
-        <input type="hidden" name="_token" value="{{ csrf_token('role_permissions') }}">
+        <form method="post"
+              data-controller="ui--modal"
+              data-action="submit->ui--modal#intercept"
+              data-ui--modal-title-value="{{ 'permission.confirm.title'|trans }}"
+              data-ui--modal-message-value="{{ 'permission.confirm.message'|trans }}"
+              data-ui--modal-confirm-label-value="{{ 'action.save'|trans({}, 'messages') }}"
+              data-ui--modal-cancel-label-value="{{ 'action.cancel'|trans({}, 'messages') }}"
+              data-ui--modal-confirm-variant-value="primary">
+            <input type="hidden" name="_token" value="{{ csrf_token('role_permissions') }}">
 
-        {% for resource, codes in grouped %}
-            <div class="panel p-5 mb-4">
-                <h2 class="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-3">{{ resource }}</h2>
-                <table class="w-full text-sm">
-                    <thead>
-                        <tr class="text-left text-xs uppercase tracking-wide text-slate-400">
-                            <th class="py-2">{{ 'permission.column.code'|trans }}</th>
-                            {% for role in roles %}<th class="py-2 text-center">{{ role }}</th>{% endfor %}
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
-                        {% for code in codes %}
-                            <tr>
-                                <td class="py-2 font-mono text-xs text-slate-700 dark:text-slate-300">{{ code }}</td>
-                                {% for role in roles %}
-                                    <td class="py-2">
-                                        {# L'interrupteur du reste de la coquille (jetons `.toggle-*`
-                                           d'admin-bundle), et non une case système : cinquante cases
-                                           natives au milieu d'un back-office stylé se voient. #}
-                                        <label class="toggle-switch mx-auto block w-fit" title="{{ code }} · {{ role }}">
-                                            <input type="checkbox"
-                                                   class="toggle-switch-input"
-                                                   name="permissions[{{ role }}][{{ code }}]"
-                                                   value="1"
-                                                   aria-label="{{ code }} · {{ role }}"
-                                                   {{ code in granted[role] ? 'checked' : '' }}
-                                                   {{ is_granted(constant('App\\Security\\PermissionCodes::PERMISSION_UPDATE')) ? '' : 'disabled' }}>
-                                            <span class="toggle-switch-track"></span>
-                                        </label>
-                                    </td>
+            {% for resource, codes in grouped %}
+                <div class="panel p-6 mb-4">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100">
+                            {{ ('permission.resource.' ~ resource)|trans({}, 'permission') }}
+                        </h2>
+                        <span class="font-mono text-xs text-slate-400 dark:text-slate-500">{{ resource }}</span>
+                    </div>
+
+                    <div class="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700">
+                        <table class="w-full text-xs">
+                            <thead class="bg-slate-50 dark:bg-slate-700/50">
+                                <tr>
+                                    <th class="text-left px-3 py-2 font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                                        {{ 'permission.column.code'|trans }}
+                                    </th>
+                                    {% for role in roles %}
+                                        <th class="px-3 py-2 text-center">
+                                            <span class="px-2 py-0.5 rounded-full text-xs font-medium ring-1 bg-accent-50 dark:bg-accent-900/30 text-accent-700 dark:text-accent-400 ring-accent-200 dark:ring-accent-800">
+                                                {{ ('permission.role.' ~ role)|trans({}, 'permission') }}
+                                            </span>
+                                        </th>
+                                    {% endfor %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for code in codes %}
+                                    <tr class="border-t border-slate-100 dark:border-slate-700">
+                                        <td class="px-3 py-2 font-mono text-[11px] text-accent-700 dark:text-accent-400">{{ code }}</td>
+                                        {% for role in roles %}
+                                            <td class="px-3 py-2 text-center">
+                                                <label class="toggle-switch" title="{{ code }} · {{ role }}">
+                                                    <input type="checkbox"
+                                                           class="toggle-switch-input"
+                                                           name="permissions[{{ role }}][{{ code }}]"
+                                                           value="1"
+                                                           aria-label="{{ code }} · {{ role }}"
+                                                           {{ code in granted[role] ? 'checked' : '' }}
+                                                           {{ is_granted(constant('App\\Security\\PermissionCodes::PERMISSION_UPDATE')) ? '' : 'disabled' }}>
+                                                    <span class="toggle-switch-track"></span>
+                                                </label>
+                                            </td>
+                                        {% endfor %}
+                                    </tr>
                                 {% endfor %}
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            {% endfor %}
 
-        {% if is_granted(constant('App\\Security\\PermissionCodes::PERMISSION_UPDATE')) %}
-            <div class="form-actions">
-                <button type="submit" class="btn-primary">{{ 'action.save'|trans({}, 'messages') }}</button>
-            </div>
-        {% endif %}
-    </form>
+            {% if is_granted(constant('App\\Security\\PermissionCodes::PERMISSION_UPDATE')) %}
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">{{ 'action.save'|trans({}, 'messages') }}</button>
+                </div>
+            {% endif %}
+        </form>
+    </div>
 {% endblock %}

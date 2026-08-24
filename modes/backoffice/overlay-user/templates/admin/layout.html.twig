@@ -10,7 +10,47 @@
 {% extends '@Admin/layout.html.twig' %}
 
 {% block head %}
+    {{ parent() }}
     {% if app.user %}
         <script>window.jwtToken = "{{ jwt_token() }}";</script>
     {% endif %}
+{% endblock %}
+
+{# `admin_topbar_actions` est le bloc que le bundle réserve à ça : « à droite, AVANT le menu de
+   compte (cloche, sélecteur de langue…) ». #}
+{% block admin_topbar_actions %}
+    {{ include('_partials/_locale_switcher.html.twig') }}
+{% endblock %}
+
+{#
+    L'en-tête de la barre latérale.
+
+    Le rendu par défaut du bundle est `max-h-10 w-full object-contain` dans un bandeau `h-14` :
+    `object-position` vaut `center`, donc un logo plus étroit que la boîte FLOTTE au milieu, et
+    c'est la HAUTEUR qui borne, jamais la largeur. Un wordmark au rapport 2,9:1 n'occupait ainsi
+    que 52 % du bandeau, centré (mesuré à l'écran chez wovex, 2026-08-23).
+
+    ⚠️ `admin.branding.logo_width` ne corrige PAS ça : cette clé n'est lue que par la carte
+    d'authentification et par le layout d'e-mail.
+
+    Ce bloc cale à GAUCHE et récupère quelques pixels de hauteur. Pour occuper toute la largeur,
+    il faut un logo au rapport ≥ 5:1 — c'est une décision de branding, pas un correctif. Rognez
+    aussi les marges transparentes de votre fichier : elles comptent dans le rapport.
+
+    ⚠️ `h-14` NE BOUGE PAS : la barre du haut est `h-14` EN DUR dans le gabarit du bundle, hors de
+    tout bloc. La changer ici désalignerait les deux bordures sur toute la largeur de l'écran.
+#}
+{% block admin_sidebar_brand %}
+    <div class="h-14 flex items-center px-3 border-b border-slate-200 dark:border-slate-700">
+        <a href="{{ path(admin_branding().homeRoute) }}" class="block w-full">
+            {% if admin_branding().hasLogo %}
+                <img src="{{ asset(admin_branding().logo) }}"
+                     alt="{{ admin_branding().name }}"
+                     class="h-auto max-h-11 w-full object-contain object-left">
+            {% endif %}
+            {% if admin_branding().showName %}
+                <span class="text-sm font-semibold text-slate-700 dark:text-slate-200">{{ admin_branding().name }}</span>
+            {% endif %}
+        </a>
+    </div>
 {% endblock %}

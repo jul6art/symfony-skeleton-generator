@@ -6,3 +6,12 @@ permission:
   confirm:
     title: Save permissions
     message: Access for the affected accounts changes immediately.
+
+  # Le nom lisible d'une ressource du catalogue (`PermissionCodes::grouped()`), et celui d'un
+  # rôle de colonne. Sans eux, la grille affiche les codes bruts en en-tête.
+  resource:
+    user: Accounts
+    permission: Permissions
+  role:
+    ROLE_ADMIN: Administrator
+    ROLE_USER: User

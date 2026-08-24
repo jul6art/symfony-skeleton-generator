@@ -6,6 +6,7 @@ namespace App\Controller\Admin;
 
 use App\Entity\User;
 use App\Form\ProfileFormType;
+use App\Security\PermissionCodes;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
@@ -16,6 +17,10 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\String\Slugger\SluggerInterface;
+
+use function sprintf;
+
+use const PATHINFO_FILENAME;
 
 /**
  * Le profil du compte connecté : son identité affichée et son avatar.
@@ -50,7 +55,7 @@ final class AccountProfileController extends AbstractController
             if ($uploaded instanceof UploadedFile) {
                 // Nom reconstruit, jamais celui du client : un nom d'origine porte le chemin et
                 // l'extension que l'envoyeur a choisis, et `guessExtension()` lit le contenu.
-                $name = $slugger->slug(pathinfo($uploaded->getClientOriginalName(), \PATHINFO_FILENAME))
+                $name = $slugger->slug(pathinfo($uploaded->getClientOriginalName(), PATHINFO_FILENAME))
                     ->lower()->truncate(40)->toString();
                 $filename = sprintf('%s-%s.%s', $name ?: 'avatar', bin2hex(random_bytes(8)), $uploaded->guessExtension() ?? 'bin');
 
@@ -68,7 +73,13 @@ final class AccountProfileController extends AbstractController
             $entityManager->flush();
             $this->addFlash('success', 'user.profile.flash.saved');
 
-            return $this->redirectToRoute('admin_account_profile_edit');
+            // Retour sur la FICHE : c'est là qu'on voit le résultat, avatar compris.
+            // ⚠️ Mais `admin_user_show` porte `#[IsGranted(USER_READ)]`, que
+            // `DefaultRolePermissions` n'accorde pas à un compte ordinaire. Rediriger sans ce
+            // garde enverrait la moitié des comptes sur un 403 après un enregistrement RÉUSSI.
+            return $this->isGranted(PermissionCodes::USER_READ)
+                ? $this->redirectToRoute('admin_user_show', ['id' => $user->getId()])
+                : $this->redirectToRoute('admin_account_profile_edit');
         }
 
         return $this->render('admin/account/profile.html.twig', ['form' => $form]);

@@ -1,0 +1,13 @@
+{#
+    La carte d'authentification du bundle, augmentée du sélecteur de langue.
+
+    ⚠️ `@!Admin/...` — avec le point d'exclamation — désigne le gabarit ORIGINAL du bundle, celui
+    que ce fichier remplace. Sans lui, ce gabarit s'étendrait lui-même et Twig boucle.
+
+    UN seul fichier, et non un par écran : les cinq pages d'authentification étendent
+    `@Admin/security/_card.html.twig`, qui résout désormais vers ici. Les dupliquer toutes les
+    cinq les ferait diverger du bundle à la première mise à jour.
+#}
+{% extends '@!Admin/security/_card.html.twig' %}
+
+{% block auth_topbar %}{{ include('_partials/_locale_switcher.html.twig') }}{% endblock %}

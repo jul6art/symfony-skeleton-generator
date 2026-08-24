@@ -11,6 +11,7 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use App\Repository\UserRepository;
+use App\Security\BackofficeLocales;
 use App\Security\PermissionCodes;
 use App\Security\UserRoles;
 use Doctrine\ORM\Mapping as ORM;
@@ -128,6 +129,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, AclUser
     /** Le mode de couleur. `admin-bundle` le laisse hors de son trait pour cette raison précise. */
     #[ORM\Column(length: 10, options: ['default' => 'light'])]
     private string $theme = ColorMode::Light->value;
+
+    /**
+     * La langue de l'interface.
+     *
+     * Pas de `#[Groups]` : c'est une préférence, comme les cinq colonnes `appearance_*`, et la
+     * table des comptes n'en a pas besoin. La contrainte `Choice` va de pair avec la colonne non
+     * nullable — le formulaire est la seule porte avant persistance.
+     */
+    #[ORM\Column(length: 5, options: ['default' => BackofficeLocales::DEFAULT])]
+    #[Assert\Choice(choices: BackofficeLocales::SUPPORTED)]
+    private string $locale = BackofficeLocales::DEFAULT;
 
     /** Transitoire : le formulaire l'écrit, le contrôleur le hache. Jamais mappé. */
     private ?string $plainPassword = null;
@@ -275,6 +287,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, AclUser
     public function getTenant(): ?AclTenantInterface
     {
         return null;
+    }
+
+    public function getLocale(): string
+    {
+        return $this->locale;
+    }
+
+    public function setLocale(string $locale): static
+    {
+        $this->locale = $locale;
+
+        return $this;
     }
 
     #[Override]

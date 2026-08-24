@@ -1,0 +1,56 @@
+framework:
+    messenger:
+        failure_transport: failed
+
+        transports:
+            # https://symfony.com/doc/current/messenger.html#transport-configuration
+            async:
+                dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
+                retry_strategy:
+                    max_retries: 3
+                    multiplier: 2
+            failed: 'doctrine://default?queue_name=failed'
+            # sync: 'sync://'
+
+        default_bus: messenger.bus.default
+
+        buses:
+            messenger.bus.default: []
+
+        routing:
+            Symfony\Component\Mailer\Messenger\SendEmailMessage: async
+            Symfony\Component\Notifier\Message\ChatMessage: async
+            Symfony\Component\Notifier\Message\SmsMessage: async
+
+            # Route your messages to the transports
+            # 'App\Message\YourMessage': async
+
+# ⚠️ En DÉVELOPPEMENT, le mail part TOUT DE SUITE.
+#
+# Le routage asynchrone ci-dessus est juste en production, où un worker `messenger:consume`
+# tourne. Ici, la pile Docker n'en a AUCUN : la file Doctrine se remplit et rien n'arrive jamais.
+# Pire, le jour où quelqu'un la draine, elle livre des messages sérialisés des heures plus tôt —
+# le 2026-08-23, un mail de réinitialisation est ainsi arrivé avec l'objet en clé brute (code
+# d'avant le correctif) et un jeton dont la demande avait expiré depuis longtemps. Symptôme lu à
+# l'écran : « This reset link is invalid or has expired ».
+when@dev:
+    framework:
+        messenger:
+            routing:
+                Symfony\Component\Mailer\Messenger\SendEmailMessage: sync
+
+# En TEST : un transport en mémoire pour ce qui reste asynchrone (rien ne touche la base), et le
+# mail en SYNCHRONE comme en dev.
+#
+# ⚠️ `assertEmailCount()` ne compte que les mails ENVOYÉS : un message routé vers un transport,
+# fût-il en mémoire, est « queued » et ne compte pas. Laisser le mail asynchrone ici rendrait le
+# test du parcours de réinitialisation aveugle à ce qu'il doit prouver — que le mail part dans la
+# requête — et le ferait diverger du comportement que le développeur voit en dev.
+when@test:
+    framework:
+        messenger:
+            transports:
+                async: 'in-memory://'
+            routing:
+                Symfony\Component\Mailer\Messenger\SendEmailMessage: sync
+

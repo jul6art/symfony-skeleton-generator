@@ -4,15 +4,43 @@
 {% block title %}{{ 'user.edit.title'|trans }} · {{ admin_branding().name }}{% endblock %}
 
 {% block content %}
-    <h1 class="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-6">{{ 'user.edit.title'|trans }}</h1>
+    <div class="max-w-2xl">
+        <div class="mb-6">
+            <nav class="text-xs text-slate-400 dark:text-slate-500 mb-3">
+                <a href="{{ path('admin_user_index') }}" class="hover:text-slate-700 dark:hover:text-slate-300">{{ 'user.list.title'|trans }}</a>
+                <span class="mx-2">/</span><span class="text-slate-600 dark:text-slate-400">{{ 'user.edit.title'|trans }}</span>
+            </nav>
+            <h1 class="text-2xl font-bold text-slate-900 dark:text-slate-100">{{ 'user.edit.title'|trans }}</h1>
+        </div>
 
-    <div class="form-panel max-w-2xl">
-        {{ form_start(form, { attr: { class: 'form-grid' } }) }}
-            {{ form_widget(form) }}
-            <div class="form-actions">
-                <button type="submit" class="btn-primary">{{ 'action.save'|trans({}, 'messages') }}</button>
-                <a href="{{ path('admin_user_index') }}" class="btn-secondary">{{ 'action.cancel'|trans({}, 'messages') }}</a>
-            </div>
-        {{ form_end(form) }}
+        <div class="form-panel">
+            {{ form_start(form, { attr: { class: 'form-grid' } }) }}
+                {# Les erreurs GLOBALES en tête : sans elles, une contrainte de classe ou un
+                   `UniqueEntity` n'apparaît nulle part et l'utilisateur voit un formulaire qui
+                   « ne fait rien ». #}
+                {{ form_errors(form) }}
+
+                <fieldset class="form-fieldset">
+                    <legend>{{ 'user.section.identity'|trans }}</legend>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {{ form_row(form.firstName) }}
+                        {{ form_row(form.lastName) }}
+                    </div>
+                    {{ form_row(form.email) }}
+                </fieldset>
+
+                <fieldset class="form-fieldset">
+                    <legend>{{ 'user.section.access'|trans }}</legend>
+                    {{ form_row(form.plainPassword) }}
+                    {{ form_row(form.roles) }}
+                    {{ form_row(form.isActive) }}
+                </fieldset>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">{{ 'action.save'|trans({}, 'messages') }}</button>
+                    <a href="{{ path('admin_user_index') }}" class="btn-secondary">{{ 'action.cancel'|trans({}, 'messages') }}</a>
+                </div>
+            {{ form_end(form) }}
+        </div>
     </div>
 {% endblock %}

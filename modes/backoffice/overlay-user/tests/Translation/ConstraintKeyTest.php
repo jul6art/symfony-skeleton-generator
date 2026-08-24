@@ -4,9 +4,17 @@ declare(strict_types=1);
 
 namespace App\Tests\Translation;
 
+use FilesystemIterator;
 use PHPUnit\Framework\Attributes\CoversNothing;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Translation\TranslatorBagInterface;
+
+use function dirname;
+use function sprintf;
+
+use const PREG_SET_ORDER;
 
 /**
  * Chaque clé de message de contrainte référencée dans src/ doit exister dans le domaine
@@ -50,8 +58,8 @@ final class ConstraintKeyTest extends KernelTestCase
     private function referencedConstraintKeys(): array
     {
         $keys = [];
-        $files = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator(\dirname(__DIR__, 2).'/src', \FilesystemIterator::SKIP_DOTS),
+        $files = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator(dirname(__DIR__, 2).'/src', FilesystemIterator::SKIP_DOTS),
         );
 
         foreach ($files as $file) {
@@ -64,7 +72,7 @@ final class ConstraintKeyTest extends KernelTestCase
                 "/(?:message|minMessage|maxMessage)\\s*:\\s*'([^']+)'|'invalid_message'\\s*=>\\s*'([^']+)'/",
                 $source,
                 $matches,
-                \PREG_SET_ORDER,
+                PREG_SET_ORDER,
             );
             foreach ($matches as $match) {
                 $key = '' !== ($match[2] ?? '') ? $match[2] : ($match[1] ?? '');
