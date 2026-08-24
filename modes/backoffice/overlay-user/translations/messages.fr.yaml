@@ -34,40 +34,6 @@ cookie_consent:
   privacy_link: En savoir plus
   accept: Accepter
   decline: Refuser
-datatable:
-  filters: Filtres
-  filter_apply: Appliquer
-  filter_reset: Réinitialiser
-  filter:
-    input_too_short: Saisissez au moins un caractère
-    searching: Recherche…
-    no_results: Aucun résultat
-  status:
-    active: Actif
-    inactive: Inactif
-  confirm:
-    title: Confirmer
-    message: Confirmez-vous cette action ?
-    confirm: Confirmer
-    cancel: Annuler
-  error:
-    loading: Erreur lors du chargement
-  coalescence:
-    message: Des modifications sont arrivées
-    refresh: Rafraîchir
-  bulk:
-    selected: sélectionné(s)
-    choose: Choisir une action
-    apply: Appliquer
-    clear: Tout désélectionner
-  col:
-    id: ID
-  daterange:
-    placeholder: Toutes les dates
-    from: Du
-    to: Au
-    since: depuis le
-    until: jusqu'au
 modal:
   subject_wrap: « %subject% »
   subject_default: cet élément

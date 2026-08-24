@@ -37,7 +37,7 @@ final class UserDataTableConfigProvider extends AbstractDataTableConfigProvider
             // `responsivePriority: 10` sur l'identifiant : c'est la première colonne que la
             // responsive doit masquer. Sans priorité explicite, tout vaut 5 et elle masque dans
             // l'ordre des index — l'ID reste, les colonnes métier disparaissent.
-            $this->column('id', 'datatable.col.id', responsivePriority: 10),
+            $this->column('id', 'datatable.col.id', 'datatable', responsivePriority: 10),
             $this->column('fullName', 'user.field.name', 'user', render: 'userNameWithAvatar', responsivePriority: 1),
             $this->column('email', 'user.field.email', 'user', responsivePriority: 2),
             // ⚠️ `readOnlyColumn` et non `column` : `roles` est une colonne JSON, donc NON
@@ -46,6 +46,12 @@ final class UserDataTableConfigProvider extends AbstractDataTableConfigProvider
             $this->readOnlyColumn('roles', 'user.field.roles', 'user', render: 'roleBadges', responsivePriority: 4),
             $this->readOnlyColumn('isActive', 'user.field.status', 'user', render: 'statusBadge', responsivePriority: 3),
             $this->column('createdAt', 'user.field.created_at', 'user', render: 'date', responsivePriority: 6),
+            // Offertes sans être montrées : dans le sélecteur, absentes du premier rendu.
+            // `fullName` les concatène déjà, mais lui n'est PAS triable côté serveur alors que ces
+            // deux-là le sont (`OrderFilter` de `User`) — c'est ce qui les rend utiles à qui veut
+            // trier sur le nom de famille.
+            $this->column('lastName', 'user.field.family_name', 'user', responsivePriority: 10, hidden: true),
+            $this->column('firstName', 'user.field.first_name', 'user', responsivePriority: 10, hidden: true),
         ];
     }
 
@@ -57,8 +63,8 @@ final class UserDataTableConfigProvider extends AbstractDataTableConfigProvider
     {
         return [
             $this->staticFilter('isActive', 'isActive', 'user.field.status', [
-                ['value' => 'true', 'label' => $this->t('datatable.status.active')],
-                ['value' => 'false', 'label' => $this->t('datatable.status.inactive')],
+                ['value' => 'true', 'label' => $this->t('datatable.status.active', 'datatable')],
+                ['value' => 'false', 'label' => $this->t('datatable.status.inactive', 'datatable')],
             ], 'user'),
             $this->dateRangeFilter('createdAt', 'createdAt', 'user.filter.created', 'user', granularity: 'datetime'),
         ];

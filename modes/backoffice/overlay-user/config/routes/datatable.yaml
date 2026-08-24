@@ -1,0 +1,16 @@
+# L'endpoint des préférences de tableau par compte, livré par `jul6art/datatable-bundle`. UNE route
+# sert TOUS les tableaux — la clé du tableau est le seul segment — et c'est ce qui rend la
+# fonctionnalité opt-in en une ligne de Twig au lieu d'un contrôleur par entité.
+#
+# ⚠️ Ce fichier est dans `overlay-user/` et non dans `overlay/`, à dessein : le contrôleur du bundle
+# a besoin d'un magasin, et `App\DataTable\DatatablePreferenceStore` vient de cette brique. Sans la
+# brique « comptes », `PreferenceControllerPass` retire le contrôleur — et une route qui pointerait
+# alors sur un contrôleur absent sortirait en 500 au lieu de ne pas exister.
+#
+# Sous `/admin` : le pare-feu et l'`access_control` qui gardent l'espace la gardent aussi. Le jour
+# où un second espace apparaît, elle reste ici — les deux appelleraient le même endpoint, qui lit le
+# compte sur le jeton de sécurité.
+datatable_preferences:
+    resource: '@DatatableBundle/Controller/DatatablePreferenceController.php'
+    type: attribute
+    prefix: /admin/datatable/preferences

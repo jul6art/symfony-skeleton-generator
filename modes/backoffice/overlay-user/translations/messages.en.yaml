@@ -34,40 +34,6 @@ cookie_consent:
   privacy_link: Learn more
   accept: Accept
   decline: Decline
-datatable:
-  filters: Filters
-  filter_apply: Apply
-  filter_reset: Reset
-  filter:
-    input_too_short: Type at least one character
-    searching: Searching…
-    no_results: No result
-  status:
-    active: Active
-    inactive: Inactive
-  confirm:
-    title: Confirm
-    message: Do you confirm this action?
-    confirm: Confirm
-    cancel: Cancel
-  error:
-    loading: Could not load the data
-  coalescence:
-    message: Changes came in
-    refresh: Refresh
-  bulk:
-    selected: selected
-    choose: Choose an action
-    apply: Apply
-    clear: Clear selection
-  col:
-    id: ID
-  daterange:
-    placeholder: All dates
-    from: From
-    to: To
-    since: since
-    until: until
 modal:
   subject_wrap: “%subject%”
   subject_default: this item

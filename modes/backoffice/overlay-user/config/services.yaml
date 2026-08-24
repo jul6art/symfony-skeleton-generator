@@ -36,6 +36,13 @@ services:
     Jul6Art\AclBundle\Contract\PermissionSetProviderInterface: '@App\Acl\DoctrinePermissionSetProvider'
     Jul6Art\AclBundle\Contract\PermissionStoreInterface: '@App\Acl\DoctrinePermissionStore'
 
+    # Le port de persistance des préférences de tableau (`datatable-bundle` ≥ 1.2). Le bundle
+    # interprète et borne le contenu, et sert les trois opérations HTTP ; il ne stocke rien.
+    # ⚠️ Même sens de défaillance que les deux alias ci-dessus : sans celui-ci,
+    # `PreferenceControllerPass` RETIRE le contrôleur et la fonctionnalité n'existe pas — pas de
+    # panneau « Colonnes », pas d'erreur, rien.
+    Jul6Art\DatatableBundle\Preference\DatatablePreferenceStoreInterface: '@App\DataTable\DatatablePreferenceStore'
+
     # Le répertoire des avatars téléversés. Sous `public/` : le fichier est servi par le serveur
     # web comme n'importe quel asset — un avatar n'est pas une donnée à protéger, et le faire
     # passer par un contrôleur coûterait une requête PHP par vignette de la liste des comptes.

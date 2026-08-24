@@ -17,6 +17,7 @@ user:
     status: Statut
     active: Compte actif
     created_at: Créé le
+    family_name: Nom de famille
   filter:
     created: Créé entre
   help:

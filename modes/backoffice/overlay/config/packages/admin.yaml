@@ -13,10 +13,16 @@ admin:
         logo: 'img/logo.png'
         favicon: 'img/favicon.ico'
         home_route: admin_dashboard
-        # Largeur du logo (px) sur les pages d'authentification et dans les e-mails ; null garde
-        # la hauteur fixe historique. `show_name: false` retire le nom écrit sous le logo (pages
-        # d'auth) et à côté (barre latérale) : le cas d'un logo qui est déjà un wordmark.
-        logo_width: ~
+        # Largeur du logo (px) sur les pages d'authentification et dans les e-mails ; sans la clé,
+        # la hauteur fixe historique s'applique et la largeur suit. `show_name: false` retire le nom
+        # écrit sous le logo (pages d'auth) et à côté (barre latérale) : le cas d'un logo qui est
+        # déjà un wordmark.
+        #
+        # ⚠️ La clé est COMMENTÉE, pas posée à `~`. Le nœud du bundle est un `integerNode()` dont le
+        # défaut est null : le défaut ne s'applique qu'en l'ABSENCE de la clé, et un `~` explicite
+        # est refusé à la compilation du conteneur (« Expected int, but got null »). Tout projet
+        # généré échouait alors au boot, y compris `debug:router`.
+        # logo_width: 360
         show_name: true
 
     # Une route vide MASQUE le lien correspondant, elle ne casse pas le rendu. C'est ainsi qu'on

@@ -1,0 +1,59 @@
+# Le catalogue du socle de tableau (`jul6art/datatable-bundle`).
+#
+# Domaine `datatable`, déclaré par `datatable.translation_domain` dans
+# `config/packages/datatable.yaml`. Il n'est PAS dans `messages` : la règle §4 de
+# `docs/claude/claude_core.md` répartit les traductions par domaine fonctionnel, et y retomber par
+# défaut est une erreur bloquante. Le bundle lit ce domaine depuis la v1.2 — il ne code plus
+# `messages` en dur.
+#
+# Ce qui n'est PAS ici, à dessein : le tree `modal:` reste dans `messages`. C'est le vocabulaire des
+# modales de confirmation, partagé par tous les `ui--modal`, donc bien au-delà des tableaux.
+
+datatable:
+  filters: Filtres
+  filter_apply: Appliquer
+  filter_reset: Réinitialiser
+  filter:
+    input_too_short: Saisissez au moins un caractère
+    searching: Recherche…
+    no_results: Aucun résultat
+  status:
+    active: Actif
+    inactive: Inactif
+  confirm:
+    title: Confirmer
+    message: Confirmez-vous cette action ?
+    confirm: Confirmer
+    cancel: Annuler
+  error:
+    loading: Erreur lors du chargement
+    saving: "Échec de l'enregistrement de vos préférences"
+  coalescence:
+    message: Des modifications sont arrivées
+    refresh: Rafraîchir
+  bulk:
+    selected: sélectionné(s)
+    choose: Choisir une action
+    apply: Appliquer
+    clear: Tout désélectionner
+  col:
+    id: ID
+  daterange:
+    placeholder: Toutes les dates
+    from: Du
+    to: Au
+    since: depuis le
+    until: jusqu'au
+  columns:
+    button: Colonnes
+    hint: "Cochez les colonnes à afficher, glissez pour les réordonner."
+    reset: "Réinitialiser l'affichage"
+    close: Fermer
+  views:
+    button: Vues
+    hint: "Appliquez une vue enregistrée, ou enregistrez les filtres affichés."
+    empty: "Aucune vue enregistrée."
+    name: "Nom de la vue"
+    save: "Enregistrer les filtres affichés"
+    default: "Vue par défaut à l'ouverture"
+    delete: "Supprimer la vue"

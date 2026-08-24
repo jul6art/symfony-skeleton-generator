@@ -5,9 +5,10 @@
     pagine, trie, cherche et filtre. Ce gabarit ne pose que la coquille et les trois
     configurations produites par `UserDataTableConfigProvider`.
 
-    ⚠️ Les deux `include` sont OBLIGATOIRES et vont DANS la balise `<table>` — ils émettent des
-    attributs, pas des éléments. Sans `_csrf`, aucune action POST n'est autorisée ; sans
-    `_translations`, la barre de filtres affiche des clés brutes.
+    ⚠️ Les `include` vont DANS la balise `<table>` — ils émettent des attributs, pas des éléments.
+    Sans `_csrf`, aucune action POST n'est autorisée ; sans `_translations`, la barre de filtres
+    affiche des clés brutes. `_preferences` est le seul des trois qui soit optionnel : il ouvre le
+    sélecteur de colonnes et les vues enregistrées pour ce tableau, sous la clé `user`.
 #}
 {% extends 'admin/layout.html.twig' %}
 {% trans_default_domain 'user' %}
@@ -40,6 +41,7 @@
                data-{{ datatable_stimulus() }}-default-order-value='[[0, "desc"]]'
                data-{{ datatable_stimulus() }}-page-length-value="25"
                data-{{ datatable_stimulus() }}-language-value="{{ app.request.locale }}"
+               {{ include('@Datatable/datatable/_preferences.html.twig', { key: 'user' }) }}
                {{ include('@Datatable/datatable/_csrf.html.twig') }}
                {{ include('@Datatable/datatable/_translations.html.twig') }}>
             <thead>

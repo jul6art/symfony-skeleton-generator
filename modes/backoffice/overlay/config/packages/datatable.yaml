@@ -1,4 +1,13 @@
 datatable:
+    # Le domaine des clés `datatable.*`, donc les fichiers `translations/datatable.{fr,en}.yaml`.
+    # Sans cette clé le bundle retombe sur `messages` — ce que la règle §4 de `claude_core.md`
+    # traite comme une erreur bloquante, et ce qui rendrait la clé brute dans chaque panneau.
+    # Les cartes de `status_maps` en héritent : inutile de le répéter.
+    #
+    # ⚠️ Le catalogue lui-même vient de la brique « comptes » (`overlay-user/`), qui est aussi celle
+    # qui apporte le seul tableau du mode. Sans elle, cette clé est inerte : rien ne rend de table.
+    translation_domain: datatable
+
     # L'identifiant Stimulus vient du CHEMIN de `assets/controllers/core/datatable_controller.js`,
     # que `bootstrap.js` traduit en `core--datatable`. Les deux doivent dire la même chose : un
     # contrôleur Stimulus qui ne reçoit aucune valeur ne lève pas, il rend un tableau vide.

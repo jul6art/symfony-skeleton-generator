@@ -154,6 +154,12 @@ roles.
   filters and row actions in PHP; one Stimulus controller draws them and reads
   the rows from an API Platform collection. Pagination, sorting, global search
   and per-column filters are the API's, not a second implementation.
+- **Per-user table preferences.** Every account arranges a table for itself:
+  which columns it sees, in what order, plus named views — a saved set of
+  filters, one of which can open the table. One optional include per table; a
+  column marked `hidden: true` is offered without being shown, which is what
+  lets a table declare wide without costing width to whoever does not want it.
+  The bundle interprets the preferences, the generated project stores them.
 - **Live refresh over Mercure.** A change that touches a visible row reloads the
   page of data; a burst shows a "refresh" banner rather than reloading N times.
   Single-tenant, so the bundle's default topic resolver is the right one.

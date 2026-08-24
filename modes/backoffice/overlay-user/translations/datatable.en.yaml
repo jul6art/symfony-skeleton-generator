@@ -1,0 +1,57 @@
+# The table foundation's catalogue (`jul6art/datatable-bundle`).
+#
+# Domain `datatable`, declared by `datatable.translation_domain` in
+# `config/packages/datatable.yaml` — NOT in `messages`: rule §4 of `docs/claude/claude_core.md`
+# splits translations by functional domain, and falling back to `messages` is a blocking error.
+#
+# What is deliberately NOT here: the `modal:` tree stays in `messages`. It is the confirmation
+# modals' vocabulary, shared by every `ui--modal`, so it reaches far beyond tables.
+
+datatable:
+  filters: Filters
+  filter_apply: Apply
+  filter_reset: Reset
+  filter:
+    input_too_short: Type at least one character
+    searching: Searching…
+    no_results: No result
+  status:
+    active: Active
+    inactive: Inactive
+  confirm:
+    title: Confirm
+    message: Do you confirm this action?
+    confirm: Confirm
+    cancel: Cancel
+  error:
+    loading: Could not load the data
+    saving: "Could not save your preferences"
+  coalescence:
+    message: Changes came in
+    refresh: Refresh
+  bulk:
+    selected: selected
+    choose: Choose an action
+    apply: Apply
+    clear: Clear selection
+  col:
+    id: ID
+  daterange:
+    placeholder: All dates
+    from: From
+    to: To
+    since: since
+    until: until
+  columns:
+    button: Columns
+    hint: "Tick the columns to show, drag to reorder them."
+    reset: "Reset the layout"
+    close: Close
+  views:
+    button: Views
+    hint: "Apply a saved view, or save the filters on screen."
+    empty: "No saved view."
+    name: "View name"
+    save: "Save the filters on screen"
+    default: "Default view on opening"
+    delete: "Delete the view"

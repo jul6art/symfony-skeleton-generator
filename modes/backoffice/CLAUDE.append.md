@@ -33,12 +33,56 @@ ce qu'ils portent est l'erreur la plus coûteuse de cet écosystème, parce qu'e
    filtres que les colonnes supposent (`OrderFilter` pour chaque `sortField`, `OrSearchFilter` pour
    la recherche globale).
 3. Une action de contrôleur qui passe `columns_config`, `filters_config` et `actions_config`.
-4. Un gabarit qui inclut **les deux** partials du bundle, DANS la balise `<table>`.
+4. Un gabarit qui inclut `_csrf.html.twig` et `_translations.html.twig`, DANS la balise `<table>`.
 5. Une route POST par action de ligne, avec son `#[IsGranted]` et son jeton `datatable_action`.
 
 Les cinq, ou la table est cassée d'une manière qui ne lève pas : `sortField` manquant → le tri est
 ignoré côté serveur ; `_csrf` oublié → les actions répondent 419 ; `_translations` oublié → la barre
 de filtres affiche des clés.
+
+### Les préférences par compte : colonnes, ordre, vues enregistrées
+
+Un sixième include, celui-là **optionnel**, ouvre le sélecteur de colonnes et les vues
+enregistrées pour un tableau :
+
+```twig
+{{ include('@Datatable/datatable/_preferences.html.twig', { key: 'user' }) }}
+```
+
+La clé nomme un TABLEAU et pas une entité : deux écrans listant la même entité avec des colonnes
+différentes sont deux clés. Motif accepté par la route : `[a-z0-9][a-z0-9_.-]{0,63}`. Sans
+l'include, la table se rend exactement comme avant — pas de requête, pas de boutons.
+
+Le bundle **interprète** les préférences (il borne, assainit, versionne) et sert `GET` / `PUT` /
+`DELETE` sur `/admin/datatable/preferences/{key}` ; il ne stocke rien. Ce mode fournit la moitié
+qui manque, et elle vient TOUTE de la brique « comptes » :
+`App\Entity\DatatablePreference`, son repository, `App\DataTable\DatatablePreferenceStore`, l'alias
+du port dans `config/services.yaml` et la route dans `config/routes/datatable.yaml`.
+
+- **Sans l'alias, il n'y a pas d'endpoint** : `PreferenceControllerPass` retire le contrôleur du
+  conteneur. Pas de panneau, pas d'erreur — le même sens de défaillance silencieuse que les deux
+  alias ACL.
+- **Le compte vient du jeton de sécurité**, jamais du payload : écrire les préférences d'un autre
+  n'est pas « interdit », c'est irreprésentable. D'où l'absence de voter et de code de permission.
+- **`write()` est un upsert.** L'endpoint est un `PUT` et le navigateur renvoie tout l'état à chaque
+  sauvegarde : un `INSERT` aveugle heurte l'UNIQUE `(owner_id, datatable_key)` et sort en 500 au
+  SECOND clic.
+- **Le contenu est opaque** : colonne `text`, jamais `json`. Un type `json` ferait décoder Doctrine
+  à la lecture et ré-encoder à l'écriture, donc les octets rendus ne seraient plus ceux reçus.
+
+**Déclarer large, montrer étroit.** Une colonne que le lecteur peut masquer ne coûte rien à celui
+qui n'en veut pas : la question n'est plus « mérite-t-elle la largeur ? » mais « quelqu'un
+pourrait-il vouloir la voir ? ». `hidden: true` sur une aide de colonne la met dans le sélecteur et
+hors du premier rendu — c'est ce que font `lastName` et `firstName` de la table des comptes. Trois
+choses à savoir : le drapeau n'est honoré que si le tableau a l'include ci-dessus ; une colonne
+ajoutée depuis la dernière sauvegarde d'un compte reprend ce défaut, donc livrer un lot de colonnes
+masquées n'élargit l'écran de personne ; et c'est un défaut d'AFFICHAGE — une colonne masquée reste
+sérialisée, donc jamais une raison d'ajouter un champ à un groupe `read`.
+
+**Une colonne se déclare avec son tri et son filtre, ou pas du tout.** Un `sortField` sans l'entrée
+correspondante dans l'`OrderFilter` envoie un `order[…]` que le serveur ignore : le clic ne fait
+rien, et rien ne le signale. C'est la raison pour laquelle `roles` est un `readOnlyColumn` et
+`lastName` un `column`.
 
 ### Les pièges de ce mode, appris ailleurs
 
@@ -53,6 +97,10 @@ de filtres affiche des clés.
   doivent dire `core--datatable`.
 - **Ajouter un rendu de badge** = une entrée dans `datatable.status_maps` **et** une dans
   `assets/datatable/renderers.js`. Un nom inconnu du registre affiche la valeur brute.
+- **Le catalogue du tableau est le domaine `datatable`**, pas `messages` :
+  `translations/datatable.{fr,en}.yaml`, déclaré par `datatable.translation_domain`. Le tree
+  `modal:` reste dans `messages` — c'est le vocabulaire des modales de confirmation, partagé par
+  tous les `ui--modal`, donc bien au-delà des tableaux.
 - **Un code de permission mal orthographié OUVRE l'écran.** Le voter s'abstient sur ce qu'il ne sait
   pas lire, et une décision où tous les voters s'abstiennent vaut « accordé ».
 - **`npm` est requis dans ce mode**, et seulement dans celui-là — voir ci-dessous.

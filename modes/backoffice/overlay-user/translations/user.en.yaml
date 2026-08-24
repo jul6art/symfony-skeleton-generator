@@ -17,6 +17,7 @@ user:
     status: Status
     active: Active account
     created_at: Created
+    family_name: Family name
   filter:
     created: Created between
   help:
