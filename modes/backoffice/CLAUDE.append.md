@@ -181,3 +181,47 @@ toutes les routes visitées, triées par coût.
 
 ⚠️ Le préfixe de nom `admin_performance_` est un contrat entre les deux bundles : le core l'exclut
 de sa collecte (`ignored_route_prefix`), sans quoi le tableau de bord mesurerait sa propre page.
+
+### Six pièges de plus, tous trouvés en regardant les écrans (2026-08-24)
+
+Aucun n'était visible dans une suite verte, et cinq naissaient de ce mode — donc de tout projet
+qu'il génère.
+
+- **Une clé de flash posée par un TERNAIRE échappe au scan.**
+  `addFlash('success', $actif ? 'x.activated' : 'x.deactivated')` est la forme normale dès qu'une
+  route bascule un statut, et un motif qui exige `', 'clé')` n'en capture aucune des deux :
+  `FlashKeyTest` restait vert avec deux clés absentes du catalogue, affichées BRUTES dans le toast.
+  Il capture désormais l'argument entier puis toutes les chaînes qu'il contient.
+- **`$catalogue->has()` suit la chaîne de repli, `defines()` non.** Un test qui vérifie une clé
+  avec `has()` sur la locale non-défaut la trouve dans `en` et passe au vert, pendant que l'écran
+  français affiche l'anglais. Et vérifier la seule locale par défaut ne prouve rien de l'autre :
+  `FlashKeyTest` boucle sur `BackofficeLocales::SUPPORTED` avec `defines()`.
+- **Une carte de statuts n'atteint le navigateur que si le gabarit la DEMANDE.**
+  `_translations.html.twig` ne descend que le socle ; sans
+  `extra_translations: datatable_status_map(['<carte>'])`, le rendu de badge affiche la clé dans la
+  cellule — avec la bonne couleur, ce qui achève de masquer le défaut. Trois surfaces vont
+  ensemble : la carte, le rendu, le transport.
+- **Un `dateRangeFilter()` sans `DateFilter` sur l'entité ne filtre RIEN.** API Platform jette en
+  silence un paramètre qu'aucun filtre ne réclame : la barre s'ouvre, se remplit, affiche
+  « depuis le … » et ne retire aucune ligne (103 avant, 103 après, mesuré). `OrderFilter` ne
+  remplace pas : il trie. `DateRangeFilterMappingTest` vérifie les deux sens — toute colonne date a
+  son filtre, tout filtre a son mapping.
+- **`ui-bundle` doit être dans le contenu scanné par Tailwind.** Il ne livre ni JS ni CSS, donc il
+  n'a rien à faire dans `FRONT_BUNDLES` — mais son thème de formulaire est le seul endroit où
+  passent les classes des `Custom*Type`. Sans lui, elles sont purgées, et le symptôme n'est pas une
+  erreur : c'est une icône NOIRE au lieu de grise sur chaque champ à add-on. D'où `TEMPLATE_BUNDLES`
+  dans `bundle-assets.js`, et une résolution qui teste la RACINE du paquet et non son `assets/` —
+  un bundle sans `assets/` faisait sinon retomber tous ses chemins sur `../BUNDLES/`, présent chez
+  le développeur et absent en CI.
+- **Un pare-feu `stateless` vide le stockage de jetons à chaque requête.** Un test qui fait
+  `loginUser()` puis DEUX appels à `/api/…` échoue sur le second en 401 « JWT Token not found », ce
+  qui ressemble à un défaut d'autorisation. Signer chaque appel avec un JWT
+  (`JWTTokenManagerInterface::create()`) — c'est aussi ce que fait la vraie table, via
+  `window.jwtToken`.
+
+Et une règle d'interface, figée par `ActionButtonTest` : **tout bouton d'action porte son icône et
+sa variante de couleur**, les mêmes que la même action ailleurs — enregistrer `btn-primary` +
+`fa-floppy-disk`, annuler `btn-secondary` + `fa-xmark`, activer `btn-success` + `fa-circle-check`,
+désactiver `btn-warning` + `fa-ban`, supprimer `btn-danger` + `fa-trash-can`. « Voir » et
+« Modifier » restent sobres : ce sont des lectures. Un « Désactiver » gris qui ouvre une modale
+orange se lit comme deux actions distinctes.

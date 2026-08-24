@@ -55,3 +55,11 @@ datatable:
     save: "Save the filters on screen"
     default: "Default view on opening"
     delete: "Delete the view"
+
+  # Les rôles d'un compte, lus par le rendu `roleBadges` (`assets/datatable/renderers.js`).
+  # Ils vivent ici et non dans `messages` parce que leur clé porte le préfixe `datatable.` :
+  # la carte `user_role` hérite du `translation_domain` du bundle, et les chercher ailleurs
+  # rendrait le code brut dans la cellule.
+  user_role:
+    ROLE_ADMIN: Administrator
+    ROLE_SUPER_ADMIN: Super administrator

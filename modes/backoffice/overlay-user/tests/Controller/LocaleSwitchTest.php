@@ -104,6 +104,27 @@ final class LocaleSwitchTest extends WebTestCase
 
         self::assertSame(1, $crawler->filter('[data-controller="ui--locale-switcher"]')->count());
         self::assertSame(2, $crawler->filter('button[data-locale]')->count(), 'Une entrée par langue déclarée.');
+
+        // Un drapeau par entrée, plus celui du déclencheur : le sélecteur se lit d'un coup d'œil
+        // sans avoir à lire. Le rendre, et pas seulement vérifier la table de l'extension — un
+        // gabarit qu'aucun test ne rend est un gabarit dont on ne sait rien.
+        self::assertSame(
+            3,
+            $crawler->filter('[data-controller="ui--locale-switcher"] svg')->count(),
+            'Un drapeau par langue, plus celui de la langue courante sur le déclencheur.',
+        );
+    }
+
+    /** Le sélecteur des pages d'authentification porte les mêmes drapeaux : c'est le même partial. */
+    public function testTheSwitcherOnTheSignInPageAlsoShowsFlags(): void
+    {
+        $client = static::createClient();
+        $client->disableReboot();
+        $this->createSchema();
+
+        $crawler = $client->request('GET', '/login');
+
+        self::assertSame(3, $crawler->filter('[data-controller="ui--locale-switcher"] svg')->count());
     }
 
     /** Le jeton se lit sur une page rendue : le stockage CSRF est la session. */

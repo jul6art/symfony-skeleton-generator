@@ -92,7 +92,9 @@
 
             {% if is_granted(constant('App\\Security\\PermissionCodes::PERMISSION_UPDATE')) %}
                 <div class="form-actions">
-                    <button type="submit" class="btn-primary">{{ 'action.save'|trans({}, 'messages') }}</button>
+                    <button type="submit" class="btn-primary">
+                        <i class="fa-solid fa-floppy-disk"></i> {{ 'action.save'|trans({}, 'messages') }}
+                    </button>
                 </div>
             {% endif %}
         </form>

@@ -28,9 +28,6 @@ user:
   action:
     bulk_activate: Activate selection
     bulk_deactivate: Deactivate selection
-  flash:
-    activated: User activated.
-    deactivated: User deactivated.
   show:
     info_title: Information
   confirm:

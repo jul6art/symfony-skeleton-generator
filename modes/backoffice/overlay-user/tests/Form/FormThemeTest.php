@@ -75,6 +75,41 @@ final class FormThemeTest extends WebTestCase
     }
 
     /**
+     * Un champ à add-on réserve la place de son icône, et l'icône se colore.
+     *
+     * ⚠️ Les deux défauts que ce test fige ont vécu ensemble sur les trois écrans
+     * d'authentification (2026-08-24). L'add-on est posé en `absolute`, donc il RECOUVRE le champ :
+     * sans gouttière, le texte saisi passe dessous — 8 px de chevauchement mesurés. Et il se
+     * colorait en `text-gray-400`, une palette qu'aucun fichier scanné par Tailwind n'utilise :
+     * la classe était purgée, l'icône héritait de la couleur du texte, NOIRE en clair.
+     *
+     * Le second n'est vérifiable ici que parce que le balisage vient du thème ; que la classe soit
+     * réellement COMPILÉE dépend de `bundle-assets.js`, et cela se voit à l'écran.
+     */
+    public function testAFieldWithAnAddOnReservesItsGutterAndColoursIt(): void
+    {
+        $client = static::createClient();
+        $crawler = $client->request('GET', '/register');
+
+        self::assertResponseIsSuccessful();
+
+        self::assertSame(
+            1,
+            $crawler->filter('input[type="email"].form-control.pr-10')->count(),
+            'Le champ e-mail doit réserver la place de son enveloppe, sinon la saisie passe dessous.',
+        );
+        self::assertSame(
+            2,
+            $crawler->filter('input[type="password"].form-control.pr-10')->count(),
+            'Idem pour les deux bornes du mot de passe et leur œil.',
+        );
+
+        $html = (string) $client->getResponse()->getContent();
+        self::assertStringContainsString('text-slate-400', $html, 'Les add-ons se colorent dans le vocabulaire de la coquille.');
+        self::assertStringNotContainsString('text-gray-', $html, 'La palette `gray` n\'existe dans aucune feuille de ce projet.');
+    }
+
+    /**
      * Un champ de mot de passe prend `CustomPasswordType` d'`ui-bundle`, jamais le `PasswordType`
      * natif : c'est le FAIL A1 de `form-checklist.md`, « l'erreur la plus fréquente ». Le type
      * dédié apporte l'œil qui révèle la saisie — et le contrôleur `form--password` qui l'anime.

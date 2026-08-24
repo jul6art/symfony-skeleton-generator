@@ -62,7 +62,14 @@
                               data-ui--modal-cancel-label-value="{{ 'action.cancel'|trans({}, 'messages') }}"
                               data-ui--modal-confirm-variant-value="{{ user.isActive ? 'warning' : 'primary' }}">
                             <input type="hidden" name="_token" value="{{ csrf_token('datatable_action') }}">
-                            <button type="submit" class="btn-secondary">{{ toggleLabel|trans({}, 'messages') }}</button>
+                            {# ⚠️ La variante du BOUTON suit celle de la modale qu'il ouvre (juste au-dessus,
+                               `confirm-variant`) et celle de la même action dans le menu d'une ligne de la
+                               table. Un « Désactiver » gris qui ouvre une modale orange se lit comme deux
+                               actions différentes — c'est le défaut que l'item D8 de la checklist ferme. #}
+                            <button type="submit" class="{{ user.isActive ? 'btn-warning' : 'btn-success' }}">
+                                <i class="fa-solid {{ user.isActive ? 'fa-ban' : 'fa-circle-check' }}"></i>
+                                {{ toggleLabel|trans({}, 'messages') }}
+                            </button>
                         </form>
                     {% endif %}
                 </div>

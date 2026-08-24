@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Translation;
 
 use App\Security\BackofficeLocales;
+use App\Twig\LocaleExtension;
 use PHPUnit\Framework\Attributes\CoversNothing;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Translation\TranslatorBagInterface;
@@ -50,5 +51,37 @@ final class LocaleCatalogueTest extends KernelTestCase
                 );
             }
         }
+    }
+
+    /**
+     * Chaque langue offerte a son DRAPEAU. Une liste de langues et une table de drapeaux qui
+     * divergent donnent un sélecteur à trou : deux entrées illustrées, la troisième nue — un défaut
+     * que seul l'écran montre, et seulement pour qui parle la langue ajoutée.
+     */
+    public function testEveryOfferedLocaleHasAFlag(): void
+    {
+        self::bootKernel();
+        $extension = static::getContainer()->get(LocaleExtension::class);
+
+        foreach (BackofficeLocales::SUPPORTED as $locale) {
+            $flag = $extension->flag($locale);
+
+            self::assertNotSame('', $flag, sprintf('Aucun drapeau pour « %s ».', $locale));
+            self::assertStringContainsString('<svg', $flag, sprintf('Le drapeau de « %s » doit être un SVG.', $locale));
+
+            // ⚠️ SVG et non emoji : Windows ne possède pas les glyphes de drapeaux nationaux, et
+            // 🇫🇷 y rend « FR » en lettres. Le même écran serait illustré chez les uns, textuel
+            // chez les autres, sans que rien ne le signale côté serveur.
+            self::assertStringNotContainsString('🇫', $flag);
+            self::assertStringContainsString('aria-hidden="true"', $flag, 'Décoratif : la langue est déjà nommée à côté.');
+        }
+    }
+
+    /** Une langue inconnue ne fait pas tomber le sélecteur : elle perd son drapeau, rien de plus. */
+    public function testAnUnknownLocaleDegradesToNoFlag(): void
+    {
+        self::bootKernel();
+
+        self::assertSame('', static::getContainer()->get(LocaleExtension::class)->flag('zz'));
     }
 }

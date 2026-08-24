@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Translation;
 
+use App\Security\BackofficeLocales;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Translation\TranslatorBagInterface;
@@ -28,17 +29,25 @@ final class FlashKeyTest extends KernelTestCase
         $translator = static::getContainer()->get(TranslatorInterface::class);
         self::assertInstanceOf(TranslatorBagInterface::class, $translator);
 
-        // Pas d'`assertIsString` : l'extension Symfony de PHPStan lit le conteneur compilé et
-        // connaît déjà le type du paramètre — l'assertion serait toujours vraie, donc du bruit.
-        $locale = (string) static::getContainer()->getParameter('kernel.default_locale');
-
-        $catalogue = $translator->getCatalogue($locale);
+        // ⚠️ TOUTES les langues, pas seulement celle par défaut. Un catalogue vérifié seul laisse
+        // l'autre diverger, et le traducteur retombe SILENCIEUSEMENT sur le repli : l'utilisateur
+        // qui a choisi le français lit l'anglais, ou la clé. Vérifié le 2026-08-24 : retirer une
+        // clé de `messages.fr.yaml` laissait ce test vert, puisque le défaut est `en`.
+        // Même règle que `ConstraintKeyTest`, qui contrôle ses deux locales depuis le 2026-08-23.
         $missing = [];
 
-        foreach ($this->flashKeys() as $file => $keys) {
-            foreach ($keys as $key) {
-                if (!$catalogue->has($key, 'messages')) {
-                    $missing[] = sprintf('%s : « %s »', $file, $key);
+        foreach (BackofficeLocales::SUPPORTED as $locale) {
+            $catalogue = $translator->getCatalogue($locale);
+
+            foreach ($this->flashKeys() as $file => $keys) {
+                foreach ($keys as $key) {
+                    // ⚠️ `defines()` et NON `has()` : `has()` suit la chaîne de repli, donc une clé
+                    // absente de `messages.fr.yaml` mais présente en `en` lui répond « oui ». Le
+                    // test restait vert sur la locale non-défaut pendant que l'écran français
+                    // affichait l'anglais — c'est-à-dire précisément ce qu'il doit attraper.
+                    if (!$catalogue->defines($key, 'messages')) {
+                        $missing[] = sprintf('[%s] %s : « %s »', $locale, $file, $key);
+                    }
                 }
             }
         }
@@ -85,13 +94,24 @@ final class FlashKeyTest extends KernelTestCase
                 $source,
                 $matches,
             );
-            preg_match_all(
-                '/\$this->addFlash\(\s*\'[^\']+\'\s*,\s*\'([^\']+)\'\s*\)/',
-                $source,
-                $nativeMatches,
-            );
+            // ⚠️ La clé n'est pas toujours un littéral SEUL. Dès qu'une route bascule un statut,
+            // la forme courante est `addFlash('success', $actif ? 'x.activated' : 'x.deactivated')`
+            // — et un motif qui exige `', 'clé')` n'en capture aucune des deux. C'était le cas de
+            // `UserController::toggle()` et `runBulk()` : quatre routes, deux clés absentes du
+            // catalogue, suite verte et clé brute dans le toast (vu le 2026-08-24).
+            //
+            // On capture donc l'ARGUMENT entier, puis toutes les chaînes qu'il contient : deux pour
+            // un ternaire, une pour un littéral. Le motif de clé (`a.b_c`) écarte ce qui n'en est
+            // pas — une concaténation dynamique reste, elle, hors de portée d'une analyse statique.
+            preg_match_all('/\$this->addFlash\(\s*\'[^\']+\'\s*,\s*(.+?)\);/', $source, $nativeMatches);
 
-            $found = array_merge($matches[1], $nativeMatches[1]);
+            $nativeKeys = [];
+            foreach ($nativeMatches[1] as $argument) {
+                preg_match_all('/\'([a-z][a-z0-9_]*(?:\.[a-z0-9_]+)+)\'/', $argument, $literals);
+                $nativeKeys = array_merge($nativeKeys, $literals[1]);
+            }
+
+            $found = array_merge($matches[1], $nativeKeys);
             if ([] !== $found) {
                 $keys[$file->getRelativePathname()] = array_values(array_unique($found));
             }

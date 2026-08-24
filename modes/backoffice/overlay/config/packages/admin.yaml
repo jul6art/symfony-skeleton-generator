@@ -18,10 +18,14 @@ admin:
         # écrit sous le logo (pages d'auth) et à côté (barre latérale) : le cas d'un logo qui est
         # déjà un wordmark.
         #
-        # ⚠️ La clé est COMMENTÉE, pas posée à `~`. Le nœud du bundle est un `integerNode()` dont le
-        # défaut est null : le défaut ne s'applique qu'en l'ABSENCE de la clé, et un `~` explicite
-        # est refusé à la compilation du conteneur (« Expected int, but got null »). Tout projet
-        # généré échouait alors au boot, y compris `debug:router`.
+        # La clé est COMMENTÉE et non posée à `~` : l'absence dit la même chose, et un exemple
+        # chiffré est plus utile à décommenter qu'un `~` à remplacer.
+        #
+        # ⚠️ Historique, parce qu'il se reproduirait : jusqu'à `admin-bundle` v1.4.1, ce nœud était
+        # un `integerNode()->defaultNull()`, qui REFUSE un null explicite — le défaut ne
+        # s'applique qu'en l'ABSENCE de la clé. Le `~` qui était écrit ici faisait échouer TOUT
+        # projet généré à la compilation du conteneur (« Expected int, but got null »),
+        # `debug:router` compris. Le nœud accepte désormais les deux écritures.
         # logo_width: 360
         show_name: true
 

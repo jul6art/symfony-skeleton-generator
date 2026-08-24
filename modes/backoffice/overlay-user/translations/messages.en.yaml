@@ -69,6 +69,8 @@ security.reset_password.flash.invalid_token: This reset link is invalid or has e
 security.reset_password.flash.changed: Password changed, you can sign in.
 user.flash.created: User created.
 user.flash.updated: User updated.
+user.flash.activated: User activated.
+user.flash.deactivated: User deactivated.
 user.flash.cannot_delete_self: You cannot delete your own account.
 user.flash.deleted: User deleted.
 permission.flash.saved: Permissions saved.
@@ -83,10 +85,6 @@ form.file.selected: Selected file
 # Appearance preferences saved. The key is emitted by `admin-bundle`, whose toast partial
 # translates in `messages`: without this entry it shows up RAW.
 appearance.flash.saved: Preferences saved.
-# Libellés de la carte `user_role` (config/packages/datatable.yaml), lus par le rendu
-# `roleBadges`. Une carte sans ses libellés affiche le code brut dans la cellule.
-datatable.user_role.ROLE_ADMIN: Administrator
-datatable.user_role.ROLE_SUPER_ADMIN: Super administrator
 # Unités de taille de fichier, passées au contrôleur `form--dropzone` : un bundle ne connaît
 # pas la langue de l'application qui l'embarque.
 form.file.units: B,KB,MB,GB

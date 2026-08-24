@@ -37,8 +37,12 @@
                 </fieldset>
 
                 <div class="form-actions">
-                    <button type="submit" class="btn-primary">{{ 'action.save'|trans({}, 'messages') }}</button>
-                    <a href="{{ path('admin_user_index') }}" class="btn-secondary">{{ 'action.cancel'|trans({}, 'messages') }}</a>
+                    <button type="submit" class="btn-primary">
+                        <i class="fa-solid fa-floppy-disk"></i> {{ 'action.save'|trans({}, 'messages') }}
+                    </button>
+                    <a href="{{ path('admin_user_index') }}" class="btn-secondary">
+                        <i class="fa-solid fa-xmark"></i> {{ 'action.cancel'|trans({}, 'messages') }}
+                    </a>
                 </div>
             {{ form_end(form) }}
         </div>

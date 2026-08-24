@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\DateFilter;
 use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\ApiFilter;
@@ -73,6 +74,13 @@ use function in_array;
 #[ApiFilter(SearchFilter::class, properties: ['email' => 'partial', 'isActive' => 'exact', 'roles' => 'partial'])]
 #[ApiFilter(OrSearchFilter::class, properties: ['email', 'firstName', 'lastName'])]
 #[ApiFilter(OrderFilter::class, properties: ['id', 'email', 'firstName', 'lastName', 'createdAt'])]
+// ⚠️ Sans ce filtre, `createdAt[after]` et `createdAt[before]` sont IGNORÉS : API Platform jette
+// en silence un paramètre qu'aucun filtre ne réclame. La barre de filtres s'ouvrait, se
+// remplissait, affichait « depuis le … » et ne retirait AUCUNE ligne — 103 avant, 103 après un
+// `before=2020-01-01` (mesuré contre l'API le 2026-08-24). `OrderFilter` ne remplace rien : il
+// trie, il ne filtre pas. Toute colonne date déclarant un `dateRangeFilter()` côté provider a son
+// entrée ici, et `DateRangeFilterMappingTest` fait échouer la gate si les deux divergent.
+#[ApiFilter(DateFilter::class, properties: ['createdAt'])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface, AclUserInterface, AdminUserInterface, AppearanceAwareInterface
 {
     /**
