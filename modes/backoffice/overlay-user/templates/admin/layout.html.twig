@@ -33,9 +33,17 @@
     ⚠️ `admin.branding.logo_width` ne corrige PAS ça : cette clé n'est lue que par la carte
     d'authentification et par le layout d'e-mail.
 
-    Ce bloc cale à GAUCHE et récupère quelques pixels de hauteur. Pour occuper toute la largeur,
-    il faut un logo au rapport ≥ 5:1 — c'est une décision de branding, pas un correctif. Rognez
-    aussi les marges transparentes de votre fichier : elles comptent dans le rapport.
+    Ce bloc cale à GAUCHE et récupère quelques pixels de hauteur. Le reste tient au FICHIER : dans
+    un bandeau de 56 px, un logo occupe `hauteur × rapport` de large, et rien d'autre ne le change.
+    Mesuré chez wovex dans la même boîte de 232 px :
+
+        verrou complet (icône + nom + baseline)  2,88:1  →  115 px  (52 %, centré)
+        idem, marges transparentes rognées       3,50:1  →  154 px  (67 %)
+        wordmark SEUL (ni icône ni baseline)     5,00:1  →  220 px  (95 %)
+
+    Donnez donc à `admin.branding.logo` un wordmark au rapport ≥ 5:1 pour la barre latérale, et
+    gardez le verrou complet pour la carte d'authentification et l'e-mail, où c'est la largeur qui
+    contraint et pas la hauteur. Rognez les marges transparentes : elles comptent dans le rapport.
 
     ⚠️ `h-14` NE BOUGE PAS : la barre du haut est `h-14` EN DUR dans le gabarit du bundle, hors de
     tout bloc. La changer ici désalignerait les deux bordures sur toute la largeur de l'écran.
