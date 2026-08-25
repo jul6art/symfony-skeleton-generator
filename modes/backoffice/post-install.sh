@@ -27,10 +27,20 @@ if [ -f importmap.php ]; then
 fi
 
 # ⚠️ Le host des URLs générées HORS requête. Une commande console n'a pas de requête : `url()` et
-# `absolute_url()` y retombent sur `DEFAULT_URI`. Laissé à « http://localhost », un mail envoyé
-# depuis le terminal part avec des liens qui ne mènent nulle part — et un logo en « http://:/ ».
-# La recipe de Flex pose la clé ; on la commente pour que le premier déploiement la voie.
-if [ -f .env ] && ! grep -q '# DEFAULT_URI — le host' .env; then
-    printf '    .env : DEFAULT_URI commenté\n'
-    printf '\n# DEFAULT_URI — le host des URLs générées hors requête (mails envoyés par une\n# commande, notifications). À régler sur l'"'"'URL publique du projet.\n' >> .env
+# `absolute_url()` y retombent sur `DEFAULT_URI`. Laissé au défaut de la recipe Flex
+# (« http://localhost »), un mail envoyé depuis le terminal part avec des liens qui ne mènent nulle
+# part — et un logo en « http://:/ » ; l'URL de `app:dev:login-link`, elle, sort inutilisable.
+#
+# ⚠️ On POSE la valeur au lieu de seulement la commenter. Un commentaire laisse la clé fausse, et
+# une clé fausse ne se voit pas : elle est syntaxiquement correcte, le conteneur compile, et le
+# défaut n'apparaît qu'au premier lien cliqué. Constaté deux fois : corrigé à la main dans wovex le
+# 2026-08-23, et encore au défaut de la recipe dans superp le 2026-08-25. C'est exactement la règle
+# du journal d'apprentissage : « ce qui a été ajouté à un projet à la main doit remonter dans le
+# hook, ou le défaut attend le prochain projet généré ».
+#
+# La convention de cet écosystème est `https://<projet>.localhost` (Traefik). Un projet qui sert
+# ailleurs corrige une ligne visible, plutôt que de découvrir une ligne fausse.
+if [ -f .env ] && grep -q '^DEFAULT_URI=' .env; then
+    printf '    .env : DEFAULT_URI réglé sur https://%s.localhost\n' "${PROJECT_NAME:-app}"
+    sed -i.bak "s#^DEFAULT_URI=.*#DEFAULT_URI=https://${PROJECT_NAME:-app}.localhost#" .env && rm -f .env.bak
 fi

@@ -68,3 +68,34 @@ when@test:
                 cost: 4
                 time_cost: 3
                 memory_cost: 10
+
+# ── Connexion sans mot de passe, en DÉVELOPPEMENT uniquement ────────────────────────────────────
+#
+# Ouvre une session à partir d'une URL signée, fabriquée en console :
+#
+#     symfony console app:dev:login-link manager@example.test
+#
+# Sert à regarder les écrans tourner avec n'importe quel compte de fixtures — sans avoir à taper
+# d'identifiants, et sans jamais faire transiter de mot de passe.
+#
+# ⚠️ `when@dev` est la garde, et elle est double : la ROUTE est déclarée sous `when@dev`
+# (`config/routes/dev_login_link.yaml`) et le contrôleur comme la commande portent `#[When('dev')]`.
+# Une route qui authentifie sur simple présentation d'une signature n'a rien à faire ailleurs.
+# `DevLoginLinkTest` vérifie qu'aucune des deux n'existe hors développement.
+#
+# ⚠️ `signature_properties: ['id', 'password']` : inclure le hachage du mot de passe invalide tous
+# les liens en cours dès que le mot de passe change. Sans lui, un lien fabriqué avant une
+# réinitialisation resterait valable après.
+#
+# ⚠️ `DEFAULT_URI` (`.env`) doit porter le VRAI hôte du projet : l'URL est fabriquée hors requête,
+# donc c'est lui qui en donne le schéma et le domaine. Laissé au défaut de la recipe
+# (`http://localhost`), le lien sort inutilisable — défaut trouvé dans superp le 2026-08-25.
+when@dev:
+    security:
+        firewalls:
+            main:
+                login_link:
+                    check_route: dev_login_link_check
+                    signature_properties: ['id', 'password']
+                    lifetime: 900
+                    max_uses: 1

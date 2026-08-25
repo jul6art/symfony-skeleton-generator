@@ -225,3 +225,32 @@ sa variante de couleur**, les mêmes que la même action ailleurs — enregistre
 désactiver `btn-warning` + `fa-ban`, supprimer `btn-danger` + `fa-trash-can`. « Voir » et
 « Modifier » restent sobres : ce sont des lectures. Un « Désactiver » gris qui ouvre une modale
 orange se lit comme deux actions distinctes.
+
+## Se connecter sans mot de passe, en développement
+
+Le mode livre `app:dev:login-link <email>` : une URL signée qui ouvre une session pour n'importe
+quel compte de fixtures, sans rien taper. Elle sert à parcourir les écrans, et à le faire avec un
+compte autre que le sien — un rôle sans permission, un compte inactif, un autre locataire.
+
+```
+symfony console app:dev:login-link manager@example.test
+```
+
+- **La garde est DOUBLE et elle n'est pas décorative.** La route vit sous `when@dev`
+  (`config/routes/dev_login_link.yaml`), le contrôleur et la commande portent `#[When('dev')]`. Une
+  route qui authentifie sur simple présentation d'une signature n'a rien à faire en production, et
+  `DevLoginLinkTest` vérifie qu'aucune des deux n'existe hors développement.
+- **Pas d'attribut `#[Route]` sur le contrôleur**, jamais : `config/routes.yaml` scanne
+  `src/Controller/` dans TOUS les environnements, donc un attribut ferait exister l'URL en prod.
+  C'est le fichier YAML `when@dev` qui déclare la route — les deux verrous disent la même chose.
+- **Le service s'injecte par son NOM** (`security.authenticator.login_link_handler.main`) : Symfony
+  en fabrique un par pare-feu, donc `LoginLinkHandlerInterface` seule est ambiguë et l'injection
+  échoue avec « cannot be determined ».
+- **`DEFAULT_URI` doit porter le vrai hôte du projet.** L'URL est fabriquée hors requête : c'est lui
+  qui en donne le schéma et le domaine. Le hook du mode le règle désormais sur
+  `https://<projet>.localhost` — laissé au défaut de la recipe (`http://localhost`), le lien sort
+  inutilisable, et les mails transactionnels avec.
+- **Si le projet redirige mal après connexion**, brancher sur `login_link` le même `success_handler`
+  que `form_login`. Sans lui, le lien retombe sur `/`, qui n'est pas toujours le bon point d'entrée
+  — dans un projet à espaces multiples, la session EST ouverte mais la page répond 404, ce qui se
+  lit comme « le lien n'a pas marché ».

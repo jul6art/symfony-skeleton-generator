@@ -1,0 +1,15 @@
+# Le lien de connexion de DÉVELOPPEMENT : ouvrir une session sans saisir de mot de passe.
+#
+# L'URL est fabriquée en console (`app:dev:login-link <email>`) et signée ; l'authentificateur
+# `login_link` du pare-feu `main` l'intercepte ici. Sert à regarder les écrans tourner avec
+# n'importe quel compte de fixtures, sans identifiants à taper.
+#
+# ⚠️ `when@dev` n'est pas une précaution de style : une route qui authentifie sur simple
+# présentation d'une signature n'a rien à faire en production. Le pendant côté configuration est
+# dans `config/packages/security.yaml` (bloc `when@dev`), et `DevLoginLinkTest` vérifie que ni la
+# route ni la commande n'existent hors développement.
+when@dev:
+    dev_login_link_check:
+        path: /login-link/check
+        controller: App\Controller\Dev\LoginLinkController
+        methods: [GET]
