@@ -206,6 +206,16 @@ qu'il génère.
   « depuis le … » et ne retire aucune ligne (103 avant, 103 après, mesuré). `OrderFilter` ne
   remplace pas : il trie. `DateRangeFilterMappingTest` vérifie les deux sens — toute colonne date a
   son filtre, tout filtre a son mapping.
+- **La suite tourne EN PARALLÈLE** (`./paratest.sh`, appelé par `make test`) : sur un projet de
+  deux cents tests, neuf secondes au lieu de soixante-dix, donc un `make qa` complet en une
+  dizaine. Rien à isoler entre les processus — la suite tourne sur SQLite en mémoire et chaque test
+  crée son schéma par `SchemaTool`, donc chaque processus a déjà sa base. ⚠️ **Ne pas recopier la
+  mécanique de bases modèles d'un projet PostgreSQL** : elle résout le partage d'un serveur de
+  bases, problème que ce mode n'a pas. Le cache de test est réchauffé UNE fois avant les workers,
+  sans quoi N processus compilent le conteneur dans le même dossier — course rare, silencieuse, et
+  qui se manifeste par un rouge irreproductible. `make test-serial` garde le mono-thread : un test
+  qui ne tombe qu'en parallèle dépend d'un état partagé entre processus, et c'est LUI qu'il faut
+  corriger.
 - **Un `apiFilter()` promet DEUX correspondances, et chacune peut être fausse seule.** (1) Son
   `param` doit être filtrable sur la collection LISTÉE — un chemin qui traverse une relation
   s'écrit en entier (`site.customer`, jamais `customer`) ; (2) son `searchKey` doit être réclamé

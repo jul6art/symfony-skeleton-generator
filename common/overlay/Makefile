@@ -9,7 +9,7 @@ COMPOSER := symfony composer
 CONSOLE  := symfony console
 
 .PHONY: help install start stop logs cc db-create db-diff db-migrate db-reset \
-        fixtures test cs cs-fix stan qa
+        fixtures test test-serial cs cs-fix stan qa
 
 help: ## Liste les cibles disponibles
 	@grep -hE '^[a-zA-Z0-9_-]+:.*?## ' $(MAKEFILE_LIST) \
@@ -48,7 +48,17 @@ db-reset: ## Recrée la base à zéro (destructif)
 fixtures: ## Recharge les fixtures
 	$(CONSOLE) doctrine:fixtures:load --no-interaction
 
-test: ## Lance les tests
+# Le lanceur parallèle si le mode en fournit un, le lanceur simple sinon. La condition évite de
+# forker ce Makefile par mode : un mode dont la suite s'isole naturellement (SQLite en mémoire)
+# dépose son `paratest.sh` dans son overlay et gagne la parallélisation ; les autres gardent
+# PHPUnit, sans qu'aucune cible ne mente sur ce qu'elle fait.
+test: ## Lance les tests (en parallèle si paratest.sh est présent)
+	@if [ -x ./paratest.sh ]; then ./paratest.sh; else $(PHP) vendor/bin/phpunit; fi
+
+# ⚠️ Le mono-thread reste la RÉFÉRENCE. Un test qui ne tombe qu'en parallèle dépend d'un état
+# partagé entre processus — un fichier à chemin fixe, un port, une horloge — et c'est LUI qu'il
+# faut corriger : le rejouer ici sert à le confirmer, pas à s'en dispenser.
+test-serial: ## Lance les tests en un seul processus (référence, pour reproduire un échec)
 	$(PHP) vendor/bin/phpunit
 
 cs: ## Vérifie le style de code

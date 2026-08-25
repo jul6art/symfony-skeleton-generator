@@ -1,3 +1,4 @@
 symfony/browser-kit
 symfony/css-selector
 doctrine/doctrine-fixtures-bundle
+brianium/paratest                   # suite parallèle (voir paratest.sh) — la suite tourne sur SQLite en mémoire, donc rien à isoler
