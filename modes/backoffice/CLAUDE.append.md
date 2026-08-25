@@ -216,6 +216,29 @@ qu'il génère.
   qui se manifeste par un rouge irreproductible. `make test-serial` garde le mono-thread : un test
   qui ne tombe qu'en parallèle dépend d'un état partagé entre processus, et c'est LUI qu'il faut
   corriger.
+- **`column()` rend une colonne triable PAR DÉFAUT** (`sortField ?? $data`) : déclarer une colonne
+  suffit à PROMETTRE un tri. Si l'entité ne réclame pas la propriété dans son `OrderFilter`, API
+  Platform jette le paramètre en silence — l'en-tête s'allume, passe en « descendant », et l'ordre
+  ne bouge pas. Une valeur calculée en PHP (`fullName`) n'est ordonnable que par le
+  `ConcatOrderFilter` d'`api-bundle`. Figé par `SortFieldMappingTest` ; vérifié à l'écran en
+  cliquant l'en-tête DEUX fois — l'ordre ascendant coïncide souvent avec l'ordre par défaut.
+- **Une entité supprimable en douceur descend DEUX champs, pas un.** `deletedAt` est lu par
+  `createdRow` du contrôleur Stimulus pour TEINTER la ligne ; `isDeleted` est lu par les
+  `condition` des actions. Il manquait toujours l'un des deux sur le projet d'origine : sans
+  `deletedAt`, une ligne supprimée s'affiche comme une ligne vivante ; sans `isDeleted`,
+  « Restaurer » n'apparaît JAMAIS et « Supprimer » s'offre sur une ligne morte (une condition qui
+  lit un champ absent vaut `undefined`, donc `!row.isDeleted` est toujours vrai). Figé par
+  `SoftDeletableExposureTest`, qui DÉCOUVRE les entités au lieu de les lister.
+  ⚠️ Et une colonne UNIQUE libérée à la suppression (`Strings::markDeleted()`) doit être RENDUE à
+  la restauration (`Strings::restoreDeleted()`), après vérification qu'elle n'a pas été reprise :
+  un compte restauré avec l'adresse `x@y_DELETED_1787…` est vivant, listé, et incapable de se
+  connecter.
+- **Un `<select>` de plusieurs centaines d'options ne se parcourt pas.** Le contrôleur
+  `ui--select2` est enregistré par le squelette et n'est monté nulle part : le brancher par les
+  `attr` du champ (`data-controller`, `data-ui--select2-url-value`,
+  `data-ui--select2-search-key-value="search"`). ⚠️ Le `query_builder` RESTE — le Select2 borne ce
+  qui est PROPOSÉ, le formulaire ce qui est ACCEPTÉ. N/A sur un `ChoiceType` en `expanded: true` :
+  ce sont des cases à cocher, que le thème rend en interrupteurs.
 - **Un `apiFilter()` promet DEUX correspondances, et chacune peut être fausse seule.** (1) Son
   `param` doit être filtrable sur la collection LISTÉE — un chemin qui traverse une relation
   s'écrit en entier (`site.customer`, jamais `customer`) ; (2) son `searchKey` doit être réclamé
