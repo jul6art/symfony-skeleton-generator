@@ -45,12 +45,27 @@ use function sprintf;
 final class DateRangeFilterMappingTest extends KernelTestCase
 {
     /**
-     * Les rendus qui font d'une colonne une colonne de DATE. Le vocabulaire vient du contrôleur
-     * Stimulus du datatable-bundle, qui les résout en formatage de date.
+     * Les rendus de date que le socle sait RÉSOUDRE. Le vocabulaire vient du contrôleur Stimulus du
+     * datatable-bundle (`getRenderer()`), qui n'en expose que deux.
+     *
+     * ⚠️ Cette liste contenait `datetime` et `dateTime`, qui n'existent NULLE PART — un rendu
+     * inconnu retombe sur `null` et la cellule affiche la valeur ISO brute. Et elle oubliait
+     * `dateOnly`, donc une colonne de date pure échappait à la règle n° 1. Les deux erreurs sont
+     * sans effet ici, où la seule colonne date est rendue par `date` ; elles se paieraient à la
+     * première colonne `date_immutable` ajoutée, et un garde-fou qui ne garde pas est pire que pas
+     * de garde-fou (superp, rapport 2026-08-24 P2).
      *
      * @var list<string>
      */
-    private const array DATE_RENDERERS = ['date', 'datetime', 'dateTime'];
+    private const array DATE_RENDERERS = ['date', 'dateOnly'];
+
+    /**
+     * Tout ce qui, dans une clef `render`, DÉSIGNE une date — y compris les rendus inexistants, que
+     * le test doit voir pour les refuser.
+     *
+     * @var list<string>
+     */
+    private const array DATE_LIKE_RENDERERS = ['date', 'dateOnly', 'datetime', 'dateTime'];
 
     /**
      * Provider → entité qu'il liste.
@@ -114,6 +129,42 @@ final class DateRangeFilterMappingTest extends KernelTestCase
     }
 
     /**
+     * Une colonne ne déclare pas un rendu que le socle ne sait pas résoudre.
+     *
+     * `render: 'datetime'` n'existe pas : `getRenderer()` rend `null`, DataTables reçoit
+     * `render: null` et la cellule affiche l'ISO brut (`2026-08-24T14:26:58+00:00`). Rien ne le
+     * signale — ni PHPStan, ni la console du navigateur.
+     *
+     * @param class-string<AbstractDataTableConfigProvider> $providerClass
+     * @param class-string                                  $entityClass
+     */
+    #[DataProvider('providers')]
+    public function testNoColumnDeclaresARendererThatDoesNotExist(string $providerClass, string $entityClass): void
+    {
+        $provider = $this->buildProvider($providerClass);
+
+        foreach ($provider->getColumns() as $column) {
+            $render = $column['render'] ?? null;
+            if (!is_string($render) || !in_array($render, self::DATE_LIKE_RENDERERS, true)) {
+                continue;
+            }
+
+            self::assertContains(
+                $render,
+                self::DATE_RENDERERS,
+                sprintf(
+                    '%s déclare `render: \'%s\'` sur « %s » (%s). Le socle ne résout que `date` et `dateOnly` : '
+                    .'un rendu inconnu retombe sur null et la cellule affiche la valeur ISO brute.',
+                    $providerClass,
+                    $render,
+                    (string) ($column['data'] ?? '?'),
+                    $entityClass,
+                ),
+            );
+        }
+    }
+
+    /**
      * Le test ne prouve rien s'il ne regarde aucune colonne : on l'affirme plutôt que l'espérer.
      *
      * @param class-string<AbstractDataTableConfigProvider> $providerClass
@@ -155,7 +206,7 @@ final class DateRangeFilterMappingTest extends KernelTestCase
             $render = $column['render'] ?? null;
             $data = $column['data'] ?? null;
 
-            if (is_string($render) && is_string($data) && in_array($render, self::DATE_RENDERERS, true)) {
+            if (is_string($render) && is_string($data) && in_array($render, self::DATE_LIKE_RENDERERS, true)) {
                 $columns[] = $data;
             }
         }
