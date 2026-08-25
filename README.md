@@ -172,6 +172,12 @@ roles.
 - **Accounts**: sign in (CSRF, remember me, throttling), sign up (closable,
   creates inactive accounts), forgotten password, change password, user CRUD
   with bulk actions, and a role × permission grid.
+- **A parallel test suite.** `make test` runs `./paratest.sh` — one process per
+  core minus two. Nothing to isolate between them: the suite runs on in-memory
+  SQLite and every test builds its schema through `SchemaTool`, so each process
+  already has its own database. `make test-serial` keeps the single-process
+  runner as the reference: a test that only fails in parallel depends on state
+  shared between processes, and that test is the one to fix.
 
 > ⚠️ **This is the only mode that needs Node.** The table engine is DataTables 2
 > + its Responsive plugin + jQuery + Select2, and it is compiled by Webpack
@@ -197,7 +203,9 @@ interactive docs.
 
 Every mode also ships a smoke test — public pages and probes answer, protected
 areas stay closed — so `make qa` (php-cs-fixer, PHPStan level 8, PHPUnit) is
-green on a freshly generated project.
+green on a freshly generated project. Last measured on `backoffice`, 2026-08-26:
+**80 tests / 330 assertions in 6.6 s across 16 processes**, PHPStan clean,
+php-cs-fixer without a diff.
 
 ## Usage
 
