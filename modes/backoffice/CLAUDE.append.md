@@ -206,6 +206,24 @@ qu'il génère.
   « depuis le … » et ne retire aucune ligne (103 avant, 103 après, mesuré). `OrderFilter` ne
   remplace pas : il trie. `DateRangeFilterMappingTest` vérifie les deux sens — toute colonne date a
   son filtre, tout filtre a son mapping.
+- **Un `apiFilter()` promet DEUX correspondances, et chacune peut être fausse seule.** (1) Son
+  `param` doit être filtrable sur la collection LISTÉE — un chemin qui traverse une relation
+  s'écrit en entier (`site.customer`, jamais `customer`) ; (2) son `searchKey` doit être réclamé
+  par la collection INTERROGÉE, et il vaut par DÉFAUT le nom du champ affiché (`?name=…`), que
+  presque aucune ressource n'expose. Passer `searchKey: 'search'` pour viser un `OrSearchFilter`.
+  Dans les deux cas la panne est silencieuse : la liste déroulante s'ouvre, se remplit, et ne se
+  réduit JAMAIS à mesure qu'on tape ; la table affiche « filtre actif » et rend le même décompte.
+  Invisible avec six options, inutilisable au-dessus de deux cents.
+- **Un point dans un chemin de filtre ne prouve pas une relation.** `address.city` est un champ
+  d'EMBEDDABLE : Doctrine le range dans la table du porteur et l'adresse directement. Le joindre
+  lève `Association name expected` — une 500 sur une collection qui répondait parfaitement, jusqu'au
+  jour où un écran s'est servi de sa recherche. Corrigé dans `api-bundle` ≥ 1.0.1 ; la leçon reste :
+  un chemin pointé se vérifie sur les métadonnées, pas sur la forme de la chaîne.
+- **Les dates d'un tableau s'affichent en `DD/MM/YYYY HH:mm`** (`dateOnly` : `DD/MM/YYYY`), dans
+  toutes les langues — figé par `datatable-bundle` ≥ 1.4.0. Le format ne suit PAS la locale :
+  `dateStyle: 'short'` rend `8/25/26` en anglais et `25/08/26` en français, mêmes chiffres, ordre
+  inverse, et rien à l'écran ne dit lequel on lit. Un rendu maison qui reformaterait une date
+  lui-même retomberait dans le défaut.
 - **`ui-bundle` doit être dans le contenu scanné par Tailwind.** Il ne livre ni JS ni CSS, donc il
   n'a rien à faire dans `FRONT_BUNDLES` — mais son thème de formulaire est le seul endroit où
   passent les classes des `Custom*Type`. Sans lui, elles sont purgées, et le symptôme n'est pas une
