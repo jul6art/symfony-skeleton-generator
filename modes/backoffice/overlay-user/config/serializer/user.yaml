@@ -14,3 +14,15 @@ App\Entity\User:
             groups: ['user:read']
         createdAt:
             groups: ['user:read']
+        # ⚠️ `deletedAt` est OBLIGATOIRE ici, et son absence ne lève pas : une ligne supprimée
+        # s'affiche alors comme une ligne vivante. C'est `createdRow` du contrôleur Stimulus du
+        # `datatable-bundle` qui le lit pour teinter la ligne.
+        #
+        # ⚠️ Il ne remplace PAS `isDeleted` (getter de `User`, cf. son commentaire) : `deletedAt`
+        # teinte la ligne, `isDeleted` décide des actions offertes. Les DEUX voyagent, et
+        # `tests/Entity/SoftDeletableExposureTest.php` le prouve.
+        #
+        # Défaut trouvé par ce test même, sur cegeta le 2026-09-02 — le mode déclarait le test
+        # mais pas le champ qu'il exige.
+        deletedAt:
+            groups: ['user:read']

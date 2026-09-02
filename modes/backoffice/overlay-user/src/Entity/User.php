@@ -274,6 +274,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, AclUser
         return $this->isActive;
     }
 
+    /**
+     * Le pendant de `deletedAt`, lu par les `condition` des actions de la datatable.
+     *
+     * ⚠️ Les deux champs ne se remplacent pas : `deletedAt` teinte la ligne supprimée,
+     * `isDeleted` décide des actions offertes. Et une `condition` qui lit un champ ABSENT de la
+     * réponse vaut `undefined` : `row.isDeleted` est faux pour tout le monde (« Restaurer »
+     * n'apparaît JAMAIS) et `!row.isDeleted` vrai pour tout le monde (« Supprimer » s'offre sur
+     * une ligne morte). Aucun des deux cas ne lève.
+     *
+     * ⚠️ Un getter, et pas un `#[Groups]` sur la propriété du trait : `isDeleted()` vient du
+     * `SoftDeletableTrait`, et un attribut posé sur une propriété de trait porterait l'union des
+     * groupes de tous ses consommateurs. Le nom de méthode diffère du nom sérialisé, d'où
+     * `#[SerializedName]`.
+     *
+     * Défaut trouvé par `tests/Entity/SoftDeletableExposureTest.php` sur cegeta le 2026-09-02 :
+     * le mode livrait le test sans le getter qu'il exige.
+     */
+    #[Groups(['user:read'])]
+    #[SerializedName('isDeleted')]
+    public function isDeletedForApi(): bool
+    {
+        return $this->isDeleted();
+    }
+
     public function setIsActive(bool $isActive): static
     {
         $this->isActive = $isActive;
