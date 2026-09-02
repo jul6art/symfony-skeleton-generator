@@ -38,20 +38,7 @@ final class UserDataTableConfigProvider extends AbstractDataTableConfigProvider
             // responsive doit masquer. Sans priorité explicite, tout vaut 5 et elle masque dans
             // l'ordre des index — l'ID reste, les colonnes métier disparaissent.
             $this->column('id', 'datatable.col.id', 'datatable', responsivePriority: 10),
-            // ⚠️ `readOnlyColumn` et non `column` : `fullName` est CONCATÉNÉ en PHP, donc il
-            // n'est pas ordonnable par l'`OrderFilter` de l'entité — et `column()` rend une
-            // colonne triable PAR DÉFAUT (`sortField ?? $data`). La déclarer triable ferait
-            // ignorer le tri côté serveur EN SILENCE : l'en-tête s'allume, l'indicateur passe en
-            // « descendant », et l'ordre ne bouge pas.
-            //
-            // C'est précisément ce que les colonnes `lastName`/`firstName` masquées ci-dessous
-            // servent à contourner, et le commentaire qui les accompagne le disait déjà — sous un
-            // `column()` qui le contredisait. Défaut trouvé par
-            // `tests/DataTable/SortFieldMappingTest.php` sur cegeta le 2026-09-02.
-            //
-            // → Pour le rendre réellement triable : le `ConcatOrderFilter` d'`api-bundle`. C'est
-            //   une amélioration produit, pas le rôle d'un squelette.
-            $this->readOnlyColumn('fullName', 'user.field.name', 'user', render: 'userNameWithAvatar', responsivePriority: 1),
+            $this->column('fullName', 'user.field.name', 'user', render: 'userNameWithAvatar', responsivePriority: 1),
             $this->column('email', 'user.field.email', 'user', responsivePriority: 2),
             // ⚠️ `readOnlyColumn` et non `column` : `roles` est une colonne JSON, donc NON
             // triable. La déclarer triable ferait ignorer le tri côté serveur sans que rien ne le
@@ -60,9 +47,9 @@ final class UserDataTableConfigProvider extends AbstractDataTableConfigProvider
             $this->readOnlyColumn('isActive', 'user.field.status', 'user', render: 'statusBadge', responsivePriority: 3),
             $this->column('createdAt', 'user.field.created_at', 'user', render: 'date', responsivePriority: 6),
             // Offertes sans être montrées : dans le sélecteur, absentes du premier rendu.
-            // `fullName` les concatène déjà, mais lui n'est PAS triable côté serveur alors que ces
-            // deux-là le sont (`OrderFilter` de `User`) — c'est ce qui les rend utiles à qui veut
-            // trier sur le nom de famille.
+            // `fullName` les concatène déjà et se trie désormais aussi (par `ConcatOrderFilter`,
+            // sur les deux colonnes réelles) ; celles-ci restent utiles à qui veut trier sur le
+            // seul nom de famille, sans le prénom devant.
             $this->column('lastName', 'user.field.family_name', 'user', responsivePriority: 10, hidden: true),
             $this->column('firstName', 'user.field.first_name', 'user', responsivePriority: 10, hidden: true),
         ];

@@ -22,6 +22,7 @@ use Jul6Art\AdminBundle\Appearance\ColorMode;
 use Jul6Art\AdminBundle\Contract\AdminUserInterface;
 use Jul6Art\AdminBundle\Contract\AppearanceAwareInterface;
 use Jul6Art\AdminBundle\Entity\Traits\AppearancePreferencesTrait;
+use Jul6Art\ApiBundle\Filter\ConcatOrderFilter;
 use Jul6Art\ApiBundle\Filter\OrSearchFilter;
 use Jul6Art\CoreBundle\Entity\Traits\IdTrait;
 use Jul6Art\CoreBundle\Entity\Traits\SoftDeletableTrait;
@@ -74,6 +75,13 @@ use function in_array;
 #[ApiFilter(SearchFilter::class, properties: ['email' => 'partial', 'isActive' => 'exact', 'roles' => 'partial'])]
 #[ApiFilter(OrSearchFilter::class, properties: ['email', 'firstName', 'lastName'])]
 #[ApiFilter(OrderFilter::class, properties: ['id', 'email', 'firstName', 'lastName', 'createdAt'])]
+// ⚠️ `fullName` n'est PAS une colonne : c'est un getter qui concatène prénom et nom. Un
+// `OrderFilter` ordinaire écrirait `ORDER BY u.fullName` — champ inconnu, erreur DQL. Le
+// `ConcatOrderFilter` d'`api-bundle` existe pour ce cas exact et ordonne sur les deux colonnes
+// réelles. Sans lui, la colonne PRINCIPALE de l'écran des comptes promet un tri que le serveur
+// jette en silence, et `tests/DataTable/SortFieldMappingTest.php` le refuse — c'est le filtre
+// qu'il attend, pas un passage de la colonne en lecture seule.
+#[ApiFilter(ConcatOrderFilter::class, properties: ['fullName' => ['firstName', 'lastName']])]
 // ⚠️ Sans ce filtre, `createdAt[after]` et `createdAt[before]` sont IGNORÉS : API Platform jette
 // en silence un paramètre qu'aucun filtre ne réclame. La barre de filtres s'ouvrait, se
 // remplissait, affichait « depuis le … » et ne retirait AUCUNE ligne — 103 avant, 103 après un
