@@ -85,6 +85,22 @@ final class JsTranslationTest extends AbstractJsTranslationTestCase
         return [self::projectDir().'/templates'];
     }
 
+    /**
+     * Le garde de l'autre moitié d'un déplacement de domaine : les appelants SERVEUR.
+     *
+     * ⚠️ Un vocabulaire déplacé vers `javascript` est souvent rendu par Twig ou par PHP aussi —
+     * une pastille sur la fiche, une option dans un filtre, le libellé d'une action de ligne. Un
+     * `|trans` resté sur l'ancien domaine NE LÈVE PAS : il rend la CLÉ, en toutes lettres, dans
+     * la page. Le défaut a traversé trois projets de cet écosystème avant que ce garde existe.
+     *
+     * @return list<string>
+     */
+    #[\Override]
+    protected static function serverDirectories(): array
+    {
+        return [self::projectDir().'/templates', self::projectDir().'/src'];
+    }
+
     private static function declared(): DeclaredTranslationKeys
     {
         $service = static::getContainer()->get(DeclaredTranslationKeys::class);
