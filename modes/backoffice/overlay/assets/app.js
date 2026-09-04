@@ -1,3 +1,12 @@
+import { registerTranslator } from '@jul6art/core-bundle/i18n/registry';
+import { trans } from './translator';
+
+// ⚠️ AVANT `./bootstrap` : c'est lui qui démarre Stimulus, et un contrôleur qui se connecte avant
+// l'enregistrement traduirait sa première frappe en clés brutes. Le registre est la seule voie par
+// laquelle un contrôleur livré dans `vendor/jul6art/*` atteint le catalogue — il ne peut pas
+// importer ce fichier-ci, le chemin depuis `vendor/` n'existe pas.
+registerTranslator(trans);
+
 import './bootstrap';
 import './styles/app.css';
 import './datatable/renderers';

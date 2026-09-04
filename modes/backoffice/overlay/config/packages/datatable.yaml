@@ -17,13 +17,15 @@ datatable:
         single: datatable_action
         bulk: bulk_action
 
-    # Vos types d'action de masse, EN PLUS des treize du bundle (delete, activate, publish…).
-    # Chacun exige ses clés `modal.<type>.*` et `modal.bulk.<type>.*`, sans quoi il est ignoré.
-    bulk_actions: []
-
-    # Les cartes d'énumérations lues par les rendus de badge, exposées aux gabarits par
-    # `datatable_status_map(...)`. `path` vaut `[datatable, <nom>]` par défaut et `key_prefix`
-    # `datatable.<nom>.`.
+    # Les cartes d'énumérations lues par les rendus de badge. `key_prefix` vaut `datatable.<nom>.`
+    # par défaut, et c'est la clé du CATALOGUE — la même chaîne que le `labelPath` passé à
+    # `badge()` dans `assets/datatable/renderers.js`. Les deux vont par paires.
+    #
+    # ⚠️ Elles ne TRANSPORTENT plus rien depuis `datatable-bundle` v2 : elles DÉCLARENT. Le
+    # navigateur a le catalogue entier ; ce registre sert au garde de traduction
+    # (`tests/Translation/JsTranslationTest.php`), qui ne saurait pas autrement que ces clés sont
+    # vivantes — aucun littéral du JavaScript ne les nomme, `badge()` les construit par
+    # interpolation.
     status_maps:
         # Lue par le rendu `roleBadges` (`assets/datatable/renderers.js`). Les deux vont par
         # paires : un nom inconnu du registre afficherait la valeur brute, et une carte sans son

@@ -15,23 +15,24 @@ use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Translation\TranslatorBagInterface;
 
 use function sprintf;
 
-use const JSON_THROW_ON_ERROR;
-
 /**
- * Ce que la table des comptes DESCEND au JavaScript, et pas seulement ce qu'elle configure.
+ * Ce que la table des comptes affiche vraiment, et dans quelle langue.
  *
- * Un rendu de badge résout son libellé par `this.t('datatable.<carte>.<clé>')`, qui descend l'arbre
- * posé dans `data-…-translations-value`. Trois surfaces doivent donc s'accorder — la carte
- * (`datatable.status_maps`), le rendu (`assets/datatable/renderers.js`) et le TRANSPORT
- * (`extra_translations` de l'include). Les deux premières étaient bonnes, la troisième absente :
- * la cellule affichait `datatable.user_role.ROLE_SUPER_ADMIN`, avec la bonne couleur, pendant que
- * la clé existait dans le catalogue. Aucune erreur, aucun test rouge (2026-08-24).
+ * ⚠️ Il n'y a plus de TRANSPORT à éprouver. Jusqu'à `datatable-bundle` v2, un rendu de badge lisait
+ * son libellé dans un arbre JSON posé par le gabarit dans `data-…-translations-value`, et trois
+ * surfaces devaient s'accorder — la carte, le rendu, et l'include qui descendait l'arbre. La
+ * troisième avait été oubliée : la cellule affichait `datatable.user_role.ROLE_SUPER_ADMIN` avec
+ * la bonne couleur pendant que la clé existait dans le catalogue (2026-08-24). Le navigateur a
+ * maintenant le catalogue lui-même, et {@see \App\Tests\Translation\JsTranslationTest} tient les
+ * deux bouts.
  *
- * Le test assert sur la VALEUR TRADUITE et non sur la présence de la clé : c'est ce qui attrape
- * aussi une carte descendue depuis le mauvais domaine, qui rendrait la clé brute à l'identique.
+ * Ce qui reste à prouver ici, et que le garde ne dit pas : que les libellés atteignent le paquet
+ * JavaScript **traduits**, dans chaque langue. Une clé présente dans le bon domaine mais vide, ou
+ * recopiée du français à l'anglais, passerait le garde sans que personne ne le voie.
  */
 #[CoversNothing]
 final class UserDataTableTranslationsTest extends WebTestCase
@@ -45,27 +46,30 @@ final class UserDataTableTranslationsTest extends WebTestCase
         yield 'en / admin' => ['en', 'ROLE_ADMIN', 'Administrator'];
     }
 
+    /**
+     * ⚠️ Le test lit le CATALOGUE de la locale, pas la page. C'est ce que `ux-translator` dépose
+     * dans `var/translations/index.js`, donc exactement ce que le navigateur recevra — et la seule
+     * surface où la traduction d'un badge est encore observable côté serveur.
+     */
     #[DataProvider('roleLabels')]
-    public function testTheRoleBadgeLabelsReachTheBrowser(string $locale, string $role, string $expected): void
+    public function testTheRoleBadgeLabelsAreTranslatedInEveryLocale(string $locale, string $role, string $expected): void
     {
-        $client = static::createClient();
-        $client->disableReboot();
-        $this->createSchema();
+        static::createClient();
 
-        $admin = $this->createUser(UserRoles::ROLE_ADMIN, $locale);
-        $client->loginUser($admin);
-        $crawler = $client->request('GET', '/admin/users');
+        $translator = static::getContainer()->get('translator');
+        self::assertInstanceOf(TranslatorBagInterface::class, $translator);
 
-        self::assertResponseIsSuccessful();
+        $key = sprintf('datatable.user_role.%s', $role);
+        $catalogue = $translator->getCatalogue($locale);
 
-        $raw = $crawler->filter('table[data-controller]')->attr('data-core--datatable-translations-value');
-        /** @var array{datatable?: array{user_role?: array<string, string>}} $translations */
-        $translations = json_decode((string) $raw, true, 512, JSON_THROW_ON_ERROR);
-
+        self::assertTrue(
+            $catalogue->defines($key, 'javascript'),
+            sprintf('« %s » doit vivre dans le domaine `javascript` : c\'est le seul que le navigateur reçoit.', $key),
+        );
         self::assertSame(
             $expected,
-            $translations['datatable']['user_role'][$role] ?? null,
-            sprintf('Le libellé de %s doit atteindre le navigateur en « %s », traduit.', $role, $locale),
+            $catalogue->get($key, 'javascript'),
+            sprintf('Le libellé de %s doit être traduit en « %s ».', $role, $locale),
         );
     }
 

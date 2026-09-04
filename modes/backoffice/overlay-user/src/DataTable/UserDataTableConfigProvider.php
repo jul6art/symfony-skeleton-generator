@@ -63,8 +63,8 @@ final class UserDataTableConfigProvider extends AbstractDataTableConfigProvider
     {
         return [
             $this->staticFilter('isActive', 'isActive', 'user.field.status', [
-                ['value' => 'true', 'label' => $this->t('datatable.status.active', 'datatable')],
-                ['value' => 'false', 'label' => $this->t('datatable.status.inactive', 'datatable')],
+                ['value' => 'true', 'label' => $this->t('datatable.status.active', 'javascript')],
+                ['value' => 'false', 'label' => $this->t('datatable.status.inactive', 'javascript')],
             ], 'user'),
             $this->dateRangeFilter('createdAt', 'createdAt', 'user.filter.created', 'user', granularity: 'datetime'),
         ];

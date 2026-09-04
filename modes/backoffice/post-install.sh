@@ -14,8 +14,13 @@ set -uo pipefail
 
 cd "${PROJECT_DIR:?}" || exit 1
 
-printf '    Assets (npm install + build)…\n'
-if ! (npm install --silent && npm run build --silent) >/dev/null 2>&1; then
+# ⚠️ Le préchauffage AVANT le build : `assets/translator.js` importe `var/translations/index.js`,
+# que le préchauffage écrit et que `/var/` gitignore. Sans lui, le premier build échoue sur un
+# import introuvable — sur une machine neuve, donc à chaque génération.
+printf '    Assets (npm install + cache:warmup + build)…\n'
+if ! (npm install --silent \
+        && symfony console cache:warmup \
+        && npm run build --silent) >/dev/null 2>&1; then
     printf '/!\\ compilation des assets impossible — relancer « make assets ».\n' >&2
 fi
 

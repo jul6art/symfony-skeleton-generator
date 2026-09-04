@@ -5,6 +5,7 @@
 # Ici : uniquement les ajouts maison.
 
 symfonycasts/tailwind-bundle        # binaire Tailwind local, aucun build Node
+symfony/ux-translator               # le catalogue du navigateur (domaine `javascript`)
 
 # Suggestions :
 # symfony/ux-live-component

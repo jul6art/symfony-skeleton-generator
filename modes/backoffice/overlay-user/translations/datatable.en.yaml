@@ -8,58 +8,5 @@
 # modals' vocabulary, shared by every `ui--modal`, so it reaches far beyond tables.
 
 datatable:
-  filters: Filters
-  filter_apply: Apply
-  filter_reset: Reset
-  filter:
-    input_too_short: Type at least one character
-    searching: Searching…
-    no_results: No result
-  status:
-    active: Active
-    inactive: Inactive
-  confirm:
-    title: Confirm
-    message: Do you confirm this action?
-    confirm: Confirm
-    cancel: Cancel
-  error:
-    loading: Could not load the data
-    saving: "Could not save your preferences"
-  coalescence:
-    message: Changes came in
-    refresh: Refresh
-  bulk:
-    selected: selected
-    choose: Choose an action
-    apply: Apply
-    clear: Clear selection
   col:
     id: ID
-  daterange:
-    placeholder: All dates
-    from: From
-    to: To
-    since: since
-    until: until
-  columns:
-    button: Columns
-    hint: "Tick the columns to show, drag to reorder them."
-    reset: "Reset the layout"
-    close: Close
-  views:
-    button: Views
-    hint: "Apply a saved view, or save the filters on screen."
-    empty: "No saved view."
-    name: "View name"
-    save: "Save the filters on screen"
-    default: "Default view on opening"
-    delete: "Delete the view"
-
-  # Les rôles d'un compte, lus par le rendu `roleBadges` (`assets/datatable/renderers.js`).
-  # Ils vivent ici et non dans `messages` parce que leur clé porte le préfixe `datatable.` :
-  # la carte `user_role` hérite du `translation_domain` du bundle, et les chercher ailleurs
-  # rendrait le code brut dans la cellule.
-  user_role:
-    ROLE_ADMIN: Administrator
-    ROLE_SUPER_ADMIN: Super administrator

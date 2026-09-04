@@ -21,9 +21,17 @@ Encore
     })
     .enablePostCssLoader()
 
-    // Le front des bundles maison. `@jul6art/datatable-bundle/...` et
+    // Le front des bundles maison. `@jul6art/core-bundle/...`, `@jul6art/datatable-bundle/...` et
     // `@jul6art/admin-bundle/...` pointent sur le répertoire `assets/` du paquet.
-    .addAliases(bundleAliases())
+    //
+    // ⚠️ `@symfony/ux-translator` s'ajoute à la main : le bundle ne déclare ses chemins tout seul
+    // que sous AssetMapper, et ce mode compile avec Encore. Le paquet composer contient bien
+    // `assets/dist/`, donc aucune dépendance npm en `file:` n'est nécessaire — et c'est heureux,
+    // celle que la recette Flex ajoute fait échouer `npm install` (arborist, npm 10.2.4).
+    .addAliases({
+        ...bundleAliases(),
+        '@symfony/ux-translator': path.resolve(__dirname, 'vendor/symfony/ux-translator/assets/dist/translator_controller.js'),
+    })
 ;
 
 const config = Encore.getWebpackConfig();

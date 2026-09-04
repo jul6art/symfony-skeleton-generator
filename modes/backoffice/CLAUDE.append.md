@@ -33,12 +33,12 @@ ce qu'ils portent est l'erreur la plus coûteuse de cet écosystème, parce qu'e
    filtres que les colonnes supposent (`OrderFilter` pour chaque `sortField`, `OrSearchFilter` pour
    la recherche globale).
 3. Une action de contrôleur qui passe `columns_config`, `filters_config` et `actions_config`.
-4. Un gabarit qui inclut `_csrf.html.twig` et `_translations.html.twig`, DANS la balise `<table>`.
+4. Un gabarit qui inclut `_csrf.html.twig`, DANS la balise `<table>`.
 5. Une route POST par action de ligne, avec son `#[IsGranted]` et son jeton `datatable_action`.
 
 Les cinq, ou la table est cassée d'une manière qui ne lève pas : `sortField` manquant → le tri est
-ignoré côté serveur ; `_csrf` oublié → les actions répondent 419 ; `_translations` oublié → la barre
-de filtres affiche des clés.
+ignoré côté serveur ; `_csrf` oublié → les actions répondent 419 ; une clé absente du domaine
+`javascript` → la barre de filtres affiche des clés.
 
 ### Les préférences par compte : colonnes, ordre, vues enregistrées
 
@@ -97,10 +97,20 @@ rien, et rien ne le signale. C'est la raison pour laquelle `roles` est un `readO
   doivent dire `core--datatable`.
 - **Ajouter un rendu de badge** = une entrée dans `datatable.status_maps` **et** une dans
   `assets/datatable/renderers.js`. Un nom inconnu du registre affiche la valeur brute.
-- **Le catalogue du tableau est le domaine `datatable`**, pas `messages` :
-  `translations/datatable.{fr,en}.yaml`, déclaré par `datatable.translation_domain`. Le tree
-  `modal:` reste dans `messages` — c'est le vocabulaire des modales de confirmation, partagé par
-  tous les `ui--modal`, donc bien au-delà des tableaux.
+- **Le catalogue du NAVIGATEUR est le domaine `javascript`**, et c'est le SEUL que
+  `symfony/ux-translator` dépose dans le paquet JS (`core.js_translations.domain`). Toute clé lue
+  par un `t()` JavaScript y vit : le socle du tableau, les cas des cartes de statuts, le tree
+  `datatable.modal:` et les onze `datatable.dt.*` de DataTables.
+  Le domaine `datatable` subsiste pour ce que le SERVEUR rend — ici la seule
+  `datatable.col.organization`. **Le tri se fait clé par clé, jamais fichier par fichier.**
+- ⚠️ **`javascript` est un domaine de TRANSPORT, pas de sujet.** Les autres domaines répondent à
+  « de quoi parle ce libellé » ; celui-ci répond à « qui le lit ». Un vocabulaire d'énumération lu
+  par un badge ET par une fiche y est DÉPLACÉ, jamais recopié — deux exemplaires divergent au
+  premier changement.
+- ⚠️ **Déplacer une clé oblige à reprendre TOUS ses appelants, y compris côté serveur.**
+  `tests/Translation/JsTranslationTest.php` ne regarde que le domaine `javascript` : il ne verrait
+  pas un gabarit resté sur `'datatable'`. C'est ce qui a sorti `datatable.quote_status.sent` en
+  clair sur une fiche de `cereezer`, avec un garde vert.
 - **Un code de permission mal orthographié OUVRE l'écran.** Le voter s'abstient sur ce qu'il ne sait
   pas lire, et une décision où tous les voters s'abstiennent vaut « accordé ».
 - **`npm` est requis dans ce mode**, et seulement dans celui-là — voir ci-dessous.
@@ -196,11 +206,16 @@ qu'il génère.
   avec `has()` sur la locale non-défaut la trouve dans `en` et passe au vert, pendant que l'écran
   français affiche l'anglais. Et vérifier la seule locale par défaut ne prouve rien de l'autre :
   `FlashKeyTest` boucle sur `BackofficeLocales::SUPPORTED` avec `defines()`.
-- **Une carte de statuts n'atteint le navigateur que si le gabarit la DEMANDE.**
-  `_translations.html.twig` ne descend que le socle ; sans
-  `extra_translations: datatable_status_map(['<carte>'])`, le rendu de badge affiche la clé dans la
-  cellule — avec la bonne couleur, ce qui achève de masquer le défaut. Trois surfaces vont
-  ensemble : la carte, le rendu, le transport.
+- **Une carte de statuts se DÉCLARE, elle ne se transporte plus.** Le navigateur a le catalogue ;
+  `datatable.status_maps` sert à dire au garde de traduction que ces clés sont vivantes, alors
+  qu'aucun littéral du JavaScript ne les nomme — `badge()` les construit par interpolation. Deux
+  surfaces vont ensemble : la carte et le rendu (`assets/datatable/renderers.js`), et le
+  `labelPath` passé à `badge()` est le préfixe de la clé du CATALOGUE.
+- **Le `var/translations/index.js` doit exister AVANT `npm run build`.** `assets/translator.js`
+  l'importe, et `/var/` est gitignoré : `make assets` préchauffe d'abord. ⚠️ Et c'est bien
+  `cache:warmup` qu'il faut, pas `ux:translator:warm-cache` seul — le warmer dépose les catalogues
+  DÉJÀ CHARGÉS, donc sur un traducteur froid il écrit `export const messages = {};`, un fichier
+  valide et un catalogue vide, sans rien lever.
 - **Un `dateRangeFilter()` sans `DateFilter` sur l'entité ne filtre RIEN.** API Platform jette en
   silence un paramètre qu'aucun filtre ne réclame : la barre s'ouvre, se remplit, affiche
   « depuis le … » et ne retire aucune ligne (103 avant, 103 après, mesuré). `OrderFilter` ne

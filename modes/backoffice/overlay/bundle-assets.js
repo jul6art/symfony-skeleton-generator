@@ -31,7 +31,13 @@ function bundleAssets(pkg) {
 }
 
 /** Les bundles qui livrent du JS et du CSS : alias webpack, imports postcss, contenu Tailwind. */
-const FRONT_BUNDLES = ['datatable-bundle', 'admin-bundle'];
+/**
+ * ⚠️ `core-bundle` n'y est pas pour du style : il porte le REGISTRE de traduction
+ * (`@jul6art/core-bundle/i18n/registry`) que `app.js` alimente et que le mixin du
+ * `datatable-bundle` ré-exporte. Sans cet alias, le build échoue à la résolution — bruyamment,
+ * ce qui est le bon échec pour un alias manquant.
+ */
+const FRONT_BUNDLES = ['core-bundle', 'datatable-bundle', 'admin-bundle'];
 
 /**
  * Les bundles dont les GABARITS écrivent des classes Tailwind, en plus des précédents.

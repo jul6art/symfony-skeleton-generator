@@ -17,6 +17,7 @@ use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Translation\TranslatorBagInterface;
 
 use function sprintf;
 
@@ -199,22 +200,22 @@ final class DatatablePreferencesTest extends WebTestCase
         self::assertSame(self::ENDPOINT, $table->attr('data-core--datatable-preferences-url-value'));
         self::assertNotEmpty($table->attr('data-core--datatable-preferences-csrf-value'));
 
-        $translations = json_decode(
-            (string) $table->attr('data-core--datatable-translations-value'),
-            true,
-            512,
-            JSON_THROW_ON_ERROR,
-        );
-        self::assertIsArray($translations);
-        /** @var array<string, array<string, string>> $datatable */
-        $datatable = $translations['datatable'];
+        // ⚠️ Les libellés du panneau ne voyagent plus dans un attribut : le navigateur reçoit le
+        // catalogue `javascript` entier. Et ces quatre-là sont invisibles à un scanner — le
+        // contrôleur les passe par variable (`_buildPanel('columns', …, 'datatable.columns.button')`),
+        // ce qui est exactement pourquoi `DeclaredTranslationKeys` les déclare.
+        $translator = static::getContainer()->get('translator');
+        self::assertInstanceOf(TranslatorBagInterface::class, $translator);
+
         // L'invariant est indépendant de la LOCALE : le libellé n'est pas la clé. Figer « Colonnes »
         // ferait échouer le test dans l'environnement de test, qui tourne en anglais — pour une
         // raison qui ne dirait rien du défaut visé.
         foreach ([['columns', 'button'], ['views', 'button'], ['columns', 'hint'], ['views', 'empty']] as [$panel, $key]) {
-            $value = $datatable[$panel][$key];
+            $translationKey = sprintf('datatable.%s.%s', $panel, $key);
+            $value = $translator->getCatalogue()->get($translationKey, 'javascript');
+
             self::assertNotEmpty($value);
-            self::assertNotSame(sprintf('datatable.%s.%s', $panel, $key), $value, 'Le libellé du panneau ne doit pas sortir en clé brute.');
+            self::assertNotSame($translationKey, $value, 'Le libellé du panneau ne doit pas sortir en clé brute.');
         }
     }
 

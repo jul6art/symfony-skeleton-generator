@@ -1,0 +1,118 @@
+# Le catalogue du NAVIGATEUR — le seul domaine que `symfony/ux-translator` dépose dans le
+# paquet JavaScript (`core.js_translations.domain`, cf. `jul6art/core-bundle`).
+#
+# ⚠️ Un domaine de TRANSPORT, pas de sujet. Les autres domaines de ce projet répondent à « de
+# quoi parle ce libellé » ; celui-ci répond à « qui le lit ». Le vocabulaire d'une énumération
+# y est DÉPLACÉ et non recopié : deux exemplaires d'un même libellé divergent au premier
+# changement — et le déplacement se termine par la reprise de TOUS ses appelants, y compris
+# côté serveur, que le garde de traduction ne voit pas.
+#
+# ⚠️ Ce qui reste dans `datatable` : ce que le SERVEUR rend, c'est-à-dire l'en-tête de la
+# colonne inter-tenants.
+
+datatable:
+  # Les libellés propres à DataTables. Ils étaient écrits DANS le JavaScript du bundle — onze
+  # phrases françaises et un anglais presque vide — jusqu'à sa v2. Un produit qui déclare une
+  # troisième langue retombait donc sur un anglais à moitié rempli.
+  #
+  # ⚠️ `_MENU_`, `_START_`, `_END_`, `_TOTAL_` et `_MAX_` sont les jetons de DataTables,
+  # substitués bien après le traducteur : ils voyagent DANS la phrase et doivent y survivre.
+  dt:
+    processing: Traitement…
+    search: 'Rechercher :'
+    length_menu: Afficher _MENU_ éléments
+    info: Affichage de _START_ à _END_ sur _TOTAL_ éléments
+    info_empty: Affichage de 0 à 0 sur 0 élément
+    info_filtered: (filtré de _MAX_ éléments au total)
+    loading: Chargement…
+    zero_records: Aucun élément trouvé
+    empty_table: Aucune donnée disponible
+    aria:
+      sort_ascending: ': activer pour trier la colonne par ordre croissant'
+      sort_descending: ': activer pour trier la colonne par ordre décroissant'
+
+  filters: Filtres
+  filter_apply: Appliquer
+  filter_reset: Réinitialiser
+  filter:
+    input_too_short: Saisissez au moins un caractère
+    searching: Recherche…
+    no_results: Aucun résultat
+  status:
+    active: Actif
+    inactive: Inactif
+  confirm:
+    title: Confirmer
+    message: Confirmez-vous cette action ?
+    confirm: Confirmer
+    cancel: Annuler
+  error:
+    loading: Erreur lors du chargement
+    saving: "Échec de l'enregistrement de vos préférences"
+  coalescence:
+    message: Des modifications sont arrivées
+    refresh: Rafraîchir
+  bulk:
+    selected: sélectionné(s)
+    choose: Choisir une action
+    apply: Appliquer
+    clear: Tout désélectionner
+    # ⚠️ Les `aria-label` des cases de sélection de masse. Absentes, un lecteur d'écran
+    # annonce « datatable.bulk.select_all » — un défaut que seul quelqu'un qui ne voit pas
+    # l'écran rencontre, et que le garde de traduction a trouvé le 2026-09-04.
+    select_all: Tout sélectionner
+    select_row: Sélectionner cette ligne
+  daterange:
+    placeholder: Toutes les dates
+    from: Du
+    to: Au
+    since: depuis le
+    until: jusqu'au
+  columns:
+    button: Colonnes
+    hint: "Cochez les colonnes à afficher, glissez pour les réordonner."
+    reset: "Réinitialiser l'affichage"
+    close: Fermer
+  views:
+    button: Vues
+    hint: "Appliquez une vue enregistrée, ou enregistrez les filtres affichés."
+    empty: "Aucune vue enregistrée."
+    name: "Nom de la vue"
+    save: "Enregistrer les filtres affichés"
+    default: "Vue par défaut à l'ouverture"
+    delete: "Supprimer la vue"
+  # Les rôles d'un compte, lus par le rendu `roleBadges` (`assets/datatable/renderers.js`).
+  # Ils vivent ici et non dans `messages` parce que leur clé porte le préfixe `datatable.` :
+  # la carte `user_role` hérite du `translation_domain` du bundle, et les chercher ailleurs
+  # rendrait le code brut dans la cellule.
+  user_role:
+    ROLE_ADMIN: Administrateur
+    ROLE_SUPER_ADMIN: Super administrateur
+  modal:
+    subject_wrap: « %subject% »
+    subject_default: cet élément
+    delete:
+      title: Supprimer
+      message: Cette action est irréversible. Supprimer %subject% ?
+      confirm: Supprimer
+    activate:
+      title: Activer
+      message: Activer %subject% ?
+      confirm: Activer
+    deactivate:
+      title: Désactiver
+      message: Désactiver %subject% ?
+      confirm: Désactiver
+    bulk:
+      delete:
+        title: Supprimer la sélection
+        message: Cette action est irréversible. Supprimer les éléments sélectionnés ?
+        confirm: Supprimer
+      activate:
+        title: Activer la sélection
+        message: Activer les éléments sélectionnés ?
+        confirm: Activer
+      deactivate:
+        title: Désactiver la sélection
+        message: Désactiver les éléments sélectionnés ?
+        confirm: Désactiver

@@ -7,6 +7,7 @@ api-platform/symfony                # l'API que lisent les datatables (REST + JS
 symfony/expression-language         # REQUIS par les expressions `security:` d'API Platform
 symfony/mercure-bundle              # le hub de rafraîchissement temps réel
 symfony/uid
+symfony/ux-translator             # le catalogue du navigateur (domaine `javascript`)
 symfony/rate-limiter                # login_throttling + quotas d'API
 
 jul6art/api-bundle                  # filtres API Platform + AbstractCollectionProvider

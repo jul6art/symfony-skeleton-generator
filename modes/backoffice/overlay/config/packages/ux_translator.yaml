@@ -1,0 +1,13 @@
+# Le catalogue que le NAVIGATEUR reçoit.
+#
+# ⚠️ Presque tout est déjà décidé par `jul6art/core-bundle` : `core.js_translations` prépose
+# `domains: javascript` — le seul domaine exposé — et coupe le dump TypeScript en production.
+# Ce fichier ne sert qu'à ce que la recette Flex y a mis, et à ce qu'un projet voudrait changer :
+# la configuration de l'application est fusionnée APRÈS celle du bundle, donc elle gagne.
+ux_translator:
+    dump_directory: '%kernel.project_dir%/var/translations'
+
+# Pour exposer un second domaine — rarement une bonne idée, cf. `core-bundle` :
+#
+#     ux_translator:
+#         domains: [javascript, legacy]

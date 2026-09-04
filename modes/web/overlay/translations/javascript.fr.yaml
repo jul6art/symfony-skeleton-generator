@@ -1,0 +1,12 @@
+# Le catalogue du NAVIGATEUR — le seul domaine que `symfony/ux-translator` dépose dans le paquet
+# JavaScript (`core.js_translations.domain`, cf. `jul6art/core-bundle`).
+#
+# ⚠️ Un domaine de TRANSPORT, pas de sujet. Les autres domaines de ce projet répondent à « de quoi
+# parle ce libellé » ; celui-ci répond à « qui le lit ». Un vocabulaire lu à la fois par un gabarit
+# et par du JavaScript y est DÉPLACÉ, jamais recopié — deux exemplaires divergent au premier
+# changement. Et le déplacement se termine par la reprise de TOUS ses appelants, y compris côté
+# serveur, que le garde de traduction ne voit pas.
+#
+# Vide au départ : ce mode ne rend aucun libellé depuis JavaScript. La première chaîne affichée par
+# un contrôleur Stimulus vient ici, et `tests/Translation/JsTranslationTest.php` le vérifie dans
+# les deux sens — une clé lue et absente, comme une clé présente que plus rien ne lit.

@@ -46,6 +46,31 @@ décider d'un accès en est un autre — ce test ne sert qu'à *afficher* le rô
   le reste de l'interface. Déjà en place sur la suppression d'un compte et sur
   la déconnexion.
 
+### Traductions JavaScript
+
+Toute chaîne qu'un contrôleur Stimulus affiche est une chaîne traduite, et elle vit dans le
+catalogue `translations/javascript.{fr,en}.yaml` — **le seul domaine que le navigateur reçoit**
+(`symfony/ux-translator`, configuré par `core.js_translations` de `jul6art/core-bundle`).
+
+```js
+import { trans } from '../translator';
+
+this.element.textContent = trans('confirm.delete.title');
+```
+
+- ⚠️ **`javascript` est un domaine de TRANSPORT, pas de sujet.** Les autres domaines répondent à
+  « de quoi parle ce libellé » ; celui-ci répond à « qui le lit ». Un libellé lu à la fois par un
+  gabarit et par du JavaScript y est DÉPLACÉ, jamais recopié — deux exemplaires divergent au
+  premier changement. Et le déplacement se termine par la reprise de **tous** ses appelants, y
+  compris côté serveur : le garde ne regarde que le domaine `javascript`.
+- ⚠️ **Le domaine est fixé dans `assets/translator.js`, une fois.** `domains: javascript` restreint
+  ce qui est DÉPOSÉ ; il ne change pas le domaine par défaut de `trans()`, qui reste `messages`.
+  Un appel non qualifié ne trouve rien et rend la clé brute, sans rien lever.
+- ⚠️ **`var/translations/index.js` est écrit par le préchauffage du cache** et gitignoré. Sous
+  AssetMapper il n'y a rien d'autre à câbler : le paquet déclare ses chemins tout seul.
+- `tests/Translation/JsTranslationTest.php` tient les deux bouts — une clé lue et absente, une clé
+  présente que plus rien ne lit, et le retour d'un `data-…-translations-value`.
+
 ### Base de données
 
 Les entités sont livrées sans migration : après `make db-create`, lancer

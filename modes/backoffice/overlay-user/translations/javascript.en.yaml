@@ -1,0 +1,118 @@
+# Le catalogue du NAVIGATEUR — le seul domaine que `symfony/ux-translator` dépose dans le
+# paquet JavaScript (`core.js_translations.domain`, cf. `jul6art/core-bundle`).
+#
+# ⚠️ Un domaine de TRANSPORT, pas de sujet. Les autres domaines de ce projet répondent à « de
+# quoi parle ce libellé » ; celui-ci répond à « qui le lit ». Le vocabulaire d'une énumération
+# y est DÉPLACÉ et non recopié : deux exemplaires d'un même libellé divergent au premier
+# changement — et le déplacement se termine par la reprise de TOUS ses appelants, y compris
+# côté serveur, que le garde de traduction ne voit pas.
+#
+# ⚠️ Ce qui reste dans `datatable` : ce que le SERVEUR rend, c'est-à-dire l'en-tête de la
+# colonne inter-tenants.
+
+datatable:
+  # Les libellés propres à DataTables. Ils étaient écrits DANS le JavaScript du bundle — onze
+  # phrases françaises et un anglais presque vide — jusqu'à sa v2. Un produit qui déclare une
+  # troisième langue retombait donc sur un anglais à moitié rempli.
+  #
+  # ⚠️ `_MENU_`, `_START_`, `_END_`, `_TOTAL_` et `_MAX_` sont les jetons de DataTables,
+  # substitués bien après le traducteur : ils voyagent DANS la phrase et doivent y survivre.
+  dt:
+    processing: Processing…
+    search: 'Search:'
+    length_menu: Show _MENU_ entries
+    info: Showing _START_ to _END_ of _TOTAL_ entries
+    info_empty: Showing 0 to 0 of 0 entries
+    info_filtered: (filtered from _MAX_ total entries)
+    loading: Loading…
+    zero_records: No matching records found
+    empty_table: No data available
+    aria:
+      sort_ascending: ': activate to sort column ascending'
+      sort_descending: ': activate to sort column descending'
+
+  filters: Filters
+  filter_apply: Apply
+  filter_reset: Reset
+  filter:
+    input_too_short: Type at least one character
+    searching: Searching…
+    no_results: No result
+  status:
+    active: Active
+    inactive: Inactive
+  confirm:
+    title: Confirm
+    message: Do you confirm this action?
+    confirm: Confirm
+    cancel: Cancel
+  error:
+    loading: Could not load the data
+    saving: "Could not save your preferences"
+  coalescence:
+    message: Changes came in
+    refresh: Refresh
+  bulk:
+    selected: selected
+    choose: Choose an action
+    apply: Apply
+    clear: Clear selection
+    # ⚠️ The aria-labels of the bulk-selection checkboxes. Missing, a screen reader announces
+    # « datatable.bulk.select_all » — a defect only someone who cannot see the screen meets,
+    # and which the translation guard found on 2026-09-04.
+    select_all: Select all
+    select_row: Select this row
+  daterange:
+    placeholder: All dates
+    from: From
+    to: To
+    since: since
+    until: until
+  columns:
+    button: Columns
+    hint: "Tick the columns to show, drag to reorder them."
+    reset: "Reset the layout"
+    close: Close
+  views:
+    button: Views
+    hint: "Apply a saved view, or save the filters on screen."
+    empty: "No saved view."
+    name: "View name"
+    save: "Save the filters on screen"
+    default: "Default view on opening"
+    delete: "Delete the view"
+  # Les rôles d'un compte, lus par le rendu `roleBadges` (`assets/datatable/renderers.js`).
+  # Ils vivent ici et non dans `messages` parce que leur clé porte le préfixe `datatable.` :
+  # la carte `user_role` hérite du `translation_domain` du bundle, et les chercher ailleurs
+  # rendrait le code brut dans la cellule.
+  user_role:
+    ROLE_ADMIN: Administrator
+    ROLE_SUPER_ADMIN: Super administrator
+  modal:
+    subject_wrap: “%subject%”
+    subject_default: this item
+    delete:
+      title: Delete
+      message: This cannot be undone. Delete %subject%?
+      confirm: Delete
+    activate:
+      title: Activate
+      message: Activate %subject%?
+      confirm: Activate
+    deactivate:
+      title: Deactivate
+      message: Deactivate %subject%?
+      confirm: Deactivate
+    bulk:
+      delete:
+        title: Delete selection
+        message: This cannot be undone. Delete the selected items?
+        confirm: Delete
+      activate:
+        title: Activate selection
+        message: Activate the selected items?
+        confirm: Activate
+      deactivate:
+        title: Deactivate selection
+        message: Deactivate the selected items?
+        confirm: Deactivate

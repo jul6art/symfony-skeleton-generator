@@ -42,18 +42,7 @@
                data-{{ datatable_stimulus() }}-page-length-value="25"
                data-{{ datatable_stimulus() }}-language-value="{{ app.request.locale }}"
                {{ include('@Datatable/datatable/_preferences.html.twig', { key: 'user' }) }}
-               {{ include('@Datatable/datatable/_csrf.html.twig') }}
-               {#
-                   ⚠️ `extra_translations` n'est pas facultatif dès qu'une colonne rend un badge
-                   métier. Le partial ne descend que le SOCLE ; une carte de statuts non demandée
-                   n'atteint jamais le navigateur, et le rendu affiche alors la CLÉ dans la cellule
-                   — avec la bonne couleur, ce qui achève de masquer le défaut. Trois surfaces
-                   doivent s'accorder : la carte (`datatable.status_maps`), le rendu
-                   (`assets/datatable/renderers.js`) et ce transport. Vu le 2026-08-24.
-               #}
-               {{ include('@Datatable/datatable/_translations.html.twig', {
-                   extra_translations: datatable_status_map(['user_role']),
-               }) }}>
+               {{ include('@Datatable/datatable/_csrf.html.twig') }}>
             <thead>
                 <tr>
                     {% for column in columns_config %}<th>{{ column.title }}</th>{% endfor %}
