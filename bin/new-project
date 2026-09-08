@@ -170,7 +170,7 @@ php_id()    { php_eval "$1" 'echo PHP_VERSION_ID;' | LC_ALL=C tr -cd '0-9'; }
 php_short() { php_eval "$1" 'echo PHP_MAJOR_VERSION.".".PHP_MINOR_VERSION;' | LC_ALL=C tr -cd '0-9.'; }
 php_ok() {
     [ -n "${1:-}" ] && [ -x "$1" ] || return 1
-    ( exec >/dev/null 2>&1; "$1" -n -d display_errors=0 -r 'exit(PHP_VERSION_ID >= 80200 ? 0 : 1);' )
+    ( exec >/dev/null 2>&1; "$1" -n -d display_errors=0 -r 'exit(PHP_VERSION_ID >= 80500 ? 0 : 1);' )
 }
 
 ensure_php() {
@@ -195,7 +195,7 @@ ensure_php() {
         if [ "$id" -gt "$best_id" ]; then best="$cand"; best_id="$id"; fi
     done
 
-    [ -n "$best" ] || die "aucun PHP >= 8.2 fonctionnel trouvé (brew install php)"
+    [ -n "$best" ] || die "aucun PHP >= 8.5 fonctionnel trouvé (brew install php)"
     PATH="$(dirname "$best"):$PATH"; export PATH
     PHP_VERSION="$(php_short "$best")"
     info "PHP retenu : $best ($PHP_VERSION)"
@@ -274,6 +274,20 @@ if [ "$DRY_RUN" = 0 ]; then
     printf '%s\n' "$PHP_VERSION" > "$PROJECT_DIR/.php-version"
 fi
 info ".php-version → $PHP_VERSION"
+
+# `symfony new` écrit `"php": ">=X.Y"`, dérivé du binaire retenu. Or `>=8.5`
+# couvre PHP 9, dont les ruptures ne sont pas connues, alors que les neuf
+# bundles `jul6art/*` déclarent tous `^8.5`. On réécrit donc la contrainte
+# AVANT le premier `composer require` : posée après, elle ne serait pas prise
+# en compte par la résolution des paquets du skeleton.
+# `--no-update` n'appelle pas le réseau et ne touche pas au lock (il n'existe
+# pas encore à ce stade).
+run symfony composer require --no-update --no-interaction "php:^8.5"
+# `--no-update` laisse le `content-hash` du lock périmé. Les `composer require`
+# du bloc ci-dessous le régénèrent — mais ce bloc ne tourne pas en
+# `--no-extras`. On rafraîchit donc le hash tout de suite : c'est un no-op
+# quand un `require` suit, et la seule garantie quand il ne suit pas.
+run symfony composer update --lock --no-interaction
 
 if [ "$NO_EXTRAS" = 0 ]; then
     # Les recettes contrib (nelmio/cors, fixtures…) sont acceptées sans prompt :

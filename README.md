@@ -277,7 +277,7 @@ sfnew() { /PATH/TO/symfony-skeleton/bin/new-project "$@"; }
 
 Since `composer` is not installed globally on this machine, everything goes
 through `symfony composer`. If the `php` on the `PATH` is broken, the script
-automatically looks for the most recent PHP ≥ 8.2 in the Homebrew directories.
+automatically looks for the most recent PHP ≥ 8.5 in the Homebrew directories.
 
 ## Placeholders
 
