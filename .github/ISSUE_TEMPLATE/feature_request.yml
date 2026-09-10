@@ -1,0 +1,60 @@
+name: Feature request
+description: A package, an option, a default or a file the skeleton should ship
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Worth knowing before you write: anything added to `common/` lands in
+        **five generated projects at once**, and every package is a maintenance
+        commitment. The bar is high on purpose.
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What do you have to do by hand in every generated project today?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What you propose
+      description: |
+        Name the files: a package in `common/packages.txt` or in one
+        `modes/<mode>/packages.txt`, a file in an `overlay/`, a `make` target,
+        a `bin/new-project` option…
+    validations:
+      required: true
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Which modes should get it
+      multiple: true
+      options:
+        - web
+        - api
+        - api-platform
+        - admin
+        - backoffice
+        - every mode (common/)
+    validations:
+      required: true
+  - type: textarea
+    id: constraints
+    attributes:
+      label: How it fits the house rules
+      description: |
+        Say how the proposal holds up against the rules in
+        [CONTRIBUTING.md](https://github.com/jul6art/symfony-skeleton-generator/blob/master/.github/CONTRIBUTING.md):
+        every route keeps an explicit access decision, nothing loads from a CDN
+        at runtime, no Node outside the `backoffice` mode, strings stay
+        translation keys, and the account brick stays optional (`--no-user`).
+    validations:
+      required: false
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives you considered
+      description: Including doing it in the project after generation, or in one of the `jul6art/*` bundles.
+    validations:
+      required: false

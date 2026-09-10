@@ -1,0 +1,73 @@
+name: Bug report
+description: Something the generator writes, or the generated project does, is wrong
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. This generator is deterministic, so the command
+        line you ran plus its output is usually the whole story.
+
+        **Do not report a security problem here** — use
+        [private vulnerability reporting](https://github.com/jul6art/symfony-skeleton-generator/security/advisories/new)
+        instead, as described in [SECURITY.md](https://github.com/jul6art/symfony-skeleton-generator/blob/master/.github/SECURITY.md).
+  - type: input
+    id: command
+    attributes:
+      label: The command you ran
+      description: The full `./bin/new-project` line, flags included.
+      placeholder: ./bin/new-project my-desk --backoffice --no-registration
+    validations:
+      required: true
+  - type: dropdown
+    id: mode
+    attributes:
+      label: Mode
+      options:
+        - web
+        - api
+        - api-platform
+        - admin
+        - backoffice
+        - the generator itself (bin/new-project)
+        - several modes
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened instead
+      description: |
+        Paste the error, the failing test, or describe what is on screen.
+        For a `make qa` failure, the php-cs-fixer / PHPStan / PHPUnit output is
+        what matters — the last 30 lines are usually enough.
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: |
+        Output of `php -v | head -1`, `symfony version`, `uname -sr`, and the
+        Symfony version generated (`--version=` if you passed one).
+      render: shell
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I ran the command again on a fresh directory and it happened again
+          required: true
+        - label: The problem is in this repository's files, not in Symfony or a `jul6art/*` bundle
+          required: false
+        - label: I ran `make qa` in the generated project and pasted the relevant output above
+          required: false

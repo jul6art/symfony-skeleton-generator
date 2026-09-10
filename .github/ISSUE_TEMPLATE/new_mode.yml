@@ -1,0 +1,57 @@
+name: New mode proposal
+description: Propose a sixth mode (console, microservice, shop…)
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A mode is a data directory — no generator code to touch. The README's
+        *Adding a mode* section has the file-by-file table and a worked
+        `console` example, so a proposal is mostly about whether the mode
+        deserves to be maintained, not about how to write it.
+  - type: input
+    id: name
+    attributes:
+      label: Mode name
+      description: The flag it would answer to, e.g. `console` for `--console`.
+    validations:
+      required: true
+  - type: input
+    id: base
+    attributes:
+      label: Base skeleton
+      description: The `SYMFONY_NEW_FLAGS` it needs — empty, `--webapp` or `--api`.
+      placeholder: --webapp
+    validations:
+      required: true
+  - type: textarea
+    id: purpose
+    attributes:
+      label: What kind of project it is for
+      description: One paragraph, the way the README's table describes the existing five.
+    validations:
+      required: true
+  - type: textarea
+    id: contents
+    attributes:
+      label: What it would ship
+      description: Packages, overlay files, `make` targets, tests.
+    validations:
+      required: true
+  - type: dropdown
+    id: user
+    attributes:
+      label: Accounts
+      description: The account brick is optional in every mode except those declaring `REQUIRES_USER=1`.
+      options:
+        - reuses the existing brick, and `--no-user` works
+        - accounts are its subject, so it declares REQUIRES_USER=1
+        - no accounts at all
+    validations:
+      required: true
+  - type: textarea
+    id: distinct
+    attributes:
+      label: Why an existing mode plus a few packages is not enough
+    validations:
+      required: true

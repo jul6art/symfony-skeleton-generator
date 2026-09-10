@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Report a security vulnerability
+    url: https://github.com/jul6art/symfony-skeleton-generator/security/advisories/new
+    about: Insecure defaults, a bypassed access decision, a flaw in bin/new-project — reported privately, never as an issue.
+  - name: How to contribute
+    url: https://github.com/jul6art/symfony-skeleton-generator/blob/master/.github/CONTRIBUTING.md
+    about: The house rules, and the generate-then-`make qa` loop every change is validated with.
