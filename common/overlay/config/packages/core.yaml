@@ -25,10 +25,16 @@ core:
     form:
         number_grouping: false
 
-    # Répertoire contre lequel `pdf_image_path()` / `pdf_image_data_uri()` résolvent les
-    # chemins d'images destinées à un PDF.
-    pdf:
-        public_dir: '%kernel.project_dir%/public'
+    # ⚠️ Le nœud `pdf:` a été RETIRÉ le 2026-09-14 : `jul6art/core-bundle` v3.0.0 a extrait
+    # `PdfAssetExtension` dans `jul6art/pdf-bundle` (retrait qui casse le boot avec
+    # « Unrecognized option "pdf" », constaté en générant un projet `--backoffice` — aucun
+    # gabarit de ce squelette n'appelait `pdf_image_path()` ni `pdf_image_data_uri()`, donc rien
+    # d'autre ne dépendait de ce nœud). Un mode qui a besoin de générer des PDF ajoute
+    # `jul6art/pdf-bundle` à son `packages.txt` et sa propre configuration `pdf:` — cf.
+    # `docs/analyse/pdf_bundle.md` de l'écosystème pour la forme qu'elle prend chez un
+    # consommateur qui en a besoin. Reste à faire ailleurs : les deux mentions de
+    # `PdfAssetExtension` / `pdf_image_*()` dans `common/overlay/CLAUDE.md` documentent encore
+    # l'ancien chemin.
 
     # En-têtes de sécurité HTTP (nosniff, Referrer-Policy, X-Frame-Options,
     # Permissions-Policy, HSTS) + Content-Security-Policy. Désactivés par défaut dans le

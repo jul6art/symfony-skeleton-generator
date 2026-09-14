@@ -304,7 +304,16 @@ if [ "$NO_EXTRAS" = 0 ]; then
 
     PKGS="$(read_packages "$COMMON_DIR/packages.txt" "$MODES_DIR/$MODE/packages.txt" $USER_PKGS)"
     if [ -n "$PKGS" ]; then
-        run symfony composer require --no-interaction $PKGS
+        # ⚠️ `-W` (`--with-all-dependencies`) est OBLIGATOIRE ici, pas une précaution. Le
+        # `composer update --lock` du bare skeleton (ci-dessus) fixe déjà `doctrine/collections` à
+        # sa toute dernière version compatible avec les paquets Flex par défaut ; un `composer
+        # require` PARTIEL refuse ensuite de la bouger pour satisfaire `jul6art/core-bundle`
+        # (`^2.2`), et le mode `backoffice` échoue purement et simplement à se générer —
+        # constaté le 2026-09-14, indépendamment de tout paquet ajouté ce jour-là. `-W` autorise
+        # composer à résoudre le lot ENTIER plutôt que de traiter le lock existant comme immuable,
+        # ce qui est toujours ce qu'on veut sur un projet qui vient de naître : rien n'y est encore
+        # épinglé pour une raison qu'il faudrait protéger.
+        run symfony composer require --no-interaction -W $PKGS
     fi
 
     PKGS_DEV="$(read_packages "$COMMON_DIR/packages-dev.txt" "$MODES_DIR/$MODE/packages-dev.txt")"
