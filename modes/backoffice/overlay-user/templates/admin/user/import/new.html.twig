@@ -1,0 +1,50 @@
+{#
+    L'écran de téléversement — première des deux étapes de l'import.
+
+    ⚠️ `enctype="multipart/form-data"` est OBLIGATOIRE sur un formulaire de fichier : sans lui, le
+    navigateur poste le NOM du fichier comme une chaîne, jamais son contenu.
+#}
+{% extends 'admin/layout.html.twig' %}
+{% trans_default_domain 'user' %}
+
+{% block title %}{{ 'user.import.new.title'|trans }} · {{ admin_branding().name }}{% endblock %}
+
+{% block content %}
+    <div class="max-w-2xl">
+        <div class="mb-6">
+            <nav class="text-xs text-slate-400 dark:text-slate-500 mb-3">
+                <a href="{{ path('admin_user_index') }}" class="hover:text-slate-700 dark:hover:text-slate-300">{{ 'user.list.title'|trans }}</a>
+                <span class="mx-2">/</span><span class="text-slate-600 dark:text-slate-400">{{ 'user.import.new.title'|trans }}</span>
+            </nav>
+            <h1 class="text-2xl font-bold text-slate-900 dark:text-slate-100">{{ 'user.import.new.title'|trans }}</h1>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">{{ 'user.import.new.subtitle'|trans }}</p>
+        </div>
+
+        <div class="form-panel">
+            <form action="{{ path('admin_user_import_new') }}" method="POST" enctype="multipart/form-data" class="form-grid">
+                <input type="hidden" name="_token" value="{{ csrf_token('user_import_upload') }}">
+                <fieldset class="form-fieldset">
+                    <legend>{{ 'user.import.section.file'|trans }}</legend>
+                    <div>
+                        <label for="file" class="form-label">{{ 'user.import.fields.file'|trans }}</label>
+                        <label for="file" class="mt-2 flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg cursor-pointer bg-slate-50 dark:bg-slate-800/40 hover:bg-slate-100 dark:hover:bg-slate-800/70 transition">
+                            <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                <i class="fa-solid fa-file-csv text-3xl text-accent-500 mb-2"></i>
+                                <p class="text-sm text-slate-600 dark:text-slate-300"><span class="font-semibold">{{ 'user.import.new.cta_click'|trans }}</span> {{ 'user.import.new.cta_or_drop'|trans }}</p>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">{{ 'user.import.new.accept'|trans }}</p>
+                            </div>
+                            <input type="file" id="file" name="file" accept=".csv,text/csv" class="hidden" required>
+                        </label>
+                        <p class="text-xs text-slate-500 mt-2">{{ 'user.import.new.hint'|trans }}</p>
+                    </div>
+                </fieldset>
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">
+                        <i class="fa-solid fa-upload"></i> {{ 'user.import.action.upload'|trans }}
+                    </button>
+                    <a href="{{ path('admin_user_index') }}" class="btn-secondary">{{ 'action.cancel'|trans({}, 'messages') }}</a>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

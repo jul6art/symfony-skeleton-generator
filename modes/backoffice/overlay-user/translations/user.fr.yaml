@@ -3,6 +3,8 @@ user:
     title: Utilisateurs
     subtitle: Les comptes et leurs accès
     create: Nouvel utilisateur
+    export: Exporter
+    import: Importer
   new:
     title: Nouvel utilisateur
   edit:
@@ -39,6 +41,44 @@ user:
     switcher_label: Changer de langue
     en: Anglais
     fr: Français
+  import:
+    new:
+      title: Importer des utilisateurs
+      subtitle: Créez plusieurs comptes d'un coup à partir d'un fichier CSV.
+      cta_click: Cliquez pour téléverser
+      cta_or_drop: ou glissez-déposez
+      accept: CSV uniquement, 5 Mo maximum.
+      hint: La première ligne doit porter les en-têtes de colonnes.
+    section:
+      file: Fichier
+      mapping: Correspondance des colonnes
+    fields:
+      file: Fichier CSV
+    action:
+      upload: Téléverser
+      execute: Lancer l'import
+    map:
+      title: Faire correspondre les colonnes
+      subtitle: Indiquez quelle colonne de votre fichier porte quelle information.
+    result:
+      title: Résultat de l'import
+      subtitle: Ce qui a été créé, ignoré, ou refusé.
+      batch_failed: 'L''import s''est arrêté : un lot n''a pas pu être écrit (ligne %record%).'
+      rolled_back: Tout ce qui était déjà écrit a été annulé.
+      partially_committed: Des lots précédents étaient déjà validés et n'ont pas été annulés.
+      view_users: Voir les utilisateurs
+      import_more: Importer un autre fichier
+    # ⚠️ Ces trois-là seulement : ce sont les seules levées comme `\DomainException` DANS le
+    # mapper (`UserRowMapper::map()`), et rendues par `@Dataflow/import/_report.html.twig` via
+    # `error.message|trans({}, error.message|split('.')|first)` — le premier segment avant le point
+    # ('user') donne le DOMAINE de traduction. Les erreurs de TÉLÉVERSEMENT (fichier trop gros,
+    # MIME refusé…) passent par un flash, pas par ce mécanisme : leurs clés sont dans
+    # `messages.fr.yaml`, où `core.flash.domain_map` — vide par défaut dans ce squelette — les
+    # cherche.
+    error:
+      missing_fields: Un prénom et un nom sont requis.
+      invalid_email: L'adresse e-mail de cette ligne n'est pas exploitable.
+      unknown_role: Le rôle de cette ligne n'est pas un de ceux que cette application attribue.
 profile:
   section:
     identity: Identité

@@ -72,6 +72,17 @@ user.flash.activated: Utilisateur activé.
 user.flash.deactivated: Utilisateur désactivé.
 user.flash.cannot_delete_self: Vous ne pouvez pas supprimer votre propre compte.
 user.flash.deleted: Utilisateur supprimé.
+# ⚠️ Plate, comme chaque autre clef `user.flash.*` ci-dessus : `redirectWithError()` passe par
+# `FlashTranslator`, dont `core.flash.domain_map` est vide par défaut dans ce squelette, donc tout
+# flash retombe sur `messages`. Ces cinq sont les refus au moment du TÉLÉVERSEMENT de l'exemple
+# d'import de comptes (`jul6art/dataflow-bundle`) ; les trois levées DANS le mapper vivent dans
+# `user.fr.yaml` — elles sont rendues par le partiel de rapport du bundle, qui résout son domaine
+# depuis le premier segment de la clef plutôt que par un flash.
+user.import.error.upload_failed: Le fichier n'a pas pu être téléversé.
+user.import.error.file_too_large: Le fichier dépasse la taille autorisée.
+user.import.error.binary_spreadsheet: C'est un classeur, pas un fichier texte. Enregistrez-le en CSV et réessayez.
+user.import.error.invalid_mime: Ce type de fichier n'est pas reconnu.
+user.import.error.mapping_required: Faites correspondre au moins une colonne avant de lancer l'import.
 permission.flash.saved: Permissions enregistrées.
 user.profile.flash.saved: Profil enregistré.
 user.profile.flash.upload_failed: La photo n'a pas pu être enregistrée.

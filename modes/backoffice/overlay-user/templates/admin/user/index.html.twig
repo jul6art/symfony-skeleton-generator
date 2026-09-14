@@ -22,11 +22,21 @@
             <h1 class="text-2xl font-bold text-slate-900 dark:text-slate-100">{{ 'user.list.title'|trans }}</h1>
             <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">{{ 'user.list.subtitle'|trans }}</p>
         </div>
-        {% if is_granted(constant('App\\Security\\PermissionCodes::USER_CREATE')) %}
-            <a href="{{ path('admin_user_new') }}" class="btn-primary mt-2">
-                <i class="fa-solid fa-plus"></i> {{ 'user.list.create'|trans }}
-            </a>
-        {% endif %}
+        <div class="flex items-center gap-2 mt-2">
+            {% if is_granted(constant('App\\Security\\PermissionCodes::USER_READ')) %}
+                <a href="{{ path('admin_user_export') }}" class="btn-secondary">
+                    <i class="fa-solid fa-file-csv"></i> {{ 'user.list.export'|trans }}
+                </a>
+            {% endif %}
+            {% if is_granted(constant('App\\Security\\PermissionCodes::USER_CREATE')) %}
+                <a href="{{ path('admin_user_import_new') }}" class="btn-secondary">
+                    <i class="fa-solid fa-upload"></i> {{ 'user.list.import'|trans }}
+                </a>
+                <a href="{{ path('admin_user_new') }}" class="btn-primary">
+                    <i class="fa-solid fa-plus"></i> {{ 'user.list.create'|trans }}
+                </a>
+            {% endif %}
+        </div>
     </div>
 
     <div class="panel overflow-x-auto">

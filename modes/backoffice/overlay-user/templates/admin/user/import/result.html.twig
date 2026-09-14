@@ -1,0 +1,39 @@
+{#
+    Ce que l'import a fait.
+
+    Les compteurs et la liste d'erreurs viennent de `jul6art/dataflow-bundle`.
+#}
+{% extends 'admin/layout.html.twig' %}
+{% trans_default_domain 'user' %}
+
+{% block title %}{{ 'user.import.result.title'|trans }} · {{ admin_branding().name }}{% endblock %}
+
+{% block content %}
+    <div class="max-w-3xl">
+        <div class="mb-6">
+            <h1 class="text-2xl font-bold text-slate-900 dark:text-slate-100">{{ 'user.import.result.title'|trans }}</h1>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">{{ 'user.import.result.subtitle'|trans }}</p>
+        </div>
+
+        {# ⚠️ Le cas d'échec d'un lot vient AVANT les compteurs : `flush()` en erreur ferme
+           l'`EntityManager`, il n'y a pas de « on continue », et ce que l'opérateur doit lire
+           d'abord est jusqu'où le fichier est allé — puis si ce qui était écrit a été annulé. #}
+        {% if failed_at is defined %}
+            <div class="panel p-4 mb-6 border-l-4 border-red-500">
+                <p class="text-sm font-semibold text-red-700 dark:text-red-300">
+                    {{ 'user.import.result.batch_failed'|trans({'%record%': failed_at}) }}
+                </p>
+                <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                    {{ (rolled_back ? 'user.import.result.rolled_back' : 'user.import.result.partially_committed')|trans }}
+                </p>
+            </div>
+        {% endif %}
+
+        {{ include('@Dataflow/import/_report.html.twig', {report: report}) }}
+
+        <div class="flex gap-2">
+            <a href="{{ path('admin_user_index') }}" class="btn-primary">{{ 'user.import.result.view_users'|trans }}</a>
+            <a href="{{ path('admin_user_import_new') }}" class="btn-secondary">{{ 'user.import.result.import_more'|trans }}</a>
+        </div>
+    </div>
+{% endblock %}

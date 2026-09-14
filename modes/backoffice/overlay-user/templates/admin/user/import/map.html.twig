@@ -1,0 +1,38 @@
+{#
+    La correspondance des colonnes — seconde étape.
+
+    Le tableau vient de `jul6art/dataflow-bundle` : ce gabarit ne pose que le formulaire qui
+    l'entoure — l'action, le jeton CSRF et le bouton, que le bundle n'émet pas parce que la route
+    et le nom du jeton sont ceux de ce produit.
+#}
+{% extends 'admin/layout.html.twig' %}
+{% trans_default_domain 'user' %}
+
+{% block title %}{{ 'user.import.map.title'|trans }} · {{ admin_branding().name }}{% endblock %}
+
+{% block content %}
+    <div class="max-w-3xl">
+        <div class="mb-6">
+            <h1 class="text-2xl font-bold text-slate-900 dark:text-slate-100">{{ 'user.import.map.title'|trans }}</h1>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">{{ 'user.import.map.subtitle'|trans }}</p>
+        </div>
+
+        <div class="form-panel">
+            <form action="{{ path('admin_user_import_execute') }}" method="POST" class="form-grid">
+                <input type="hidden" name="_token" value="{{ csrf_token('user_import_execute') }}">
+                <input type="hidden" name="file_token" value="{{ file_token }}">
+                <fieldset class="form-fieldset">
+                    <legend>{{ 'user.import.section.mapping'|trans }}</legend>
+                    {{ include('@Dataflow/import/_mapper.html.twig', {
+                        inspection: inspection,
+                        fields: recognized_fields,
+                    }) }}
+                </fieldset>
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">{{ 'user.import.action.execute'|trans }}</button>
+                    <a href="{{ path('admin_user_import_new') }}" class="btn-secondary">{{ 'action.cancel'|trans({}, 'messages') }}</a>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

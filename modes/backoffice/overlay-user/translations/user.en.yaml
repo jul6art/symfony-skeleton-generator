@@ -3,6 +3,8 @@ user:
     title: Users
     subtitle: Accounts and their access
     create: New user
+    export: Export
+    import: Import
   new:
     title: New user
   edit:
@@ -39,6 +41,44 @@ user:
     switcher_label: Change language
     en: English
     fr: French
+  import:
+    new:
+      title: Import users
+      subtitle: Create several accounts at once from a CSV file.
+      cta_click: Click to upload
+      cta_or_drop: or drag and drop
+      accept: CSV only, 5 MB max.
+      hint: The first row must hold the column headers.
+    section:
+      file: File
+      mapping: Column mapping
+    fields:
+      file: CSV file
+    action:
+      upload: Upload
+      execute: Run the import
+    map:
+      title: Map the columns
+      subtitle: Tell us which column of your file holds which piece of information.
+    result:
+      title: Import result
+      subtitle: What was created, skipped, or rejected.
+      batch_failed: 'The import stopped: a batch could not be written (row %record%).'
+      rolled_back: Everything already written was rolled back.
+      partially_committed: Earlier batches were already committed and were not rolled back.
+      view_users: View users
+      import_more: Import another file
+    # ⚠️ Ces trois-là seulement : ce sont les seules levées comme `\DomainException` DANS le
+    # mapper (`UserRowMapper::map()`), et rendues par `@Dataflow/import/_report.html.twig` via
+    # `error.message|trans({}, error.message|split('.')|first)` — le premier segment avant le point
+    # ('user') donne le DOMAINE de traduction. Les erreurs de TÉLÉVERSEMENT (fichier trop gros,
+    # MIME refusé…) passent par un flash, pas par ce mécanisme : leurs clés sont dans
+    # `messages.en.yaml`, où `core.flash.domain_map` — vide par défaut dans ce squelette — les
+    # cherche.
+    error:
+      missing_fields: A first and last name are required.
+      invalid_email: This row's e-mail address is not usable.
+      unknown_role: This row's role is not one this application assigns.
 profile:
   section:
     identity: Identity

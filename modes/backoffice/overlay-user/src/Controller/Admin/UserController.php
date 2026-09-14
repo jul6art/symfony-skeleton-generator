@@ -9,9 +9,12 @@ use App\Entity\User;
 use App\Form\UserType;
 use App\Security\PermissionCodes;
 use App\Security\UserRoles;
+use App\Service\UserCsvExporter;
 use Doctrine\ORM\EntityManagerInterface;
 use Jul6Art\CoreBundle\Controller\BulkActionRunner;
 use Jul6Art\CoreBundle\Util\Strings;
+use Jul6Art\DataflowBundle\Io\Http\TabularResponseFactory;
+use Jul6Art\DataflowBundle\Io\Writer\CsvWriter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -43,6 +46,9 @@ final class UserController extends AbstractController
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly UserDataTableConfigProvider $dataTable,
+        private readonly UserCsvExporter $exporter,
+        private readonly TabularResponseFactory $responses,
+        private readonly CsvWriter $csvWriter,
     ) {
     }
 
@@ -55,6 +61,27 @@ final class UserController extends AbstractController
             'filters_config' => $this->dataTable->getFilters(),
             'actions_config' => $this->dataTable->getActions($actor),
         ]);
+    }
+
+    /**
+     * L'export CSV de la liste — l'exemple livré avec le mode `backoffice`
+     * (`jul6art/dataflow-bundle`). En FLUX : `UserCsvExporter::rows()` rend un `Generator`, et
+     * `TabularResponseFactory::stream()` écrit le premier octet avant que la dernière ligne ne
+     * soit lue.
+     *
+     * ⚠️ `USER_READ`, le même code que la liste : exporter n'est rien de plus que lire, par un
+     * autre chemin.
+     */
+    #[Route('/export.csv', name: 'export', methods: ['GET'])]
+    #[IsGranted(PermissionCodes::USER_READ)]
+    public function export(): Response
+    {
+        return $this->responses->stream(
+            $this->csvWriter,
+            UserCsvExporter::HEADER,
+            $this->exporter->rows(),
+            'users',
+        );
     }
 
     #[Route('/new', name: 'new', methods: ['GET', 'POST'])]

@@ -7,6 +7,7 @@ namespace App\Tests\Translation;
 use App\Security\BackofficeLocales;
 use Jul6Art\CoreBundle\Test\AbstractJsTranslationTestCase;
 use Jul6Art\DatatableBundle\Translation\DeclaredTranslationKeys;
+use Override;
 use PHPUnit\Framework\Attributes\CoversNothing;
 
 /**
@@ -30,7 +31,7 @@ use PHPUnit\Framework\Attributes\CoversNothing;
 #[CoversNothing]
 final class JsTranslationTest extends AbstractJsTranslationTestCase
 {
-    #[\Override]
+    #[Override]
     protected static function javaScriptDirectories(): array
     {
         return [
@@ -50,7 +51,7 @@ final class JsTranslationTest extends AbstractJsTranslationTestCase
      *
      * @return list<string>
      */
-    #[\Override]
+    #[Override]
     protected static function locales(): array
     {
         return BackofficeLocales::SUPPORTED;
@@ -64,13 +65,13 @@ final class JsTranslationTest extends AbstractJsTranslationTestCase
      * énumère déjà dans `config/packages/datatable.yaml`, et deux listes d'un même vocabulaire
      * divergent le jour où l'une change.
      */
-    #[\Override]
+    #[Override]
     protected static function declaredKeys(): array
     {
         return self::declared()->keys();
     }
 
-    #[\Override]
+    #[Override]
     protected static function declaredPrefixes(): array
     {
         return self::declared()->prefixes();
@@ -79,7 +80,7 @@ final class JsTranslationTest extends AbstractJsTranslationTestCase
     /**
      * Le garde anti-retour : plus aucun gabarit ne passe de libellés au JavaScript par un attribut.
      */
-    #[\Override]
+    #[Override]
     protected static function templateDirectories(): array
     {
         return [self::projectDir().'/templates'];
@@ -95,7 +96,7 @@ final class JsTranslationTest extends AbstractJsTranslationTestCase
      *
      * @return list<string>
      */
-    #[\Override]
+    #[Override]
     protected static function serverDirectories(): array
     {
         return [self::projectDir().'/templates', self::projectDir().'/src'];

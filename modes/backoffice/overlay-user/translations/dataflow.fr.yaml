@@ -1,0 +1,29 @@
+# Les libellés SERVEUR des partiels d'import de `jul6art/dataflow-bundle` (`_mapper.html.twig`,
+# `_report.html.twig`) — utilisés par l'exemple d'import du mode `backoffice`.
+#
+# ⚠️ Le bundle livre son catalogue en anglais (`Resources/translations/dataflow.en.xlf`) ; Symfony
+# fusionne ce fichier-ci par-dessus pour la locale française, que ce mode supporte aussi
+# (`BackofficeLocales::SUPPORTED`). Rien à ajouter côté anglais : c'est la langue par défaut de ce
+# mode, et le catalogue du bundle la couvre déjà.
+dataflow:
+  import:
+    error:
+      batch_failed: 'L''import s''est arrêté : un lot n''a pas pu être écrit.'
+      binary_spreadsheet: C'est un classeur, pas un fichier texte. Enregistrez-le en CSV et réessayez.
+      duplicate: Cet enregistrement existe déjà.
+      empty_file: Le fichier est vide.
+      file_unreadable: Le fichier n'a pas pu être ouvert.
+      row_cap_reached: Le fichier dépasse le nombre de lignes autorisé ; le reste n'a pas été lu.
+    mapper:
+      ambiguous: Deux colonnes revendiquent le même champ. Choisissez laquelle utiliser.
+      column: Colonne du fichier
+      field: Correspond à
+      ignore: — ignorer cette colonne —
+      missing: 'Aucune colonne ne fournit : %fields%'
+      unknown: non reconnue, elle sera ignorée
+    result:
+      dry_run: 'Rien n''a été écrit : c''était une simulation.'
+      errors: '%count% ligne(s) en erreur'
+      imported: '%count% ligne(s) importée(s)'
+      skipped: '%count% ligne(s) ignorée(s)'
+      truncated: Seules les %count% premières erreurs sont listées.

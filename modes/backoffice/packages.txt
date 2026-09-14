@@ -16,6 +16,7 @@ jul6art/acl-bundle                  # moteur de permissions
 jul6art/push-bundle                 # Mercure : publication, jetons, topics
 jul6art/datatable-bundle            # le socle de tableau
 jul6art/admin-bundle                # la coquille : layout, thème, apparence, pages d'auth
+jul6art/dataflow-bundle              # import/export CSV et XLSX, en flux — l'exemple de comptes ci-dessous
 
 # Suggestions :
 # jul6art/audit-bundle              # journal d'audit — une ligne de composer require

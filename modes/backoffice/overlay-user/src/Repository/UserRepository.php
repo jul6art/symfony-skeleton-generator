@@ -56,4 +56,34 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     {
         return $this->findOneBy(['email' => mb_strtolower(trim($email))]);
     }
+
+    /**
+     * Les comptes existants parmi une liste d'adresses, en UNE requête — pour l'import CSV
+     * ({@see \App\Import\UserDuplicateResolver}), qui doit résoudre les doublons d'un lot entier
+     * sans interroger la base ligne par ligne.
+     *
+     * @param list<string> $emails déjà normalisées (minuscules, sans espace) par l'appelant
+     *
+     * @return array<string, User> indexé par l'adresse normalisée
+     */
+    public function findByEmails(array $emails): array
+    {
+        if ([] === $emails) {
+            return [];
+        }
+
+        $rows = $this->createQueryBuilder('u')
+            ->andWhere('u.email IN (:emails)')
+            ->setParameter('emails', $emails)
+            ->getQuery()
+            ->getResult();
+
+        $indexed = [];
+
+        foreach ($rows as $user) {
+            $indexed[$user->getEmail()] = $user;
+        }
+
+        return $indexed;
+    }
 }
