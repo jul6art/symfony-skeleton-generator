@@ -16,6 +16,7 @@ ce dépôt porte ce qui lui appartient — ses entités, son catalogue de permis
 | Les tableaux : pagination, tri, filtres, actions de masse, temps réel | `jul6art/datatable-bundle` | le contrôleur Stimulus, `AbstractDataTableConfigProvider` |
 | Les filtres API Platform (`OrSearchFilter`, tri insensible à la casse) | `jul6art/api-bundle` | |
 | Les types de formulaire (e-mail, mot de passe, montant, IBAN…) | `jul6art/ui-bundle` | |
+| Un choix d'entité adossé à une table qui grossit (clients, sites, comptes…) | `jul6art/ui-bundle` | `AutocompleteEntityType` : la page ne porte que la valeur courante, le `query_builder` reste la borne de ce qui est accepté |
 | Le moteur de permissions, `#[CheckPermission]`, le voter | `jul6art/acl-bundle` | |
 | Mercure : publication, jetons, canaux | `jul6art/push-bundle` | |
 | Import/export CSV et XLSX, en flux | `jul6art/dataflow-bundle` | `TabularResponseFactory`, `CsvWriter`, `ImportRunner`, `HeaderInspector` — cf. `src/Import/UserRowMapper.php` et `src/Controller/Admin/UserImportController.php` pour l'exemple livré |

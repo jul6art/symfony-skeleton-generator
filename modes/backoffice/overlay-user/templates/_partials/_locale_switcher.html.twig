@@ -20,7 +20,8 @@
         {# Le conteneur porte le cadre, le SVG le remplit : les deux drapeaux n'ont pas le même
            rapport (3:2 et 2:1), et sans cadre imposé l'un des deux flotterait. #}
         <span class="inline-flex w-5 h-3.5 rounded-[2px] overflow-hidden ring-1 ring-slate-200 dark:ring-slate-600">{{ locale_flag(app.request.locale) }}</span>
-        <span class="uppercase text-xs font-semibold">{{ app.request.locale }}</span>
+        {# Sous `md`, le drapeau seul (norme d'en-tête d'admin-bundle 1.15). #}
+        <span class="hidden md:inline uppercase text-xs font-semibold">{{ app.request.locale }}</span>
         <i class="fa-solid fa-chevron-down text-xs text-slate-500 dark:text-slate-400"></i>
     </button>
     <div data-ui-dropdown-menu class="hidden absolute right-0 mt-2 w-48 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-1.5 shadow-xl z-10">

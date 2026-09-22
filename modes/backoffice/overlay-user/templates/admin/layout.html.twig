@@ -16,9 +16,22 @@
     {% endif %}
 {% endblock %}
 
-{# `admin_topbar_actions` est le bloc que le bundle réserve à ça : « à droite, AVANT le menu de
-   compte (cloche, sélecteur de langue…) ». #}
-{% block admin_topbar_actions %}
+{#
+    La barre du haut suit la norme d'`admin-bundle` ≥ 1.15 : la coquille rend `admin_topbar_locale`
+    (la langue), puis `admin_topbar_actions` (une cloche, le jour où le projet en a une), puis le
+    compte. L'ordre n'est plus l'affaire du projet.
+
+    La recherche globale se branche dans `admin_topbar_center`, par le partial du bundle — le projet
+    ne fournit que sa route et ce qu'elle cherche :
+
+        {% block admin_topbar_center %}
+            {{ include('@Admin/partials/_global_search.html.twig', { url: path('app_search_query'), … }) }}
+        {% endblock %}
+
+    Voir la section « The global search field » du README d'`admin-bundle`. Un squelette n'a aucun
+    domaine à chercher : elle n'est donc pas générée.
+#}
+{% block admin_topbar_locale %}
     {{ include('_partials/_locale_switcher.html.twig') }}
 {% endblock %}
 
