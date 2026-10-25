@@ -1,6 +1,6 @@
 {#
-    Le profil du compte connecté. Le formulaire porte un fichier : `enctype` est OBLIGATOIRE,
-    sans lui le champ arrive vide côté serveur sans que rien ne le signale.
+    Le profil du compte connecté. Le formulaire porte un fichier : `form_start` pose lui-même `enctype` (un `FileType` rend le
+    formulaire `multipart`) — le redonner en attribut le doublait, du HTML invalide.
 
     ⚠️ La largeur se pose DANS le contenu et pas par `{% block container_class %}` : le conteneur
     du layout porte `mx-auto`, donc restreindre le bloc recentre toute la page — cet écran se
@@ -27,7 +27,7 @@
         </div>
 
         <div class="form-panel">
-            {{ form_start(form, { attr: { enctype: 'multipart/form-data', class: 'form-grid' } }) }}
+            {{ form_start(form, { attr: { class: 'form-grid' } }) }}
                 {{ form_errors(form) }}
 
                 <fieldset class="form-fieldset">

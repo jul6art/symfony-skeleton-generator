@@ -108,7 +108,8 @@
             </p>
         </div>
         <div class="dropzone-preview hidden" data-form--dropzone-target="preview">
-            <img class="dropzone-preview-img hidden" data-form--dropzone-target="previewImage" alt="">
+            {# Un `src` dès le départ — un pixel transparent : une `img` sans `src` est du HTML invalide ; le contrôleur `form--dropzone` y pose l'aperçu. #}
+            <img class="dropzone-preview-img hidden" data-form--dropzone-target="previewImage" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="">
             <div class="dropzone-preview-meta">
                 <p class="dropzone-preview-name" data-form--dropzone-target="name"></p>
                 <p class="dropzone-preview-size" data-form--dropzone-target="size"></p>
