@@ -80,6 +80,9 @@ final class UserDataTableConfigProvider extends AbstractDataTableConfigProvider
     public function getActions(User $actor): array
     {
         $notSelf = 'row.id !== '.(int) $actor->getId();
+        // La ligne d'un super-administrateur n'offre rien à modifier à un administrateur
+        // (UserAccountVoter) : l'ergonomie de la règle que les routes appliquent.
+        $manageable = $actor->isSuperAdmin() ? 'true' : "!(row.roles || []).some((role) => role === 'ROLE_SUPER_ADMIN')";
         $actions = [];
 
         if ($this->permissions->isGranted($actor, PermissionCodes::USER_READ)) {
@@ -87,7 +90,10 @@ final class UserDataTableConfigProvider extends AbstractDataTableConfigProvider
         }
 
         if ($this->permissions->isGranted($actor, PermissionCodes::USER_UPDATE)) {
-            $actions[] = $this->linkAction('edit', '/admin/users/{id}/edit', 'pencil', 'action.edit');
+            $actions[] = array_merge(
+                $this->linkAction('edit', '/admin/users/{id}/edit', 'pencil', 'action.edit'),
+                ['condition' => $manageable],
+            );
         }
 
         if ($this->permissions->isGranted($actor, PermissionCodes::USER_ACTIVATE)) {
@@ -96,7 +102,7 @@ final class UserDataTableConfigProvider extends AbstractDataTableConfigProvider
                 [
                     // `condition` est évaluée par ligne : elle évite d'offrir une action qui
                     // répondrait 422, ce qui est de l'ergonomie et non une garde.
-                    'condition' => "!row.isActive && {$notSelf}",
+                    'condition' => "!row.isActive && {$notSelf} && {$manageable}",
                     'class' => 'text-emerald-600 hover:text-emerald-700',
                     'bulk' => true,
                     'bulkRoute' => '/admin/users/bulk-activate',
@@ -107,7 +113,7 @@ final class UserDataTableConfigProvider extends AbstractDataTableConfigProvider
             $actions[] = array_merge(
                 $this->postAction('deactivate', '/admin/users/{id}/deactivate', 'ban', 'action.deactivate', 'warning'),
                 [
-                    'condition' => "row.isActive && {$notSelf}",
+                    'condition' => "row.isActive && {$notSelf} && {$manageable}",
                     'class' => 'text-orange-600 hover:text-orange-700',
                     'bulk' => true,
                     'bulkRoute' => '/admin/users/bulk-deactivate',
@@ -119,7 +125,7 @@ final class UserDataTableConfigProvider extends AbstractDataTableConfigProvider
         if ($this->permissions->isGranted($actor, PermissionCodes::USER_DELETE)) {
             $actions[] = array_merge(
                 $this->bulkDeleteAction('/admin/users/{id}/delete', '/admin/users/bulk-delete'),
-                ['condition' => $notSelf],
+                ['condition' => "{$notSelf} && {$manageable}"],
             );
         }
 

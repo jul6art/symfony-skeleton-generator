@@ -25,6 +25,9 @@ de site du projet.
 - Action sans sujet : `#[IsGranted(PermissionCodes::…)]` sur la MÉTHODE. Un `#[IsGranted]` de
   classe qui ne vérifie que l'authentification n'est pas une décision.
 - Route de masse : le même attribut au niveau agrégat. La boucle par entité est la seconde garde.
+- Une permission dit QUOI, pas sur QUI : le compte d'un super-administrateur n'appartient qu'aux
+  super-administrateurs (`UserAccountVoter`), et `ROLE_SUPER_ADMIN` ne s'offre dans le formulaire
+  qu'à qui le détient (`offer_super_admin`).
 - Route publique assumée : `#[IsGranted('PUBLIC_ACCESS')]`, écrite comme les autres.
 - Le gabarit affiche un bouton sous l'attribut qui le gouverne. Un lien visible qui répond 403 est
   un bug d'interface ; une règle recopiée dans le gabarit en est un autre.

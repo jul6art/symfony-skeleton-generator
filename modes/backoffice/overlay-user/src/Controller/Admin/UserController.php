@@ -9,6 +9,7 @@ use App\Entity\User;
 use App\Form\UserType;
 use App\Security\PermissionCodes;
 use App\Security\UserRoles;
+use App\Security\Voter\UserAccountVoter;
 use App\Service\UserCsvExporter;
 use Doctrine\ORM\EntityManagerInterface;
 use Jul6Art\CoreBundle\Controller\BulkActionRunner;
@@ -89,7 +90,10 @@ final class UserController extends AbstractController
     public function new(Request $request, UserPasswordHasherInterface $hasher): Response
     {
         $user = new User();
-        $form = $this->createForm(UserType::class, $user, ['require_password' => true]);
+        $form = $this->createForm(UserType::class, $user, [
+            'require_password' => true,
+            'offer_super_admin' => $this->isGranted(UserRoles::ROLE_SUPER_ADMIN),
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -121,9 +125,10 @@ final class UserController extends AbstractController
 
     #[Route('/{id}/edit', name: 'edit', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
     #[IsGranted(PermissionCodes::USER_UPDATE)]
+    #[IsGranted(UserAccountVoter::MANAGE, subject: 'user')]
     public function edit(Request $request, User $user, UserPasswordHasherInterface $hasher): Response
     {
-        $form = $this->createForm(UserType::class, $user);
+        $form = $this->createForm(UserType::class, $user, ['offer_super_admin' => $this->isGranted(UserRoles::ROLE_SUPER_ADMIN)]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -145,6 +150,7 @@ final class UserController extends AbstractController
 
     #[Route('/{id}/activate', name: 'activate', requirements: ['id' => '\d+'], methods: ['POST'])]
     #[IsGranted(PermissionCodes::USER_ACTIVATE)]
+    #[IsGranted(UserAccountVoter::MANAGE, subject: 'user')]
     public function activate(Request $request, User $user): Response
     {
         return $this->toggle($request, $user, true);
@@ -152,6 +158,7 @@ final class UserController extends AbstractController
 
     #[Route('/{id}/deactivate', name: 'deactivate', requirements: ['id' => '\d+'], methods: ['POST'])]
     #[IsGranted(PermissionCodes::USER_ACTIVATE)]
+    #[IsGranted(UserAccountVoter::MANAGE, subject: 'user')]
     public function deactivate(Request $request, User $user): Response
     {
         return $this->toggle($request, $user, false);
@@ -159,6 +166,7 @@ final class UserController extends AbstractController
 
     #[Route('/{id}/delete', name: 'delete', requirements: ['id' => '\d+'], methods: ['POST'])]
     #[IsGranted(PermissionCodes::USER_DELETE)]
+    #[IsGranted(UserAccountVoter::MANAGE, subject: 'user')]
     public function delete(Request $request, User $user, #[CurrentUser] User $actor): Response
     {
         if (!$this->isCsrfTokenValid('datatable_action', (string) $request->request->get('_token'))) {
@@ -209,10 +217,12 @@ final class UserController extends AbstractController
     #[IsGranted(PermissionCodes::USER_DELETE)]
     public function bulkDelete(Request $request, BulkActionRunner $runner, #[CurrentUser] User $actor): Response
     {
-        $runner->run($request, User::class, PermissionCodes::USER_DELETE, static function (User $user) use ($actor): User {
-            // Jamais soi-même : la même règle que la suppression unitaire, appliquée ligne à ligne
-            // puisque la sélection, elle, peut contenir n'importe quoi.
-            if ($user->getId() === $actor->getId()) {
+        $manageable = $this->manageable();
+        $runner->run($request, User::class, PermissionCodes::USER_DELETE, static function (User $user) use ($actor, $manageable): User {
+            // Jamais soi-même, ni le compte d'un super-administrateur pour qui n'en est pas un : les
+            // règles de la suppression unitaire, appliquées ligne à ligne puisque la sélection, elle,
+            // peut contenir n'importe quoi.
+            if ($user->getId() === $actor->getId() || !$manageable($user)) {
                 return $user;
             }
 
@@ -258,11 +268,13 @@ final class UserController extends AbstractController
      */
     private function runBulk(Request $request, BulkActionRunner $runner, bool $active): Response
     {
+        $manageable = $this->manageable();
         $runner->run(
             $request,
             User::class,
             PermissionCodes::USER_ACTIVATE,
-            static fn (User $user): User => $user->setIsActive($active),
+            // Le compte d'un super-administrateur, dans la sélection d'un administrateur, reste tel quel.
+            static fn (User $user): User => $manageable($user) ? $user->setIsActive($active) : $user,
         );
 
         // Voir `bulkDelete()` : le runner ne flushe pas, et un flush unique ici coûte une écriture
@@ -274,5 +286,16 @@ final class UserController extends AbstractController
         $this->addFlash('success', $active ? 'user.flash.activated' : 'user.flash.deactivated');
 
         return $this->redirectToRoute('admin_user_index');
+    }
+
+    /**
+     * {@see UserAccountVoter} pour les routes de masse, dont les callbacks sont statiques : le voter du
+     * lanceur vérifie la permission ligne à ligne, pas à qui appartient la ligne.
+     *
+     * @return callable(User): bool
+     */
+    private function manageable(): callable
+    {
+        return fn (User $user): bool => $this->isGranted(UserAccountVoter::MANAGE, $user);
     }
 }

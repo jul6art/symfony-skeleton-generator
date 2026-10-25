@@ -71,7 +71,10 @@ one attribute per exposed action listed by `attributes()`, the decision in
 `decide()`, which only ever sees authenticated accounts. Modes with the accounts
 brick ship `UserVoter` (`USER_LIST`, `USER_VIEW`, `USER_CREATE`, `USER_EDIT`,
 `USER_DELETE`) and its unit test; the `admin` mode adds `AdminVoter` for the
-back-office door itself.
+back-office door itself. The `backoffice` mode, whose fine permissions come from
+`jul6art/acl-bundle`, ships `UserAccountVoter`: a super administrator's account
+is the super administrators' alone, and the account form offers
+`ROLE_SUPER_ADMIN` to them only — a permission says what, not to whom.
 
 The rule is enforced, not merely written down: every project ships
 `tests/Security/RouteAccessDecisionTest.php`, which walks the router and fails

@@ -43,14 +43,14 @@
                         <a href="{{ path('admin_account_profile_edit') }}" class="btn-secondary">
                             <i class="fa-solid fa-pen-to-square"></i> {{ 'action.edit'|trans({}, 'messages') }}
                         </a>
-                    {% elseif is_granted(constant('App\\Security\\PermissionCodes::USER_UPDATE')) %}
+                    {% elseif is_granted(constant('App\\Security\\PermissionCodes::USER_UPDATE')) and is_granted('USER_ACCOUNT_MANAGE', user) %}
                         <a href="{{ path('admin_user_edit', {id: user.id}) }}" class="btn-secondary">
                             <i class="fa-solid fa-pen-to-square"></i> {{ 'action.edit'|trans({}, 'messages') }}
                         </a>
                     {% endif %}
 
-                    {# Activer / désactiver : sous l'attribut qui les gouverne, et jamais sur soi. #}
-                    {% if is_granted(constant('App\\Security\\PermissionCodes::USER_ACTIVATE')) and user.id != app.user.id %}
+                    {# Activer / désactiver : sous l'attribut qui les gouverne, jamais sur soi, ni sur un super-admin pour qui n'en est pas un. #}
+                    {% if is_granted(constant('App\\Security\\PermissionCodes::USER_ACTIVATE')) and user.id != app.user.id and is_granted('USER_ACCOUNT_MANAGE', user) %}
                         {% set toggleRoute = user.isActive ? 'admin_user_deactivate' : 'admin_user_activate' %}
                         {% set toggleLabel = user.isActive ? 'action.deactivate' : 'action.activate' %}
                         <form method="post" action="{{ path(toggleRoute, {id: user.id}) }}"
