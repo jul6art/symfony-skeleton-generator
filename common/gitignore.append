@@ -17,7 +17,9 @@
 .fseventsd
 .VolumeIcon.icns
 .com.apple.timemachine.donotpresent
-Icon?
+# Le fichier « Icon\r » d'une icône de dossier macOS, et lui seul : `Icon?` attrapait aussi tout
+# dossier `icons/` (système de fichiers insensible à la casse), jamais versionné.
+Icon[!a-zA-Z0-9._-]
 Network Trash Folder
 Temporary Items
 .apdisk
