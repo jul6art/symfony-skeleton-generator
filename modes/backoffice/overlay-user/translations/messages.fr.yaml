@@ -10,6 +10,7 @@ nav:
   appearance: Apparence
   two_factor: "Double authentification"
   logout: Déconnexion
+  sidebar_toggle: 'Ouvrir ou fermer le menu'
   performance: Performance
 action:
   actions: Actions

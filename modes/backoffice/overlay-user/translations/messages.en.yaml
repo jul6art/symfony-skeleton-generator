@@ -10,6 +10,7 @@ nav:
   appearance: Appearance
   two_factor: "Two-factor authentication"
   logout: Sign out
+  sidebar_toggle: 'Open or close the menu'
   performance: Performance
 action:
   actions: Actions
