@@ -32,6 +32,12 @@ user:
     bulk_deactivate: Deactivate selection
   show:
     info_title: Information
+    member_since: Member since
+    two_factor: Two-factor authentication
+    two_factor_on: Enabled
+    two_factor_off: Disabled
+    backup_codes: "Backup codes left: %count%"
+    language: Language
   confirm:
     toggle: Confirm the status change for this account?
   section:

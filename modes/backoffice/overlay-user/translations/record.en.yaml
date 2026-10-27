@@ -1,0 +1,9 @@
+# Les mots de la fiche d'admin-bundle (1.35) : `@Admin/record/*` et le menu ⋯ du bundle, qui ne livre
+# aucune traduction. Rendus côté serveur — rien ici ne va au catalogue du navigateur.
+record:
+  tabs: "Record sections"
+  properties:
+    show_all: "Show all %count% details"
+  steps:
+    caption: "Step %position% of %total% · %label%"
+  cancel: "Cancel"

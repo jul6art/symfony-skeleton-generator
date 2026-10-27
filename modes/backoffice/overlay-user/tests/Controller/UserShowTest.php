@@ -43,7 +43,8 @@ final class UserShowTest extends WebTestCase
         // la fiche ne le montrait pas du tout.
         // Scopé à `main` : la coquille pose déjà deux avatars (barre du haut, pied de barre
         // latérale), et un sélecteur global passerait sans que la FICHE en montre un.
-        self::assertGreaterThan(0, $crawler->filter('main .rounded-full.overflow-hidden')->count(), 'La fiche montre l\'avatar.');
+        // `.admin-record__avatar` : l'avatar de la fiche d'admin-bundle (1.35), photo ou initiales.
+        self::assertGreaterThan(0, $crawler->filter('main .admin-record__avatar')->count(), 'La fiche montre l\'avatar.');
 
         self::assertGreaterThan(0, $crawler->filter('main nav a')->count(), 'Un fil d\'Ariane ramène à la liste.');
         self::assertGreaterThan(0, $crawler->filter('main .badge-active, main .badge-inactive')->count(), 'Le statut se lit d\'un coup d\'œil.');

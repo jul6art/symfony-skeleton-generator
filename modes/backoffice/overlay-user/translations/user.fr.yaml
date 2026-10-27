@@ -32,6 +32,12 @@ user:
     bulk_deactivate: Désactiver la sélection
   show:
     info_title: Informations
+    member_since: Membre depuis
+    two_factor: Double authentification
+    two_factor_on: Activée
+    two_factor_off: Désactivée
+    backup_codes: "Codes de secours restants : %count%"
+    language: Langue
   confirm:
     toggle: Confirmer le changement de statut de ce compte ?
   section:
