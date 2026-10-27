@@ -11,6 +11,11 @@
 # colonne inter-tenants.
 
 datatable:
+  preview:
+    title: "Preview"
+    open: "Open the record"
+    close: "Close"
+    error: "The preview could not be loaded."
   action:
     default: "Action %type%"
   actions: "Actions"

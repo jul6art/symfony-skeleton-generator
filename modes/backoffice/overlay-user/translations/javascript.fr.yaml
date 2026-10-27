@@ -11,6 +11,11 @@
 # colonne inter-tenants.
 
 datatable:
+  preview:
+    title: "Aperçu"
+    open: "Ouvrir la fiche"
+    close: "Fermer"
+    error: "L'aperçu n'a pas pu être chargé."
   action:
     default: "Action %type%"
   actions: "Actions"
