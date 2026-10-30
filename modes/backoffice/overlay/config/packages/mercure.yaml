@@ -3,6 +3,16 @@ mercure:
         default:
             url: '%env(MERCURE_URL)%'
             public_url: '%env(MERCURE_PUBLIC_URL)%'
+            # Protocole Mercure 1.0 (défaut du bundle) : le cookie d'abonné que le hub lit, le même dans
+            # tous les environnements — `__Secure-` exige le HTTPS (https://<projet>.localhost en local).
+            cookie_name: '__Secure-mercure_access_token'
             jwt:
                 secret: '%env(MERCURE_JWT_SECRET)%'
                 publish: ['*']
+                # Un jeton d'accès RFC 9068 : un émetteur dont le hub a la confiance (son bloc `issuer`),
+                # l'audience qu'il fixe (son `resource_identifier`), un sujet et un client.
+                claims:
+                    iss: '%env(MERCURE_JWT_ISSUER)%'
+                    aud: '%env(MERCURE_JWT_AUDIENCE)%'
+                    sub: {{PROJECT_SLUG}}
+                    client_id: {{PROJECT_SLUG}}

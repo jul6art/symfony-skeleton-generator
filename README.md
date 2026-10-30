@@ -164,6 +164,11 @@ roles.
 - **Live refresh over Mercure.** A change that touches a visible row reloads the
   page of data; a burst shows a "refresh" banner rather than reloading N times.
   Single-tenant, so the bundle's default topic resolver is the right one.
+  Mercure protocol 1.0: the tokens are RFC 9068 access tokens whose issuer and
+  audience come from `MERCURE_JWT_ISSUER` and `MERCURE_JWT_AUDIENCE` (set to
+  `https://<project>.localhost` by the generator), the subscriber token travels
+  only in the `__Secure-mercure_access_token` cookie. The hub must trust that
+  issuer and declare that audience as its resource identifier.
 - **ACL, not just roles.** `user:read`, `user:delete`… granted per role in a
   table an admin screen edits, overridable per person in both directions. The
   catalogue stays in `src/` — it is policy, not infrastructure.

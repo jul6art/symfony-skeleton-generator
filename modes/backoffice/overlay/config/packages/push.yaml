@@ -15,7 +15,5 @@ push:
         # bundle, et il est juste ici — il ne le serait plus au deuxième locataire, où chaque
         # abonné d'un canal reçoit tout ce qui y passe.
         topic_resolver: Jul6Art\PushBundle\Mercure\GlobalFeedTopicResolver
-
-        # Secret avec lequel le hub valide les jetons d'abonnement. Sans lui, la fabrique de cookie
-        # n'est pas enregistrée — plutôt que de signer des jetons que le hub rejettera.
-        jwt_secret: '%env(MERCURE_JWT_SECRET)%'
+        # Le jeton d'abonné est signé par la fabrique du hub, avec ses claims, et le cookie porte le nom
+        # que le hub lit (config/packages/mercure.yaml) — push-bundle 3, protocole Mercure 1.0.

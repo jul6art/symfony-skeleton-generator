@@ -49,3 +49,24 @@ if [ -f .env ] && grep -q '^DEFAULT_URI=' .env; then
     printf '    .env : DEFAULT_URI réglé sur https://%s.localhost\n' "${PROJECT_NAME:-app}"
     sed -i.bak "s#^DEFAULT_URI=.*#DEFAULT_URI=https://${PROJECT_NAME:-app}.localhost#" .env && rm -f .env.bak
 fi
+
+# Mercure 1.0 (push-bundle 3) : les jetons d'accès portent l'émetteur dont le hub a la confiance et
+# l'audience qu'il fixe (config/packages/mercure.yaml, claims). La recette de mercure-bundle écrit
+# MERCURE_JWT_ISSUER=https://localhost ; sa valeur suit la même convention que DEFAULT_URI, et
+# l'audience s'y ajoute — le hub de la pile locale doit dire les mêmes (MERCURE_TRUSTED_ISSUERS,
+# resource_identifier).
+if [ -f .env ]; then
+    printf '    .env : MERCURE_JWT_ISSUER et MERCURE_JWT_AUDIENCE (https://%s.localhost)\n' "${PROJECT_NAME:-app}"
+    if grep -q '^MERCURE_JWT_ISSUER=' .env; then
+        sed -i.bak "s#^MERCURE_JWT_ISSUER=.*#MERCURE_JWT_ISSUER=https://${PROJECT_NAME:-app}.localhost#" .env && rm -f .env.bak
+    else
+        printf 'MERCURE_JWT_ISSUER=https://%s.localhost\n' "${PROJECT_NAME:-app}" >> .env
+    fi
+    # Juste sous l'émetteur, dans le bloc de la recette : awk plutôt que `sed a\`, que GNU et BSD
+    # n'écrivent pas pareil.
+    if ! grep -q '^MERCURE_JWT_AUDIENCE=' .env; then
+        awk -v aud="MERCURE_JWT_AUDIENCE=https://${PROJECT_NAME:-app}.localhost/.well-known/mercure" \
+            '{ print } /^MERCURE_JWT_ISSUER=/ { print "# The audience of the JWTs, the resource identifier of the hub"; print aud }' \
+            .env > .env.tmp && mv .env.tmp .env
+    fi
+fi
