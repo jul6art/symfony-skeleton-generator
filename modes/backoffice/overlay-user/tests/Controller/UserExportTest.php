@@ -68,15 +68,19 @@ final class UserExportTest extends WebTestCase
         // `StreamedResponse` ne coule qu'UNE fois. Un second appel rendrait une chaîne vide, et le
         // test passerait sur un export vide en croyant l'avoir lu.
         $csv = (string) $client->getInternalResponse()->getContent();
-        $lines = array_values(array_filter(explode("\r\n", $csv), static fn (string $line): bool => '' !== trim($line)));
+
+        // ⚠️ Le fichier est ouvert dans un Excel français : marque d'ordre des octets, point-virgule,
+        // CRLF — le dialecte `excelFr` que `config/services.yaml` donne au rédacteur du produit.
+        self::assertStringStartsWith("\xEF\xBB\xBF", $csv, 'Sans la marque d\'ordre des octets, Excel FR lit le fichier en Latin-1.');
+        $lines = array_values(array_filter(explode("\r\n", substr($csv, 3)), static fn (string $line): bool => '' !== trim($line)));
 
         // ⚠️ `escape: ''` explicite : PHP 8.5 déprécie le paramètre implicite, et c'est aussi le
-        // bon réglage — le dialecte par défaut du bundle n'échappe pas à l'antislash, il double
+        // bon réglage — le dialecte du produit n'échappe pas à l'antislash, il double
         // l'enceinte, ce qui est ce que `str_getcsv()` doit lire pour s'accorder avec lui.
-        self::assertSame(UserCsvExporter::HEADER, str_getcsv($lines[0], escape: ''), 'L\'en-tête doit être EXACTEMENT celui de UserCsvExporter::HEADER.');
+        self::assertSame(UserCsvExporter::HEADER, str_getcsv($lines[0], ';', escape: ''), 'L\'en-tête doit être EXACTEMENT celui de UserCsvExporter::HEADER.');
         self::assertCount(3, $lines, 'Un en-tête et deux comptes.');
 
-        $rows = [str_getcsv($lines[1], escape: ''), str_getcsv($lines[2], escape: '')];
+        $rows = [str_getcsv($lines[1], ';', escape: ''), str_getcsv($lines[2], ';', escape: '')];
         $byEmail = [];
         foreach ($rows as $row) {
             $email = $row[1];

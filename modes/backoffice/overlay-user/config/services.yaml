@@ -43,6 +43,35 @@ services:
     # panneau « Colonnes », pas d'erreur, rien.
     Jul6Art\DatatableBundle\Preference\DatatablePreferenceStoreInterface: '@App\DataTable\DatatablePreferenceStore'
 
+    # ── Un seul dialecte CSV pour le produit : `excelFr`, à l'écriture ET à la lecture ───────────
+    #
+    # ⚠️ Le bundle enregistre `CsvWriter` et `CsvReader` sur le dialecte nu de `CsvDialect` (RFC 4180 :
+    # virgule, sans marque d'ordre des octets). Or l'export des comptes est OUVERT par un
+    # administrateur dans un Excel français, où la virgule est le séparateur décimal : sans ce
+    # câblage, le fichier tient dans une seule colonne et « Hélène » s'affiche « HÃ©lÃ¨ne ». Le même
+    # tableur, renvoyé tel quel à l'import, se lirait comme une colonne géante.
+    #
+    # ⚠️ Le MÊME dialecte des deux côtés, et ce n'est pas une coïncidence : le fichier qu'un
+    # administrateur réimporte le plus naturellement est celui que le produit vient d'exporter.
+    # C'est le réglage de `superp`, dont ce mode est issu.
+    #
+    # ⚠️ Pas de `tags:` : `autoconfigure: true` applique déjà `dataflow.tabular_writer` et
+    # `dataflow.tabular_reader` (le bundle les déclare par `registerForAutoconfiguration()`) — les
+    # redire ferait un doublon du même tag sur le même service. Un fichier destiné à un AUTRE
+    # programme (un import comptable, un format imposé) construit son écrivain sur son site d'appel,
+    # où le destinataire se lit.
+    Jul6Art\DataflowBundle\Io\Writer\CsvWriter:
+        arguments:
+            $dialect: '@App\Io\ExcelFrDialect'
+
+    Jul6Art\DataflowBundle\Io\Reader\CsvReader:
+        arguments:
+            $dialect: '@App\Io\ExcelFrDialect'
+
+    App\Io\ExcelFrDialect:
+        class: Jul6Art\DataflowBundle\Io\Dialect\CsvDialect
+        factory: ['Jul6Art\DataflowBundle\Io\Dialect\CsvDialect', 'excelFr']
+
     # Le répertoire des avatars téléversés. Sous `public/` : le fichier est servi par le serveur
     # web comme n'importe quel asset — un avatar n'est pas une donnée à protéger, et le faire
     # passer par un contrôleur coûterait une requête PHP par vignette de la liste des comptes.

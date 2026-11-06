@@ -69,7 +69,7 @@ final class UserImportTest extends WebTestCase
         $this->createSchema();
         $client->loginUser($this->createUser(UserRoles::ROLE_ADMIN));
 
-        $csv = "firstName,lastName,email,role\nGrace,Hopper,grace@example.test,\nAda,Lovelace,ada@example.test,ROLE_ADMIN\n";
+        $csv = "firstName;lastName;email;role\nGrace;Hopper;grace@example.test;\nAda;Lovelace;ada@example.test;ROLE_ADMIN\n";
         $crawler = $this->upload($client, $csv);
 
         // ⚠️ Les en-têtes du fichier correspondent EXACTEMENT aux champs du mapper
@@ -109,7 +109,7 @@ final class UserImportTest extends WebTestCase
 
         // ⚠️ La casse diffère à dessein : une adresse est insensible à la casse dans son domaine,
         // et `UserDuplicateResolver` doit les reconnaître comme LE MÊME compte malgré ça.
-        $csv = "firstName,lastName,email,role\nGrace,Hopper,dup@example.test,\nGrace,Hopper,Dup@example.test,\n";
+        $csv = "firstName;lastName;email;role\nGrace;Hopper;dup@example.test;\nGrace;Hopper;Dup@example.test;\n";
         $crawler = $this->upload($client, $csv);
         $client->submit($crawler->filter('form')->form());
 
@@ -143,7 +143,7 @@ final class UserImportTest extends WebTestCase
         $this->createSchema();
         $client->loginUser($this->createUser(UserRoles::ROLE_ADMIN));
 
-        $csv = "firstName,lastName,email,role\nGrace,Hopper,grace@example.test,ROLE_GHOST\n";
+        $csv = "firstName;lastName;email;role\nGrace;Hopper;grace@example.test;ROLE_GHOST\n";
         $crawler = $this->upload($client, $csv);
         $client->submit($crawler->filter('form')->form());
 
