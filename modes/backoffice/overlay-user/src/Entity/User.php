@@ -129,6 +129,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, AclUser
      */
     use TwoFactorTrait;
 
+    /** Un nom sans `<` ni `>` : il ne peut pas s'écrire comme une balise. */
+    public const string NO_MARKUP = '/^[^<>]*$/';
+
     #[ORM\Column(length: 180, unique: true)]
     #[Assert\NotBlank]
     #[Assert\Email]
@@ -146,15 +149,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, AclUser
     #[ORM\Column]
     private string $password = '';
 
+    // ⚠️ Ni `<` ni `>` : un nom s'affiche dans les tables du back-office, et un nom écrit comme
+    // une balise y était exécuté (audit 2026-11-10, S9). Les tables échappent désormais ; ceci est
+    // la seconde barrière, à la saisie.
     #[ORM\Column(length: 100)]
     #[Assert\NotBlank]
     #[Assert\Length(max: 100)]
+    #[Assert\Regex(pattern: self::NO_MARKUP, message: 'user.name.no_markup')]
     #[Groups(['user:read'])]
     private string $firstName = '';
 
     #[ORM\Column(length: 100)]
     #[Assert\NotBlank]
     #[Assert\Length(max: 100)]
+    #[Assert\Regex(pattern: self::NO_MARKUP, message: 'user.name.no_markup')]
     #[Groups(['user:read'])]
     private string $lastName = '';
 

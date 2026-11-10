@@ -1,4 +1,6 @@
 user:
+  name:
+    no_markup: 'A name cannot contain “<” or “>”.'
   email:
     not_blank: Please enter an email address.
     invalid: This email address is not valid.
