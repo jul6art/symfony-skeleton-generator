@@ -14,8 +14,8 @@ use Rector\Symfony\Symfony80\Rector\Class_\RemoveEraseCredentialsRector;
 use Rector\TypeDeclaration\Rector\FuncCall\AddArrayFunctionClosureParamTypeRector;
 use Rector\TypeDeclaration\Rector\FunctionLike\AddClosureParamTypeFromVariableCallRector;
 
-// Les jeux de règles préparés de Rector, comme les bundles maison et devinthecode (audit Fable 5.2,
-// T19). Le générateur l'applique une fois à la naissance du projet ; `make rector` vérifie ensuite
+// Les jeux de règles préparés de Rector, comme les bundles maison et devinthecode. Le
+// générateur l'applique une fois à la naissance du projet ; `make rector` vérifie ensuite
 // qu'il n'a plus rien à changer (dans `make qa`), `make rector-fix` applique.
 return RectorConfig::configure()
     ->withPaths([

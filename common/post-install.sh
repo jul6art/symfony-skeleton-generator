@@ -5,7 +5,7 @@
 set -euo pipefail
 cd "$PROJECT_DIR"
 
-# ⚠️ **Les ports publiés par Docker écoutent sur 127.0.0.1** (audit Fable 5.2, S8 g, T07). Une recette
+# ⚠️ **Les ports publiés par Docker écoutent sur 127.0.0.1**. Une recette
 # Flex écrit `- "5432"` (port hôte au hasard) ou `- "8080:80"` : Docker les ouvre sur TOUTES les
 # interfaces, et la base de développement, avec son mot de passe d'exemple, répond à qui partage le
 # réseau du poste (café, coworking, Wi-Fi d'hôtel). Seules les lignes d'un bloc `ports:` sont touchées.

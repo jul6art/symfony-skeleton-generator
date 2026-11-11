@@ -26,8 +26,7 @@ use Jul6Art\DataflowBundle\Io\Reader\CsvReader;
  *
  * ⚠️ **Pas de plafond ni de limiteur de débit ici**, contrairement à un produit multi-tenant : ce
  * mode est mono-locataire, il n'y a ni offre ni organisation à qui appliquer un quota. Un projet
- * qui grandit vers plusieurs locataires ajoutera cette politique à son tour — cf. `docs/analyse` de
- * l'écosystème `jul6art` pour la forme qu'elle prend chez un consommateur qui en a besoin.
+ * qui grandit vers plusieurs locataires ajoutera cette politique à son tour.
  */
 final readonly class UserImportService
 {

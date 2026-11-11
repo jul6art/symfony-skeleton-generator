@@ -30,7 +30,7 @@ use function sprintf;
  * ni fond — blanc sur blanc, invisible, et le HTML reste parfaitement valide.
  *
  * La classe doit passer par les OPTIONS de `form_widget`, jamais par `form_widget_simple`.
- * Constaté à l'écran le 2026-08-23 sur quatre formulaires (rapport `docs/corrections/`).
+ * Constaté à l'écran le 2026-08-23 sur quatre formulaires.
  */
 #[CoversNothing]
 final class FormThemeTest extends WebTestCase

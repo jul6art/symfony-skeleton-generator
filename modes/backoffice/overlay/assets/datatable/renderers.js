@@ -14,7 +14,7 @@ import { registerRenderers, badge } from '@jul6art/datatable-bundle/renderers';
  * ⚠️ DataTables écrit ce qu'un rendu renvoie avec `innerHTML` : un rendu reçoit des données que
  * quelqu'un a saisies, et échappe TOUT ce qu'il insère, avec l'`escapeHtml()` du bundle
  * (`import { escapeHtml } from '@jul6art/datatable-bundle/renderers'`). `badge()` le fait déjà.
- * Un prénom écrit comme une balise s'exécutait chez l'administrateur (audit 2026-11-10, S9).
+ * Un prénom écrit comme une balise s'exécutait chez l'administrateur.
  */
 registerRenderers({
     /**

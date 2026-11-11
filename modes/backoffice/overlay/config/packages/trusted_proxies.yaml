@@ -3,7 +3,7 @@
 # connexion comprise — sortent en http://. Fichier séparé pour ne pas écraser le framework.yaml
 # de la recipe.
 #
-# ⚠️ En développement SEULEMENT (audit Fable 5.2, S2, T08). Sur un serveur où Apache passe la requête
+# ⚠️ En développement SEULEMENT. Sur un serveur où Apache passe la requête
 # directement à PHP-FPM, il n'y a pas de proxy : faire confiance à `REMOTE_ADDR` y ferait confiance aux
 # X-Forwarded-* du CLIENT lui-même — une IP forgée pour chaque limiteur et chaque ligne d'audit.
 when@dev:

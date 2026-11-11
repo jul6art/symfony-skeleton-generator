@@ -71,8 +71,8 @@ if [ -f .env ]; then
     fi
 fi
 
-# Les deux variables que lit `config/packages/trusted_proxies.yaml` en production (audit Fable 5.2,
-# T08) : vides ici, réglées par le `.env.local` du serveur.
+# Les deux variables que lit `config/packages/trusted_proxies.yaml` en production :
+# vides ici, réglées par le `.env.local` du serveur.
 if [ -f .env ] && ! grep -q '^TRUSTED_HOSTS=' .env; then
     printf '    .env : TRUSTED_PROXIES et TRUSTED_HOSTS (production)\n'
     cat >> .env <<'ENV'

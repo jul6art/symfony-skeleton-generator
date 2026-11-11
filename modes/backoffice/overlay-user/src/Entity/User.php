@@ -150,7 +150,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, AclUser
     private string $password = '';
 
     // ⚠️ Ni `<` ni `>` : un nom s'affiche dans les tables du back-office, et un nom écrit comme
-    // une balise y était exécuté (audit 2026-11-10, S9). Les tables échappent désormais ; ceci est
+    // une balise y était exécuté. Les tables échappent désormais ; ceci est
     // la seconde barrière, à la saisie.
     #[ORM\Column(length: 100)]
     #[Assert\NotBlank]

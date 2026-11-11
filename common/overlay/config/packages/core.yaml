@@ -30,9 +30,8 @@ core:
     # « Unrecognized option "pdf" », constaté en générant un projet `--backoffice` — aucun
     # gabarit de ce squelette n'appelait `pdf_image_path()` ni `pdf_image_data_uri()`, donc rien
     # d'autre ne dépendait de ce nœud). Un mode qui a besoin de générer des PDF ajoute
-    # `jul6art/pdf-bundle` à son `packages.txt` et sa propre configuration `pdf:` — cf.
-    # `docs/analyse/pdf_bundle.md` de l'écosystème pour la forme qu'elle prend chez un
-    # consommateur qui en a besoin. Reste à faire ailleurs : les deux mentions de
+    # `jul6art/pdf-bundle` à son `packages.txt` et sa propre configuration `pdf:`. Reste à faire
+    # ailleurs : les deux mentions de
     # `PdfAssetExtension` / `pdf_image_*()` dans `common/overlay/CLAUDE.md` documentent encore
     # l'ancien chemin.
 

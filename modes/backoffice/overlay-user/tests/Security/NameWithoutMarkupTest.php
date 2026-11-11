@@ -14,7 +14,7 @@ use function count;
 use function sprintf;
 
 /**
- * Un nom ne s'écrit pas comme une balise (audit 2026-11-10, S9).
+ * Un nom ne s'écrit pas comme une balise.
  *
  * ⚠️ Les tables du back-office affichaient les noms sans les échapper : un nom
  * `<img src=x onerror=…>` s'exécutait chez l'administrateur qui ouvrait la liste.
