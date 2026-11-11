@@ -36,8 +36,10 @@ final class SecurityController extends AbstractController
      *
      * C'est la seule exception documentée à la règle « chaque route porte une décision d'accès » —
      * ici la décision EST le pare-feu, et `RouteAccessDecisionTest` la liste à ce titre.
+     *
+     * POST seulement, avec le jeton `logout` (`enable_csrf` du pare-feu) : un GET répond 405.
      */
-    #[Route('/logout', name: 'admin_security_logout', methods: ['GET', 'POST'])]
+    #[Route('/logout', name: 'admin_security_logout', methods: ['POST'])]
     #[CheckPermission('auth:logout')]
     public function logout(): never
     {

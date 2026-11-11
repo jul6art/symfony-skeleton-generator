@@ -51,6 +51,10 @@ security:
             logout:
                 path: admin_security_logout
                 target: admin_security_login
+                # Déconnexion en POST avec jeton (audit Fable 5.2, T14) : admin-bundle ≥ 1.38.1 rend la
+                # sortie du menu et de l'écran du second facteur en formulaire. Un lien tiers ou un
+                # préchargement ne déconnecte plus personne (`tests/Security/LogoutTest.php`).
+                enable_csrf: true
             switch_user:
                 role: ROLE_SUPER_ADMIN
                 parameter: _switch_user

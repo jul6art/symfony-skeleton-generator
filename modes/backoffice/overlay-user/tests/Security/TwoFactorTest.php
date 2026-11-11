@@ -152,7 +152,9 @@ final class TwoFactorTest extends WebTestCase
 
             if ($accepted) {
                 self::assertStringNotContainsString('/2fa', $location, 'Le code de secours ouvre la session.');
-                $this->client->request('GET', '/logout');
+                // La sortie du menu de compte : un formulaire POST qui porte son jeton.
+                $page = $this->client->request('GET', '/admin/account/two-factor');
+                $this->client->submit($page->filter('form[action="/logout"]')->form());
             } else {
                 self::assertStringContainsString('/2fa', $location, 'Déjà servi, il est refusé.');
             }
