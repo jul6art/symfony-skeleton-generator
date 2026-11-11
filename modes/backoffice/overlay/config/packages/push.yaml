@@ -15,5 +15,9 @@ push:
         # bundle, et il est juste ici — il ne le serait plus au deuxième locataire, où chaque
         # abonné d'un canal reçoit tout ce qui y passe.
         topic_resolver: Jul6Art\PushBundle\Mercure\GlobalFeedTopicResolver
+        # Le coin du projet sur un hub partagé avec d'autres applications (push-bundle 3.2) : tout sujet
+        # publié ou accordé commence par lui, et l'abonné d'une autre application n'en entend rien. Le
+        # code écrit ses sujets sans ; une publication à la main passe par `TopicPrefix::update()`.
+        topic_prefix: '/{{PROJECT_SLUG}}'
         # Le jeton d'abonné est signé par la fabrique du hub, avec ses claims, et le cookie porte le nom
         # que le hub lit (config/packages/mercure.yaml) — push-bundle 3, protocole Mercure 1.0.

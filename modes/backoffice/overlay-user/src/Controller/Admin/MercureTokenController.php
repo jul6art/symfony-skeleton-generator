@@ -38,7 +38,8 @@ final class MercureTokenController extends AbstractController
         $token = $this->cookieFactory->createToken($topics);
 
         // Le jeton reste dans le cookie : un hub Mercure 1.0 le refuse partout où du JavaScript le lirait.
-        $response = new JsonResponse(['subscribed' => $topics]);
+        // Les sujets rendus sont préfixés comme le jeton les accorde (push-bundle 3.2).
+        $response = new JsonResponse(['subscribed' => $this->cookieFactory->subscription($topics)['topics']]);
         $response->headers->setCookie($this->cookieFactory->createCookie($token));
 
         return $response;
