@@ -9,6 +9,12 @@ api_platform:
         jsonopenapi: ['application/vnd.openapi+json']
         html: ['text/html']
     defaults:
+        # ⚠️ **Le filet : une opération qui oublie sa `security:` est FERMÉE, pas ouverte** (audit
+        # Fable 5.2, T14). Personne n'a `ROLE_NOBODY` : sans règle, l'opération répond 403 à tout le
+        # monde, au lieu d'être lisible par tout compte qui passe l'`access_control`. Ce n'est qu'un
+        # filet — chaque opération déclare sa décision. Les ressources d'erreur d'API Platform
+        # (`/errors`, `/validation_errors`) ne le reçoivent pas.
+        security: "is_granted('ROLE_NOBODY')"
         stateless: true
         cache_headers:
             vary: ['Content-Type', 'Authorization', 'Origin']
