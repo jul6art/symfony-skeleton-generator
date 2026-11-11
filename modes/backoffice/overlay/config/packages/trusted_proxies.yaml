@@ -2,6 +2,19 @@
 # confiance, `Request::isSecure()` est faux et TOUTES les URLs absolues — la redirection de
 # connexion comprise — sortent en http://. Fichier séparé pour ne pas écraser le framework.yaml
 # de la recipe.
-framework:
-    trusted_proxies: '127.0.0.1,REMOTE_ADDR'
-    trusted_headers: ['x-forwarded-for', 'x-forwarded-host', 'x-forwarded-proto', 'x-forwarded-port', 'x-forwarded-prefix']
+#
+# ⚠️ En développement SEULEMENT (audit Fable 5.2, S2, T08). Sur un serveur où Apache passe la requête
+# directement à PHP-FPM, il n'y a pas de proxy : faire confiance à `REMOTE_ADDR` y ferait confiance aux
+# X-Forwarded-* du CLIENT lui-même — une IP forgée pour chaque limiteur et chaque ligne d'audit.
+when@dev:
+    framework:
+        trusted_proxies: '127.0.0.1,REMOTE_ADDR'
+        trusted_headers: ['x-forwarded-for', 'x-forwarded-host', 'x-forwarded-proto', 'x-forwarded-port', 'x-forwarded-prefix']
+
+# En production : le proxy réellement placé devant PHP (Varnish…), s'il y en a un, et les hôtes que
+# l'application sert — tout autre en-tête `Host` reçoit 400. Les deux viennent du `.env.local` du serveur.
+when@prod:
+    framework:
+        trusted_proxies: '%env(TRUSTED_PROXIES)%'
+        trusted_headers: ['x-forwarded-for', 'x-forwarded-host', 'x-forwarded-proto', 'x-forwarded-port', 'x-forwarded-prefix']
+        trusted_hosts: '%env(TRUSTED_HOSTS)%'
