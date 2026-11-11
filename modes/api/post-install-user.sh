@@ -15,16 +15,22 @@ if [ ! -f .env ]; then
 fi
 
 if ! grep -q '^JWT_SECRET_KEY=' .env; then
-    printf '    .env → variables JWT\n'
+    printf '    .env → variables JWT (la phrase du poste dans .env.dev et .env.test)\n'
     passphrase="$(openssl rand -hex 16 2>/dev/null || date +%s%N)"
-    cat >> .env <<EOF
+    cat >> .env <<'EOF'
 
 ###> lexik/jwt-authentication-bundle ###
 JWT_SECRET_KEY=%kernel.project_dir%/config/jwt/private.pem
 JWT_PUBLIC_KEY=%kernel.project_dir%/config/jwt/public.pem
-JWT_PASSPHRASE=$passphrase
+# Vide ici : un secret versionné n'en est plus un. La phrase du poste est dans .env.dev et .env.test ;
+# le serveur pose la sienne dans .env.local (un cache de production refuse une phrase vide —
+# core.secrets_guard de core-bundle).
+JWT_PASSPHRASE=
 ###< lexik/jwt-authentication-bundle ###
 EOF
+    for f in .env.dev .env.test; do
+        printf '\n# La phrase des clés JWT du poste, hors du .env versionné.\nJWT_PASSPHRASE=%s\n' "$passphrase" >> "$f"
+    done
 fi
 
 if ! grep -q '^CORS_ALLOW_ORIGIN=' .env; then

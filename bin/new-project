@@ -367,6 +367,20 @@ for hook in $HOOKS; do
     fi
 done
 
+# La phrase des clés JWT hors du .env versionné : la recette Flex de lexik l'y écrit, tirée au hasard.
+# Un secret versionné n'en est plus un, et un cache de production refuse une phrase restée la valeur du
+# dépôt (core.secrets_guard de core-bundle). La paire est déjà générée avec elle : la même phrase passe
+# dans .env.dev et .env.test, le serveur pose la sienne dans .env.local.
+if [ "$DRY_RUN" = 0 ] && grep -q '^JWT_PASSPHRASE=.' "$PROJECT_DIR/.env" 2>/dev/null; then
+    log "Phrase JWT du poste → .env.dev et .env.test"
+    passphrase="$(sed -n 's/^JWT_PASSPHRASE=//p' "$PROJECT_DIR/.env" | tail -1)"
+    sed -i.bak 's/^JWT_PASSPHRASE=.*/JWT_PASSPHRASE=/' "$PROJECT_DIR/.env" && rm -f "$PROJECT_DIR/.env.bak"
+    for f in .env.dev .env.test; do
+        grep -q '^JWT_PASSPHRASE=' "$PROJECT_DIR/$f" 2>/dev/null \
+            || printf '\n# La phrase des clés JWT du poste, hors du .env versionné.\nJWT_PASSPHRASE=%s\n' "$passphrase" >> "$PROJECT_DIR/$f"
+    done
+fi
+
 # Rector puis le style, une fois, sur tout le code né du projet : recettes Flex, squelette, hooks.
 # Le premier `make qa` passe ainsi tel quel (`make rector` n'a plus rien à changer), y compris sur
 # les fichiers des recettes que le squelette ne fournit pas. Rector converge en plusieurs passes.
