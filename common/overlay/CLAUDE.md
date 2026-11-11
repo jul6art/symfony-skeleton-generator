@@ -56,7 +56,8 @@ Tout passe par le `Makefile` (`make` seul liste les cibles) :
 | `make db-diff` / `make db-migrate` | migrations Doctrine |
 | `make test` | PHPUnit |
 | `make cs-fix` / `make stan` | php-cs-fixer / PHPStan (niveau 8) |
-| `make qa` | style + analyse + tests |
+| `make rector` / `make rector-fix` | Rector : vérification / application (`rector.php`) |
+| `make qa` | style + Rector + analyse + tests |
 | `make docs` / `make docs-check` | carte des workflows (DevTools) : mise à jour / vérification |
 
 `composer` n'est pas installé globalement : utiliser `symfony composer …` et
@@ -264,6 +265,8 @@ Règles qui en découlent :
 ## Conventions
 
 - `declare(strict_types=1);` dans tous les fichiers PHP.
+- **Rector est dans la porte** (`make rector`). Une règle qui gêne s'écarte dans `rector.php` avec sa
+  raison, comme les huit qui y sont déjà : elles changeaient le comportement sans qu'aucun outil le voie.
 - Classes `final` par défaut ; injection par constructeur, jamais de conteneur
   de services en dépendance.
 - Contrôleurs fins : ils valident l'entrée, déclarent leur décision d'accès
@@ -281,6 +284,6 @@ Règles qui en découlent :
 
 ## Definition of done
 
-`make qa` passe (php-cs-fixer, PHPStan niveau 8, PHPUnit) avant de considérer
+`make qa` passe (php-cs-fixer, Rector, PHPStan niveau 8, PHPUnit) avant de considérer
 une tâche terminée — et toute route ajoutée ou modifiée porte son action de
 voter (règle n°1), sans quoi la tâche n'est pas terminée non plus.

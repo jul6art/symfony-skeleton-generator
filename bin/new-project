@@ -367,6 +367,25 @@ for hook in $HOOKS; do
     fi
 done
 
+# Rector puis le style, une fois, sur tout le code né du projet : recettes Flex, squelette, hooks.
+# Le premier `make qa` passe ainsi tel quel (`make rector` n'a plus rien à changer), y compris sur
+# les fichiers des recettes que le squelette ne fournit pas. Rector converge en plusieurs passes.
+if [ "$NO_EXTRAS" = 0 ]; then
+    log "Rector et style — le code né propre"
+    if [ "$DRY_RUN" = 0 ]; then
+        (
+            cd "$PROJECT_DIR"
+            for pass in 1 2 3 4 5; do
+                symfony php vendor/bin/rector process --dry-run --no-progress-bar >/dev/null 2>&1 && break
+                symfony php vendor/bin/rector process --no-progress-bar >/dev/null
+                symfony php vendor/bin/php-cs-fixer fix --quiet || true
+            done
+            symfony php vendor/bin/rector process --dry-run --no-progress-bar >/dev/null 2>&1 \
+                || die "Rector a encore des changements après 5 passes : make rector-fix, puis lire le diff."
+        )
+    fi
+fi
+
 # DevTools après les hooks — ils ajoutent du code, donc des workflows — et avant le premier commit,
 # qui embarque la carte des workflows, `.devtools/` et `.claude/`.
 if [ "$NO_EXTRAS" = 0 ]; then
@@ -393,7 +412,7 @@ cat <<EOF
     cd $PROJECT_DIR
     make            # liste les cibles disponibles
     make start      # serveur local https
-    make qa         # cs-fixer + phpstan + phpunit
+    make qa         # cs-fixer + rector + phpstan + phpunit
 EOF
 
 # Étapes propres au mode (base de données, premier compte…).

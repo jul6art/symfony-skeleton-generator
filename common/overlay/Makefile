@@ -9,7 +9,7 @@ COMPOSER := symfony composer
 CONSOLE  := symfony console
 
 .PHONY: help install start stop logs cc db-create db-diff db-migrate db-reset \
-        fixtures test test-serial cs cs-fix stan qa docs docs-check
+        fixtures test test-serial cs cs-fix rector rector-fix stan qa docs docs-check
 
 help: ## Liste les cibles disponibles
 	@grep -hE '^[a-zA-Z0-9_-]+:.*?## ' $(MAKEFILE_LIST) \
@@ -67,11 +67,17 @@ cs: ## Vérifie le style de code
 cs-fix: ## Corrige le style de code
 	$(PHP) vendor/bin/php-cs-fixer fix
 
+rector: ## Vérifie que Rector n'a plus rien à changer
+	$(PHP) vendor/bin/rector process --dry-run --no-progress-bar
+
+rector-fix: ## Applique Rector
+	$(PHP) vendor/bin/rector process --no-progress-bar
+
 stan: ## Analyse statique
 	$(CONSOLE) cache:warmup --env=dev
 	$(PHP) vendor/bin/phpstan analyse --memory-limit=1G
 
-qa: cs stan test ## Style + analyse statique + tests
+qa: cs rector stan test ## Style + Rector + analyse statique + tests
 
 docs: ## Met à jour la carte des workflows (docs/workflows/), sans IA
 	$(PHP) vendor/bin/devtools workflows:inspect --no-ai

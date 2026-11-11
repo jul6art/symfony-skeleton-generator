@@ -216,10 +216,11 @@ interactive docs.
   serialization group, so it cannot leak.
 
 Every mode also ships a smoke test — public pages and probes answer, protected
-areas stay closed — so `make qa` (php-cs-fixer, PHPStan level 8, PHPUnit) is
-green on a freshly generated project. Last measured on `backoffice`, 2026-10-09:
-**93 tests / 416 assertions in 4.9 s across 16 processes**, PHPStan clean,
-php-cs-fixer without a diff.
+areas stay closed — so `make qa` (php-cs-fixer, Rector, PHPStan level 8,
+PHPUnit) is green on a freshly generated project. Last measured on
+`backoffice`, 2026-11-11: **115 tests / 490 assertions in 5.9 s across 16
+processes**, PHPStan clean, php-cs-fixer without a diff, Rector with nothing
+left to change.
 
 ## Usage
 
@@ -287,8 +288,11 @@ sfnew() { /PATH/TO/symfony-skeleton/bin/new-project "$@"; }
    Flex manages), and `modes/<mode>/CLAUDE.append.md` to `CLAUDE.md`
 6. replaces the placeholders in the copied files
 7. runs the `post-install.sh` hooks if they exist
-8. runs `common/devtools.sh`: the project's workflow map (see below)
-9. `git init` + initial commit
+8. runs Rector (`common/overlay/rector.php`) then php-cs-fixer until Rector has
+   nothing left to change: the code of the recipes, the overlays and the hooks
+   is born as `make rector` wants it
+9. runs `common/devtools.sh`: the project's workflow map (see below)
+10. `git init` + initial commit
 
 Since `composer` is not installed globally on this machine, everything goes
 through `symfony composer`. If the `php` on the `PATH` is broken, the script
