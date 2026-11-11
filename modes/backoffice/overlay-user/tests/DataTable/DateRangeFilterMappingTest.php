@@ -50,7 +50,7 @@ final class DateRangeFilterMappingTest extends KernelTestCase
      * `dateOnly`, donc une colonne de date pure échappait à la règle n° 1. Les deux erreurs sont
      * sans effet ici, où la seule colonne date est rendue par `date` ; elles se paieraient à la
      * première colonne `date_immutable` ajoutée, et un garde-fou qui ne garde pas est pire que pas
-     * de garde-fou (superp, rapport 2026-08-24 P2).
+     * de garde-fou (superp, 2026-08-24).
      *
      * @var list<string>
      */

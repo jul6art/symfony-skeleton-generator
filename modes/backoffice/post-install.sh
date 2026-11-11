@@ -38,7 +38,7 @@ fi
 #
 # ⚠️ On POSE la valeur au lieu de seulement la commenter. Un commentaire laisse la clé fausse, et
 # une clé fausse ne se voit pas : elle est syntaxiquement correcte, le conteneur compile, et le
-# défaut n'apparaît qu'au premier lien cliqué. Constaté deux fois : corrigé à la main dans wovex le
+# défaut n'apparaît qu'au premier lien cliqué. Constaté deux fois : corrigé à la main dans cereezer le
 # 2026-08-23, et encore au défaut de la recipe dans superp le 2026-08-25. C'est exactement la règle
 # du journal d'apprentissage : « ce qui a été ajouté à un projet à la main doit remonter dans le
 # hook, ou le défaut attend le prochain projet généré ».

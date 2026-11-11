@@ -45,14 +45,14 @@
     Le rendu par défaut du bundle est `max-h-10 w-full object-contain` dans un bandeau `h-14` :
     `object-position` vaut `center`, donc un logo plus étroit que la boîte FLOTTE au milieu, et
     c'est la HAUTEUR qui borne, jamais la largeur. Un wordmark au rapport 2,9:1 n'occupait ainsi
-    que 52 % du bandeau, centré (mesuré à l'écran chez wovex, 2026-08-23).
+    que 52 % du bandeau, centré (mesuré à l'écran chez cereezer, 2026-08-23).
 
     ⚠️ `admin.branding.logo_width` ne corrige PAS ça : cette clé n'est lue que par la carte
     d'authentification et par le layout d'e-mail.
 
     Ce bloc cale à GAUCHE et récupère quelques pixels de hauteur. Le reste tient au FICHIER : dans
     un bandeau de 56 px, un logo occupe `hauteur × rapport` de large, et rien d'autre ne le change.
-    Mesuré chez wovex dans la même boîte de 232 px :
+    Mesuré chez cereezer dans la même boîte de 232 px :
 
         verrou complet (icône + nom + baseline)  2,88:1  →  115 px  (52 %, centré)
         idem, marges transparentes rognées       3,50:1  →  154 px  (67 %)
