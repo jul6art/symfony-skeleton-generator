@@ -12,6 +12,19 @@ admin:
         # secours vaut un code en cours à la connexion et sur l'écran du compte.
         backup_codes: true
 
+# Le secret TOTP de chaque compte est stocké CHIFFRÉ (admin-bundle 1.39) : il faut la clé de core-bundle et
+# le type Doctrine qui chiffre la colonne — sans eux, le conteneur ne se compile pas, et aucune commande
+# console ne démarre. La clé vit dans l'environnement : celle du poste dans .env.dev et .env.test, tirée à
+# la création du projet ; celle du serveur dans son .env.local. ⚠️ Perdue, chaque compte doit réactiver
+# son second facteur : elle se sauvegarde avec la base.
+core:
+    encryption_key: '%env(APP_ENCRYPTION_KEY)%'
+
+doctrine:
+    dbal:
+        types:
+            encrypted_string: Jul6Art\CoreBundle\Doctrine\Type\EncryptedStringType
+
 when@dev:
     admin:
         # Le lien de connexion de développement (`app:dev:login-link`) n'est pas soumis au code : il sert

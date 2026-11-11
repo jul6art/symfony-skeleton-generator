@@ -14,6 +14,18 @@ set -uo pipefail
 
 cd "${PROJECT_DIR:?}" || exit 1
 
+# ⚠️ La clé de chiffrement AVANT toute commande console : avec les comptes, le second facteur stocke
+# son secret chiffré (config/packages/admin_two_factor.yaml), et sans clé le conteneur ne se compile
+# pas — les assets puis la paire JWT échouaient en silence. Celle du poste dans .env.dev et .env.test,
+# une par environnement, tirées au hasard ; .env la nomme, vide : le serveur pose la sienne.
+if [ -f config/packages/admin_two_factor.yaml ] && ! grep -q '^APP_ENCRYPTION_KEY=' .env; then
+    printf '    .env.dev, .env.test : clé de chiffrement au repos du poste\n'
+    printf '\n# La clé de chiffrement au repos (core.encryption_key) : celle du serveur dans son .env.local.\nAPP_ENCRYPTION_KEY=\n' >> .env
+    for f in .env.dev .env.test; do
+        printf '\n# La clé de chiffrement au repos du poste, propre à cet environnement.\nAPP_ENCRYPTION_KEY=%s\n' "$(openssl rand -base64 32)" >> "$f"
+    done
+fi
+
 # ⚠️ Le préchauffage AVANT le build : `assets/translator.js` importe `var/translations/index.js`,
 # que le préchauffage écrit et que `/var/` gitignore. Sans lui, le premier build échoue sur un
 # import introuvable — sur une machine neuve, donc à chaque génération.
