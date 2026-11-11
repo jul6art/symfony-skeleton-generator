@@ -32,6 +32,9 @@ security:
                 lifetime: 604800 # 7 jours
                 secure: auto
                 samesite: lax
+                # Explicite (audit Fable 5.2, T14) : changer de mot de passe invalide les cookies existants.
+                # C'est le défaut de Symfony ; l'écrire empêche de le perdre sans le voir.
+                signature_properties: [password]
             # Freine le bourrinage sur le formulaire de connexion (symfony/rate-limiter).
             login_throttling:
                 max_attempts: 5

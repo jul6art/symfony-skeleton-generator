@@ -38,6 +38,9 @@ security:
             remember_me:
                 secret: '%kernel.secret%'
                 lifetime: 604800
+                # Explicite (audit Fable 5.2, T14) : changer de mot de passe invalide les cookies existants.
+                # C'est le défaut de Symfony ; l'écrire empêche de le perdre sans le voir.
+                signature_properties: [password]
             # La double authentification optionnelle (`admin.two_factor`, config/packages/admin_two_factor.yaml) :
             # un compte qui l'a activée donne son code après son mot de passe. Les deux routes viennent de
             # `config/routes/scheb_2fa.yaml`.
