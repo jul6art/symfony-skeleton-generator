@@ -9,3 +9,7 @@
 /.vscode/
 *.swp
 *~
+
+# Le CLAUDE.md que reçoivent les projets générés : le .gitignore global de l'auteur ignore tout
+# `CLAUDE.md`, celui-ci fait partie du squelette.
+!/common/overlay/CLAUDE.md
