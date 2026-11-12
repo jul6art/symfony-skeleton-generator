@@ -1,0 +1,14 @@
+# Le point d'entrée du jeton d'abonnement Mercure (push-bundle ≥ 3.3, ADR-0001 du bundle) : le bundle
+# n'en déclare pas la route, l'application la nomme — `admin.mercure.token_route` la désigne, et le bus
+# des tableaux l'appelle avant d'ouvrir son flux.
+#
+# Un seul canal pour tous, le fil global : le fournisseur par défaut du bundle, juste pour une
+# application mono-locataire. Le jour où elle gagne des locataires, la liste devient une décision
+# d'autorisation — un `SubscriptionProviderInterface` nommé dans `push.mercure.subscriber.provider`,
+# avec un `topic_resolver` qui cloisonne ce qui est publié.
+#
+# ⚠️ Dans `overlay-user/` : le point d'entrée sert un compte connecté, et vient avec la brique « comptes ».
+admin_mercure_token:
+    path: /admin/mercure-token
+    controller: Jul6Art\PushBundle\Controller\MercureTokenController
+    methods: [GET]
