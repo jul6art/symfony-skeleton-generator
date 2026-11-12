@@ -171,6 +171,10 @@ Règles qui en découlent :
   oublié) : injecter `MathCaptchaService`, appeler `generate()` à **chaque** rendu — y
   compris après un échec, puisque `validate()` consomme la réponse attendue dans tous les
   cas. Réservé aux formulaires : pour un client JSON, utiliser reCAPTCHA ou hCaptcha.
+- **Les tests d'architecture gardent la configuration de production** (`tests/Architecture/`) : hôtes
+  de confiance, en-têtes et garde-fou des secrets (core-bundle), pare-feu (auth-bundle), sécurité
+  de chaque opération d'API (api-bundle). Les classes y sont vides : les règles vivent dans les
+  bundles. Un rouge dit quel réglage manque ; ne pas l'exempter sans écrire pourquoi.
 - **Un poste qui veut un cache `prod` obtient ses secrets par `make secrets`** : il écrit dans
   `.env.local` ceux qui manquent (sans les afficher ni remplacer une valeur posée) ; la phrase JWT
   du poste est reprise telle quelle, la paire de clés va avec elle.
