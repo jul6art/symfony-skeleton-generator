@@ -9,7 +9,7 @@ COMPOSER := symfony composer
 CONSOLE  := symfony console
 
 .PHONY: help install start stop logs cc db-create db-diff db-migrate db-reset \
-        fixtures test test-serial cs cs-fix rector rector-fix stan qa docs docs-check
+        fixtures test test-serial cs cs-fix rector rector-fix stan qa secrets docs docs-check
 
 help: ## Liste les cibles disponibles
 	@grep -hE '^[a-zA-Z0-9_-]+:.*?## ' $(MAKEFILE_LIST) \
@@ -78,6 +78,9 @@ stan: ## Analyse statique
 	$(PHP) vendor/bin/phpstan analyse --memory-limit=1G
 
 qa: cs rector stan test ## Style + Rector + analyse statique + tests
+
+secrets: ## Écrit dans .env.local les secrets de poste qui manquent, sans les afficher (cache prod sur le poste)
+	@CONSOLE="$(CONSOLE)" bin/dev-secrets
 
 docs: ## Met à jour la carte des workflows (docs/workflows/), sans IA
 	$(PHP) vendor/bin/devtools workflows:inspect --no-ai

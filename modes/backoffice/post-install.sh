@@ -26,6 +26,13 @@ if [ -f config/packages/admin_two_factor.yaml ] && ! grep -q '^APP_ENCRYPTION_KE
     done
 fi
 
+# Le garde-fou des secrets juge aussi la clé de chiffrement : un cache `prod` ne se construit pas sans
+# une vraie clé (core.secrets_guard.variables, activé par la partie commune du squelette).
+if [ -f config/packages/core.yaml ] && ! grep -q 'variables: \[APP_ENCRYPTION_KEY\]' config/packages/core.yaml; then
+    perl -0pi -e 's/(    secrets_guard:\n        enabled: true\n)/$1        variables: [APP_ENCRYPTION_KEY]\n/' config/packages/core.yaml
+    printf '    core.yaml : le garde-fou juge APP_ENCRYPTION_KEY\n'
+fi
+
 # ⚠️ Le préchauffage AVANT le build : `assets/translator.js` importe `var/translations/index.js`,
 # que le préchauffage écrit et que `/var/` gitignore. Sans lui, le premier build échoue sur un
 # import introuvable — sur une machine neuve, donc à chaque génération.

@@ -171,6 +171,9 @@ Règles qui en découlent :
   oublié) : injecter `MathCaptchaService`, appeler `generate()` à **chaque** rendu — y
   compris après un échec, puisque `validate()` consomme la réponse attendue dans tous les
   cas. Réservé aux formulaires : pour un client JSON, utiliser reCAPTCHA ou hCaptcha.
+- **Un poste qui veut un cache `prod` obtient ses secrets par `make secrets`** : il écrit dans
+  `.env.local` ceux qui manquent (sans les afficher ni remplacer une valeur posée) ; la phrase JWT
+  du poste est reprise telle quelle, la paire de clés va avec elle.
 - **Les en-têtes de sécurité sont configurés, pas codés** : `core.security_headers.enabled`
   suffit. Le listener ne remplit que les en-têtes **absents**, donc un contrôleur qui a
   besoin de `X-Frame-Options: SAMEORIGIN` (aperçu dans une iframe) le pose lui-même et

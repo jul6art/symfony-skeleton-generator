@@ -51,6 +51,13 @@ core:
         csp_enforce: true
         # csp_policy: "default-src 'self'; connect-src 'self' https://mon-hub.example.com"
 
+    # Garde-fou des secrets : la construction du cache `prod` s'arrête si `APP_SECRET` est vide,
+    # trop court, un exemple ou la valeur committée — comme `MERCURE_JWT_SECRET` et `JWT_PASSPHRASE`
+    # quand leurs bundles sont là, et chaque variable de `variables`. Le poste reste libre : seul `prod`
+    # est jugé. `make secrets` écrit les valeurs qui manquent à un poste dans `.env.local`.
+    secrets_guard:
+        enabled: true
+
     # Captcha arithmétique des formulaires publics (inscription, mot de passe oublié).
     # `generate()` rend la question et remplace la réponse attendue en session : l'appeler à
     # CHAQUE rendu, y compris après un échec. `validate()` consomme la réponse dans tous les
