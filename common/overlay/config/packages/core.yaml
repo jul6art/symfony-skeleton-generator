@@ -54,7 +54,8 @@ core:
     # Garde-fou des secrets : la construction du cache `prod` s'arrête si `APP_SECRET` est vide,
     # trop court, un exemple ou la valeur committée — comme `MERCURE_JWT_SECRET` et `JWT_PASSPHRASE`
     # quand leurs bundles sont là, et chaque variable de `variables`. Le poste reste libre : seul `prod`
-    # est jugé. `make secrets` écrit les valeurs qui manquent à un poste dans `.env.local`.
+    # est jugé. `make secrets` (vendor/bin/dev-secrets) écrit les valeurs qui manquent à un poste dans
+    # `.env.prod.local`, que seul `prod` lit.
     secrets_guard:
         enabled: true
 

@@ -175,9 +175,11 @@ Règles qui en découlent :
   de confiance, en-têtes et garde-fou des secrets (core-bundle), pare-feu (auth-bundle), sécurité
   de chaque opération d'API (api-bundle). Les classes y sont vides : les règles vivent dans les
   bundles. Un rouge dit quel réglage manque ; ne pas l'exempter sans écrire pourquoi.
-- **Un poste qui veut un cache `prod` obtient ses secrets par `make secrets`** : il écrit dans
-  `.env.local` ceux qui manquent (sans les afficher ni remplacer une valeur posée) ; la phrase JWT
-  du poste est reprise telle quelle, la paire de clés va avec elle.
+- **Un poste qui veut un cache `prod` obtient ses secrets par `make secrets`** (`vendor/bin/dev-secrets`
+  de core-bundle, son ADR-0002) : il écrit dans `.env.prod.local` — lu en `prod` seulement — ceux qui
+  manquent, sans les afficher ni remplacer une valeur posée. La valeur du poste est reprise (la phrase
+  JWT : la paire de clés va avec elle), sauf si le garde-fou la refuse (vide, exemple de recette,
+  valeur versionnée) : une neuve, et le script le dit.
 - **Les en-têtes de sécurité sont configurés, pas codés** : `core.security_headers.enabled`
   suffit. Le listener ne remplit que les en-têtes **absents**, donc un contrôleur qui a
   besoin de `X-Frame-Options: SAMEORIGIN` (aperçu dans une iframe) le pose lui-même et

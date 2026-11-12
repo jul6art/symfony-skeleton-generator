@@ -79,8 +79,8 @@ stan: ## Analyse statique
 
 qa: cs rector stan test ## Style + Rector + analyse statique + tests
 
-secrets: ## Écrit dans .env.local les secrets de poste qui manquent, sans les afficher (cache prod sur le poste)
-	@CONSOLE="$(CONSOLE)" bin/dev-secrets
+secrets: ## Écrit dans .env.prod.local les secrets qu'un cache prod demande sur ce poste, sans les afficher (core-bundle, ADR-0002)
+	@CONSOLE="$(CONSOLE)" vendor/bin/dev-secrets
 
 docs: ## Met à jour la carte des workflows (docs/workflows/), sans IA
 	$(PHP) vendor/bin/devtools workflows:inspect --no-ai
