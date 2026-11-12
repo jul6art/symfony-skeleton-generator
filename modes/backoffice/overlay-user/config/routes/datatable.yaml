@@ -3,9 +3,10 @@
 # fonctionnalité opt-in en une ligne de Twig au lieu d'un contrôleur par entité.
 #
 # ⚠️ Ce fichier est dans `overlay-user/` et non dans `overlay/`, à dessein : le contrôleur du bundle
-# a besoin d'un magasin, et `App\DataTable\DatatablePreferenceStore` vient de cette brique. Sans la
-# brique « comptes », `PreferenceControllerPass` retire le contrôleur — et une route qui pointerait
-# alors sur un contrôleur absent sortirait en 500 au lieu de ne pas exister.
+# a besoin d'un magasin, et le magasin Doctrine du bundle n'est branché que par
+# `config/packages/datatable_preferences.yaml`, qui vient de cette brique (l'entité et le compte en
+# sont). Sans la brique « comptes », `PreferenceControllerPass` retire le contrôleur — et une route qui
+# pointerait alors sur un contrôleur absent sortirait en 500 au lieu de ne pas exister.
 #
 # Sous `/admin` : le pare-feu et l'`access_control` qui gardent l'espace la gardent aussi. Le jour
 # où un second espace apparaît, elle reste ici — les deux appelleraient le même endpoint, qui lit le

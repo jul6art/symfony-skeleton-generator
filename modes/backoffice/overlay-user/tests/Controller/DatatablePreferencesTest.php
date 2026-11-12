@@ -7,10 +7,10 @@ namespace App\Tests\Controller;
 use App\Acl\DoctrinePermissionStore;
 use App\Entity\DatatablePreference;
 use App\Entity\User;
-use App\Repository\DatatablePreferenceRepository;
 use App\Security\DefaultRolePermissions;
 use App\Security\UserRoles;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Tools\SchemaTool;
 use PHPUnit\Framework\Attributes\CoversNothing;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -30,9 +30,9 @@ use const JSON_THROW_ON_ERROR;
  * opérations, avec un magasin en mémoire. Ce qu'il ne peut pas savoir, et que ce test dit :
  *
  * - la route est importée sous `/admin` et gardée par le pare-feu qui garde l'espace ;
- * - `DatatablePreferenceStoreInterface` est branchée sur l'implémentation Doctrine du projet. Sans
- *   l'alias, `PreferenceControllerPass` RETIRE le contrôleur et l'endpoint répond 404 — même sens
- *   de défaillance silencieuse que les deux alias ACL ;
+ * - `DatatablePreferenceStoreInterface` est branchée sur le magasin Doctrine du bundle et l'entité du
+ *   projet. Sans `datatable.preferences.storage`, `PreferenceControllerPass` RETIRE le contrôleur et
+ *   l'endpoint répond 404 — même sens de défaillance silencieuse que les deux alias ACL ;
  * - le magasin fait un upsert : une ligne par (compte, tableau), quoi qu'il arrive à la deuxième
  *   sauvegarde. Un `INSERT` aveugle sortirait en 500 au second clic ;
  * - la table des comptes embarque l'URL et le jeton, donc le panneau a de quoi écrire.
@@ -101,7 +101,7 @@ final class DatatablePreferencesTest extends WebTestCase
         // L'id vient du nom, côté serveur : le client ne le choisit pas.
         self::assertSame('comptes-actifs', $payload['views'][0]['id']);
 
-        $stored = $this->repository()->findOneForUser($this->user, self::TABLE_KEY);
+        $stored = $this->preference($this->user);
         self::assertInstanceOf(DatatablePreference::class, $stored);
         // Le magasin garde les octets qu'on lui a donnés : c'est le contrat « la valeur est opaque ».
         self::assertSame($payload, json_decode($stored->getPayload(), true, 512, JSON_THROW_ON_ERROR));
@@ -126,7 +126,7 @@ final class DatatablePreferencesTest extends WebTestCase
         /** @var array{views: list<array{name: string}>} $payload */
         $payload = $this->json($client);
         self::assertSame(['Seconde'], array_column($payload['views'], 'name'));
-        self::assertCount(1, $this->repository()->findBy(['owner' => $this->user]));
+        self::assertCount(1, $this->preferences()->findBy(['owner' => $this->user]));
     }
 
     /**
@@ -146,7 +146,7 @@ final class DatatablePreferencesTest extends WebTestCase
 
         self::assertResponseIsSuccessful();
         self::assertSame([], $this->json($client)['views'], 'Le second compte ne voit pas les vues du premier.');
-        self::assertNotNull($this->repository()->findOneForUser($alice, self::TABLE_KEY));
+        self::assertNotNull($this->preference($alice));
     }
 
     public function testDeletingRemovesTheRow(): void
@@ -159,7 +159,7 @@ final class DatatablePreferencesTest extends WebTestCase
         $client->request('DELETE', self::ENDPOINT, server: ['HTTP_X_CSRF_TOKEN' => $token]);
 
         self::assertResponseStatusCodeSame(Response::HTTP_NO_CONTENT);
-        self::assertNull($this->repository()->findOneForUser($this->user, self::TABLE_KEY));
+        self::assertNull($this->preference($this->user));
     }
 
     /**
@@ -177,7 +177,7 @@ final class DatatablePreferencesTest extends WebTestCase
         $client->request('DELETE', self::ENDPOINT, server: ['HTTP_X_CSRF_TOKEN' => 'forged']);
         self::assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
 
-        self::assertNull($this->repository()->findOneForUser($this->user, self::TABLE_KEY));
+        self::assertNull($this->preference($this->user));
     }
 
     /**
@@ -304,12 +304,17 @@ final class DatatablePreferencesTest extends WebTestCase
         return $decoded;
     }
 
-    private function repository(): DatatablePreferenceRepository
+    private function preference(User $owner): ?DatatablePreference
     {
-        $repository = static::getContainer()->get(DatatablePreferenceRepository::class);
-        self::assertInstanceOf(DatatablePreferenceRepository::class, $repository);
+        return $this->preferences()->findOneBy(['owner' => $owner, 'datatableKey' => self::TABLE_KEY]);
+    }
 
-        return $repository;
+    /**
+     * @return EntityRepository<DatatablePreference>
+     */
+    private function preferences(): EntityRepository
+    {
+        return static::getContainer()->get(EntityManagerInterface::class)->getRepository(DatatablePreference::class);
     }
 
     private function createSchema(): void

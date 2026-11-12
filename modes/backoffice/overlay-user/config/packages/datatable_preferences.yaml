@@ -1,0 +1,13 @@
+# Le stockage des préférences de tableau par compte (datatable-bundle ≥ 3.3) : le magasin Doctrine du
+# bundle, sur l'entité du projet. Il ne dit que les deux classes ; le reste — colonnes, compte
+# (`UserInterface` résolue vers `App\Entity\User`), lecture, upsert, effacement — vient du bundle.
+#
+# ⚠️ Ce fichier est dans `overlay-user/` et non dans `config/packages/datatable.yaml` d'`overlay/`, à
+# dessein : l'entité et le compte viennent de la brique « comptes ». Sans cette clé,
+# `PreferenceControllerPass` RETIRE le contrôleur et la fonctionnalité n'existe pas — pas de panneau
+# « Colonnes », pas d'erreur, rien.
+datatable:
+    preferences:
+        storage:
+            entity_class: App\Entity\DatatablePreference
+            user_class: App\Entity\User

@@ -109,15 +109,20 @@ La clé nomme un TABLEAU et pas une entité : deux écrans listant la même enti
 différentes sont deux clés. Motif accepté par la route : `[a-z0-9][a-z0-9_.-]{0,63}`. Sans
 l'include, la table se rend exactement comme avant — pas de requête, pas de boutons.
 
-Le bundle **interprète** les préférences (il borne, assainit, versionne) et sert `GET` / `PUT` /
-`DELETE` sur `/admin/datatable/preferences/{key}` ; il ne stocke rien. Ce mode fournit la moitié
-qui manque, et elle vient TOUTE de la brique « comptes » :
-`App\Entity\DatatablePreference`, son repository, `App\DataTable\DatatablePreferenceStore`, l'alias
-du port dans `config/services.yaml` et la route dans `config/routes/datatable.yaml`.
+Le bundle **interprète** les préférences (il borne, assainit, versionne), sert `GET` / `PUT` /
+`DELETE` sur `/admin/datatable/preferences/{key}` et, depuis la 3.3, livre aussi le **stockage
+Doctrine** (`AbstractDatatablePreference`, `DoctrineDatatablePreferenceStore`). Ce mode fournit ce
+qui reste au projet, et il vient TOUT de la brique « comptes » : l'entité concrète
+`App\Entity\DatatablePreference` (sa table et son UNIQUE, rien d'autre),
+`config/packages/datatable_preferences.yaml` (`datatable.preferences.storage` : l'entité et le
+compte) et la route dans `config/routes/datatable.yaml`.
 
-- **Sans l'alias, il n'y a pas d'endpoint** : `PreferenceControllerPass` retire le contrôleur du
-  conteneur. Pas de panneau, pas d'erreur — le même sens de défaillance silencieuse que les deux
-  alias ACL.
+- **Sans `datatable.preferences.storage`, il n'y a pas d'endpoint** : `PreferenceControllerPass`
+  retire le contrôleur du conteneur. Pas de panneau, pas d'erreur — le même sens de défaillance
+  silencieuse que les deux alias ACL.
+- **Un besoin de portée en plus du compte** (une préférence par compte ET par espace, par exemple) :
+  un service qui implémente `DatatablePreferenceScopeInterface` ajoute ses critères, et l'entité
+  concrète porte la colonne et l'UNIQUE qui vont avec. Le magasin ne change pas.
 - **Le compte vient du jeton de sécurité**, jamais du payload : écrire les préférences d'un autre
   n'est pas « interdit », c'est irreprésentable. D'où l'absence de voter et de code de permission.
 - **`write()` est un upsert.** L'endpoint est un `PUT` et le navigateur renvoie tout l'état à chaque
