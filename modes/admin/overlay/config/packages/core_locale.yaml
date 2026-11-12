@@ -1,0 +1,9 @@
+# La langue de l'interface (core-bundle ≥ 3.11, ADR-0001 du bundle) : un lien `?_locale=fr` du sélecteur
+# bascule et se retient en session, la session répond ensuite. Les langues offertes sont celles du noyau
+# (`framework.enabled_locales`). L'écouteur tourne après le pare-feu et rediffuse la langue au traducteur.
+core:
+    locale:
+        enabled: true
+        sources: [query, session]
+        query_parameter: _locale
+        remember: [query]

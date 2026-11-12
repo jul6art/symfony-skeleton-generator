@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Translation;
 
 use App\Security\BackofficeLocales;
-use App\Twig\LocaleExtension;
+use Jul6Art\CoreBundle\Twig\LocaleExtension;
 use PHPUnit\Framework\Attributes\CoversNothing;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Translation\TranslatorBagInterface;

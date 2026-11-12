@@ -203,13 +203,16 @@ rien, et rien ne le signale. C'est la raison pour laquelle `roles` est un `readO
   Le routage `async` est juste en production, où un worker tourne ; en local la file se remplit et
   rien n'arrive jamais — et le jour où on la draine, elle livre des messages sérialisés des heures
   plus tôt, avec des jetons périmés.
-- **Changer la langue demande un écouteur à la priorité 7 ET une rediffusion manuelle**
-  (`src/EventListener/LocaleListener.php`) : le pare-feu remplit `TokenStorage` à 8,
-  `LocaleAwareListener` diffuse la locale à 15 sans repasser. Poser `$request->setLocale()` seul
-  écrit la colonne, écrit la session, et laisse l'écran dans la langue précédente.
+- **La langue de l'interface vient de core-bundle** (≥ 3.11, `core.locale` dans
+  `config/packages/core_locale.yaml`, la bascule routée par `config/routes/locale.yaml`) : l'écouteur
+  tourne à la priorité 7 ET rediffuse la langue au traducteur — le pare-feu remplit `TokenStorage` à
+  8, `LocaleAwareListener` diffuse la locale à 15 sans repasser. Un écouteur maison qui poserait
+  `$request->setLocale()` seul écrirait la colonne, la session, et laisserait l'écran dans la langue
+  précédente. Une langue de plus se lit ailleurs (`?lang=`, en-tête du navigateur, une source à
+  soi) : `core.locale.sources`, l'ordre est le sens.
 - **La langue voyage dans le CORPS de la requête**, pas dans l'URL : c'est le contrat du
-  contrôleur `ui--locale-switcher` d'`admin-bundle`. Une route `/locale/{locale}` répond 204 et ne
-  change rien.
+  contrôleur `ui--locale-switcher` d'`admin-bundle`, que respecte la bascule de core-bundle. Une
+  route `/locale/{locale}` répond 204 et ne change rien.
 
 ### Les fixtures font partie du mode
 

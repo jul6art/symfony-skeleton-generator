@@ -1,0 +1,10 @@
+# La bascule de langue (core-bundle ≥ 3.11, ADR-0001 du bundle) : le bundle n'en déclare pas la route,
+# l'application la nomme — le sélecteur la désigne par `path('admin_locale_switch')`. Publique : on
+# choisit sa langue avant d'avoir un compte, sur l'écran de connexion (access_control).
+#
+# Le contrat du contrôleur Stimulus `ui--locale-switcher` d'admin-bundle : `locale` et `_token` dans le
+# CORPS, vers une URL FIXE, et 204 — une route `/locale/{locale}` répondrait 204 sans rien changer.
+admin_locale_switch:
+    path: /locale
+    controller: Jul6Art\CoreBundle\Controller\LocaleController
+    methods: [POST]

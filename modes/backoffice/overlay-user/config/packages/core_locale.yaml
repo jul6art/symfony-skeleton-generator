@@ -1,0 +1,12 @@
+# La langue de l'interface (core-bundle ≥ 3.11, ADR-0001 du bundle) : l'écouteur (priorité 7, après le
+# pare-feu, avec la rediffusion au traducteur), la préférence (session, puis compte), la bascule — routée
+# par config/routes/locale.yaml — et les fonctions Twig du sélecteur (`backoffice_locales()`,
+# `locale_flag()`). La liste des langues reste celle du produit, `BackofficeLocales`.
+#
+# ⚠️ Dans `overlay-user/` : la langue se retient sur le COMPTE, qui vient de la brique « comptes ».
+core:
+    locale:
+        enabled: true
+        supported: !php/const App\Security\BackofficeLocales::SUPPORTED
+        default: !php/const App\Security\BackofficeLocales::DEFAULT
+        sources: [route, session, account]

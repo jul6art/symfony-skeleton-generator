@@ -1,5 +1,5 @@
 {# Sélecteur de langue : la locale choisie est mémorisée en session
-   (App\EventListener\LocaleListener). #}
+   (core-bundle, `core.locale`, config/packages/core_locale.yaml). #}
 <div class="ml-2 flex items-center gap-1 text-xs">
     {% for locale in enabled_locales %}
         {% if locale == app.request.locale %}
