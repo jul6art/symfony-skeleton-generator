@@ -174,7 +174,9 @@ Règles qui en découlent :
 - **Les en-têtes de sécurité sont configurés, pas codés** : `core.security_headers.enabled`
   suffit. Le listener ne remplit que les en-têtes **absents**, donc un contrôleur qui a
   besoin de `X-Frame-Options: SAMEORIGIN` (aperçu dans une iframe) le pose lui-même et
-  garde la main. Ne passer `csp_enforce: true` qu'après avoir lu les rapports de violation.
+  garde la main. La CSP est **bloquante** (`csp_enforce: true`), sauf en développement où elle
+  ne fait que rapporter : un hôte tiers que l'application appelle s'ajoute à `csp_policy`, sinon
+  le navigateur le bloque en production sans rien afficher d'autre qu'une ligne de console.
 - **Une piste d'audit doit enregistrer les deux identités.** Pendant un `_switch_user`,
   `getCurrentUserIdOrNull()` rend le compte **usurpé** — ce que veut la plupart du code, et
   précisément ce qui rend une trace mensongère si on s'arrête là : elle dit que l'utilisateur a
