@@ -1,0 +1,12 @@
+# Les libellés des formulaires d'admin-bundle (inscription, mot de passe oublié), qui traduisent dans ce domaine.
+security:
+    register:
+        email: Adresse e-mail
+        password: Mot de passe
+        password_confirm: Confirmer le mot de passe
+    reset_password:
+        request:
+            email: Adresse e-mail
+        reset:
+            password: Nouveau mot de passe
+            password_confirm: Confirmer le mot de passe

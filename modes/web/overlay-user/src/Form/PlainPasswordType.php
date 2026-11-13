@@ -43,7 +43,7 @@ final class PlainPasswordType extends AbstractType
                 'constraints' => static function (Options $options): array {
                     $rules = [
                         new Assert\Length(
-                            min: 8,
+                            min: 12,
                             max: 4096,
                             minMessage: 'password.too_short',
                         ),

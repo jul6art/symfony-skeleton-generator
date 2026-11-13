@@ -121,7 +121,11 @@ flash:
         deleted: Compte supprimé.
     password:
         changed: Votre mot de passe a été modifié.
-        reset: 'Mot de passe modifié : vous pouvez vous connecter.'
-    reset:
-        invalid: 'Ce lien n''est plus valable (%reason%). Merci de refaire une demande.'
     csrf: Jeton CSRF invalide.
+
+# Les flashes des écrans d'admin-bundle (mot de passe oublié) : le partial les traduit dans ce domaine.
+security:
+    reset_password:
+        flash:
+            changed: 'Mot de passe modifié : vous pouvez vous connecter.'
+            invalid_token: 'Ce lien n''est plus valable. Merci de refaire une demande.'

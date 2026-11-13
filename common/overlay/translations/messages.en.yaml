@@ -121,7 +121,11 @@ flash:
         deleted: Account deleted.
     password:
         changed: Your password has been changed.
-        reset: 'Password changed: you can now sign in.'
-    reset:
-        invalid: 'This link is no longer valid (%reason%). Please request a new one.'
     csrf: Invalid CSRF token.
+
+# The flashes of admin-bundle's screens (forgotten password): the partial translates them in this domain.
+security:
+    reset_password:
+        flash:
+            changed: 'Password changed: you can now sign in.'
+            invalid_token: 'This link is no longer valid. Please request a new one.'

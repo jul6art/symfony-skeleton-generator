@@ -1,0 +1,35 @@
+# Connexion, inscription et mot de passe oublié : les contrôleurs viennent d'admin-bundle (≥ 1.43, ADR-0001 du bundle),
+# qui ne déclare aucune route. Les gabarits, le menu et le courriel de réinitialisation nomment celles-ci : un projet
+# peut changer les chemins, pas les noms.
+app_login:
+    path: /login
+    controller: Jul6Art\AdminBundle\Controller\Security\LoginController::login
+    methods: [GET, POST]
+
+# Interceptée par la clé `logout` du pare-feu, en POST seulement : l'action n'est jamais exécutée.
+app_logout:
+    path: /logout
+    controller: Jul6Art\AdminBundle\Controller\Security\LoginController::logout
+    methods: [POST]
+
+# Fermée par `APP_REGISTRATION_ENABLED=0` : la route répond 404.
+app_register:
+    path: /register
+    controller: Jul6Art\AdminBundle\Controller\Security\RegistrationController
+    methods: [GET, POST]
+
+app_forgot_password_request:
+    path: /reset-password
+    controller: Jul6Art\AdminBundle\Controller\Security\ResetPasswordController::request
+    methods: [GET, POST]
+
+app_check_email:
+    path: /reset-password/check-email
+    controller: Jul6Art\AdminBundle\Controller\Security\ResetPasswordController::checkEmail
+    methods: [GET]
+
+app_reset_password:
+    path: /reset-password/reset/{token}
+    controller: Jul6Art\AdminBundle\Controller\Security\ResetPasswordController::reset
+    defaults: { token: ~ }
+    methods: [GET, POST]

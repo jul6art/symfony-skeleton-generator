@@ -1,0 +1,39 @@
+# Connexion, inscription et mot de passe oublié (admin-bundle ≥ 1.43, ADR-0001 du bundle) : les contrôleurs sont au
+# bundle, routés par config/routes/account.yaml ; les gabarits restent ceux du projet, par l'espace `admin` (le seul :
+# un projet sans espace est servi par celui-là). La fiche et le changement de mot de passe restent dans
+# App\Controller\ProfileController.
+admin:
+    account:
+        enabled: true
+        user_class: Jul6Art\AuthBundle\Entity\User
+        registration:
+            # `APP_REGISTRATION_ENABLED=0` ferme l'inscription : la route répond 404 (config/packages/app.yaml).
+            open: '%app.registration_enabled%'
+            # L'entité d'auth-bundle n'a pas de drapeau « actif » : le compte est utilisable dès son écriture.
+            active: ~
+            # Le compte créé est connecté aussitôt, par l'authentificateur du pare-feu (form_login + remember_me : il
+            # faut le nommer).
+            sign_in: form_login
+            flash: flash.account.created
+        reset_password:
+            email:
+                from: '%env(default:app.mailer_from:MAILER_FROM)%'
+                template: reset_password/email.html.twig
+                subject: reset.email.subject
+                translation_domain: messages
+        spaces:
+            admin:
+                routes:
+                    login: app_login
+                    register: app_register
+                    reset_password_request: app_forgot_password_request
+                    reset_password_check_email: app_check_email
+                    reset_password_reset: app_reset_password
+                templates:
+                    login: security/login.html.twig
+                    register: registration/register.html.twig
+                    reset_password_request: reset_password/request.html.twig
+                    check_email: reset_password/check_email.html.twig
+                    reset_password: reset_password/reset.html.twig
+                # Déjà connecté : la connexion et l'inscription renvoient à l'accueil.
+                redirect_authenticated_to: app_home

@@ -1,0 +1,12 @@
+# The labels of admin-bundle's forms (sign-up, forgotten password), which translate in this domain.
+security:
+    register:
+        email: Email address
+        password: Password
+        password_confirm: Confirm password
+    reset_password:
+        request:
+            email: Email address
+        reset:
+            password: New password
+            password_confirm: Confirm password

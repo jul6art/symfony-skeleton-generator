@@ -17,6 +17,17 @@
 - Parcours livrés : inscription (`/register`), connexion (`/login`), mot de passe
   oublié (`/reset-password`, `symfonycasts/reset-password-bundle`), changement de
   mot de passe (`/profile/password`), administration des comptes (`/admin/users`).
+- **Connexion, inscription et mot de passe oublié sont les écrans d'admin-bundle**
+  (ADR-0001 du bundle) : aucun contrôleur ni formulaire dans `src/`. Ils se règlent
+  dans `config/packages/admin_account.yaml` (inscription ouverte, connexion
+  immédiate du nouveau compte, flash, courriel) et se routent dans
+  `config/routes/account.yaml` — un chemin peut changer, un nom de route non : les
+  gabarits, le menu et le courriel les nomment. Les gabarits restent ceux du projet
+  (`security/`, `registration/`, `reset_password/`), qui reçoivent `form`. Ce que le
+  projet ajoute à l'inscription s'écrit en écouteur (`RegistrationFormEvent`,
+  `RegistrationSubmittedEvent`, `UserRegisteredEvent`) ou en type enfant
+  (`getParent()`, puis `registration.form_type`), jamais en copie du contrôleur.
+  La demande de lien ne répond jamais en moins de 250 ms, adresse connue ou non.
 - Les accès aux comptes passent par `App\Security\Voter\UserVoter` :
   `USER_LIST`, `USER_VIEW`, `USER_CREATE`, `USER_EDIT`, `USER_DELETE`. Un
   administrateur voit tout, un membre ne voit et ne modifie que son propre
@@ -48,12 +59,15 @@
   `app.registration_enabled`). Le projet peut être généré fermé d'entrée avec
   `./bin/new-project <projet> --web --no-registration`.
 - Le premier administrateur se crée en console :
-  `make user-create ARGS="moi@exemple.com --admin"`.
+  `make user-create ARGS="moi@exemple.com --admin"` — la commande d'auth-bundle
+  (`auth.account.create_user`), qui demande le mot de passe en saisie masquée.
 - Les e-mails partent par Messenger (`SendEmailMessage` routé sur `async`) : sans
   `make worker`, le lien de réinitialisation reste dans la file et n'arrive
   jamais. En test, l'assertion à utiliser est `assertQueuedEmailCount()`.
-- Règles de mot de passe centralisées dans `App\Form\PlainPasswordType` : les
-  modifier là, pas dans chaque formulaire.
+- Règles de mot de passe : l'inscription et le mot de passe oublié suivent celles
+  d'admin-bundle (12 caractères au moins) ; `App\Form\PlainPasswordType` (changement
+  de mot de passe, administration des comptes) s'y aligne et ajoute la robustesse.
+  Les modifier là, pas dans chaque formulaire.
 - Le parcours « mot de passe oublié » ne doit jamais révéler si une adresse
   existe : toujours la même réponse, quelle que soit l'issue.
 

@@ -1,6 +1,12 @@
 # jul6art/auth-bundle — entité User, son dépôt et son manager.
 auth:
     enabled: true
+    # Les commandes de compte (auth-bundle ≥ 2.8) : `app:user:create`, le mot de passe demandé en saisie masquée.
+    account:
+        user_class: Jul6Art\AuthBundle\Entity\User
+        create_user:
+            enabled: true
+            admin_role: !php/const Jul6Art\AuthBundle\Entity\User::ROLE_ADMIN
 
 # L'entité du bundle vit dans vendor/ : son mapping doit être déclaré ici.
 doctrine:

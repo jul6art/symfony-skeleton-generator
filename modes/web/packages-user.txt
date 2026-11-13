@@ -1,6 +1,7 @@
 # Paquets de la brique « comptes » : ignorés avec --no-user.
 
-jul6art/auth-bundle                 # entité User, dépôt et manager
+jul6art/auth-bundle                 # entité User, dépôt et manager ; app:user:create
+jul6art/admin-bundle                # écrans de connexion, d'inscription et de mot de passe oublié (admin.account)
 symfonycasts/reset-password-bundle  # jetons de réinitialisation de mot de passe
 symfony/rate-limiter                # login_throttling sur le formulaire de login
 

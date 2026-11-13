@@ -37,6 +37,11 @@ rather than reinventing their pieces:
   `App\Entity\User`; validation and serialization rules for that vendor entity
   live in `config/validator/` and `config/serializer/`.
 
+With accounts, the `web` and `admin` modes add **`jul6art/admin-bundle`** for
+its sign-in, sign-up and forgotten-password screens only (`admin.account`):
+the controllers and their forms are the bundle's, the routes and the templates
+stay the project's.
+
 The `backoffice` mode adds five more, and that is most of what it *is*:
 `admin-bundle` (the shell, the theme, the appearance screen, the sign-in pages),
 `datatable-bundle` (the table engine), `api-bundle` (the API Platform filters),
@@ -102,7 +107,9 @@ including `api --no-user`: a route without an access decision is not an option.
   runtime — no remote `src` anywhere in the layout.
 - Ready-made account flow: `/register`, `/login` (CSRF, remember me, throttling),
   `/reset-password` (`symfonycasts/reset-password-bundle`, e-mail + one-shot
-  token), `/profile/password`. Logout is a POST form with a CSRF token, and
+  token, never answered under 250 ms), `/profile/password`. The first three are
+  admin-bundle's screens, set in `config/packages/admin_account.yaml` and routed
+  in `config/routes/account.yaml`, rendered by the project's own templates. Logout is a POST form with a CSRF token, and
   every sensitive action (delete, logout) asks for confirmation in a modal.
 - Public sign-up is a switch: `APP_REGISTRATION_ENABLED=0` in `.env` makes
   `/register` answer 404 and hides the "create an account" links. Generate the
@@ -250,8 +257,8 @@ Account management is a **brick**, not a hardcoded part of a mode: sign in, sign
 up, forgotten password, profile and user CRUD live in `overlay-user/`,
 `packages-user.txt`, `post-install-user.sh`, `gitignore-user.append` and
 `CLAUDE-user.append.md`. With `--no-user` none of it is copied and none of the
-related packages (`jul6art/auth-bundle`, the reset-password bundle, the JWT
-bundle…) are installed — the project keeps its layout, its front and its quality
+related packages (`jul6art/auth-bundle`, `jul6art/admin-bundle` in the `web` and
+`admin` modes, the reset-password bundle, the JWT bundle…) are installed — the project keeps its layout, its front and its quality
 gate, and `make qa` stays green. What does *not* go away is the access-decision
 rule: `symfony/security-bundle` and `AbstractVoter` are still there, and the
 remaining routes still declare their decision (a public one, in that case). A mode whose subject *is* accounts declares
