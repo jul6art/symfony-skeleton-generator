@@ -4,13 +4,18 @@ declare(strict_types=1);
 
 namespace App\Tests\Translation;
 
+use ReflectionClass;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Translation\TranslatorBagInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 use function dirname;
+use function is_string;
 use function sprintf;
+use function str_starts_with;
+use function strlen;
 
 /**
  * Les flashes sortent des contrôleurs **déjà traduits** : `addSuccessFlash('flash.x')` passe par
@@ -72,19 +77,36 @@ final class FlashKeyTest extends KernelTestCase
         // `appearance.flash.saved` — émise par `Jul6Art\AdminBundle\Controller\AppearanceController`,
         // déclarée dans le domaine `appearance`, donc affichée BRUTE à l'écran (vu le 2026-08-23,
         // et superp l'affichait brute aussi, pour la même raison).
-        $directories = array_values(array_filter([
-            $root.'/src/Controller',
-            $root.'/vendor/jul6art/admin-bundle/Controller',
-        ], is_dir(...)));
+        //
+        // Seulement ceux que le projet ROUTE : un écran absent ne montre jamais son flash. Les modes
+        // `web` et `admin` ne routent d'admin-bundle que la connexion, l'inscription et le mot de
+        // passe oublié ; tout son dossier leur aurait demandé une douzaine de clés d'écrans qu'ils
+        // n'ont pas (permissions, échéances, double authentification…).
+        $files = [];
 
-        if ([] === $directories) {
-            return [];
+        if (is_dir($root.'/src/Controller')) {
+            foreach (Finder::create()->files()->in($root.'/src/Controller')->name('*.php') as $file) {
+                $files['src/Controller/'.$file->getRelativePathname()] = (string) $file->getRealPath();
+            }
+        }
+
+        $router = static::getContainer()->get('router');
+        self::assertInstanceOf(RouterInterface::class, $router);
+
+        foreach ($router->getRouteCollection() as $route) {
+            $controller = $route->getDefault('_controller');
+            $class = is_string($controller) ? explode('::', $controller, 2)[0] : '';
+
+            if (str_starts_with($class, 'Jul6Art\\') && class_exists($class)) {
+                $file = (string) new ReflectionClass($class)->getFileName();
+                $files[substr($file, strlen($root) + 1)] = $file;
+            }
         }
 
         $keys = [];
 
-        foreach (Finder::create()->files()->in($directories)->name('*.php') as $file) {
-            $source = $file->getContents();
+        foreach ($files as $name => $path) {
+            $source = (string) file_get_contents($path);
 
             // La quote fermante suivie d'une virgule ou d'une parenthèse : une clé concaténée
             // ('advertisement.'.$status) n'est pas lisible statiquement et reste hors de portée.
@@ -116,7 +138,7 @@ final class FlashKeyTest extends KernelTestCase
 
             $found = array_merge($matches[1], $nativeKeys);
             if ([] !== $found) {
-                $keys[$file->getRelativePathname()] = array_values(array_unique($found));
+                $keys[$name] = array_values(array_unique($found));
             }
         }
 
