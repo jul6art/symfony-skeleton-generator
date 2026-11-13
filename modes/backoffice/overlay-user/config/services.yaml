@@ -17,15 +17,6 @@ services:
     # constructeur doit être câblé ici explicitement, via `%env(...)%`. L'oublier ne se voit qu'au
     # boot — « Cannot autowire … you should configure its value explicitly » — donc jamais dans un
     # simple `php -l`.
-    App\Controller\RegistrationController:
-        arguments:
-            $registrationEnabled: '%env(bool:APP_REGISTRATION_ENABLED)%'
-
-    # L'adresse d'expédition des mails transactionnels (réinitialisation de mot de passe).
-    App\Controller\ResetPasswordController:
-        arguments:
-            $mailerFrom: '%env(MAILER_FROM)%'
-
 
     # ── Un seul dialecte CSV pour le produit : `excelFr`, à l'écriture ET à la lecture ───────────
     #
@@ -55,10 +46,3 @@ services:
     App\Io\ExcelFrDialect:
         class: Jul6Art\DataflowBundle\Io\Dialect\CsvDialect
         factory: ['Jul6Art\DataflowBundle\Io\Dialect\CsvDialect', 'excelFr']
-
-    # Le répertoire des avatars téléversés. Sous `public/` : le fichier est servi par le serveur
-    # web comme n'importe quel asset — un avatar n'est pas une donnée à protéger, et le faire
-    # passer par un contrôleur coûterait une requête PHP par vignette de la liste des comptes.
-    App\Controller\Admin\AccountProfileController:
-        arguments:
-            $avatarDirectory: '%kernel.project_dir%/public/uploads/avatars'

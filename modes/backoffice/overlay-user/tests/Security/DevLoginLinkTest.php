@@ -55,7 +55,7 @@ final class DevLoginLinkTest extends KernelTestCase
         self::bootKernel();
 
         self::assertFalse(
-            static::getContainer()->has(\App\Command\DevLoginLinkCommand::class),
+            static::getContainer()->has(\Jul6Art\AuthBundle\Account\Command\DevLoginLinkCommand::class),
             'La commande qui fabrique un lien de connexion ne doit pas exister hors dev.',
         );
     }

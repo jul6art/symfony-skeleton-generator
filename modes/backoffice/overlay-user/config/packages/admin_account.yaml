@@ -1,0 +1,21 @@
+# Connexion, mot de passe oublié, inscription et profil (admin-bundle ≥ 1.42, ADR-0001 du bundle) — seulement avec la
+# gestion des comptes : les contrôleurs sont au bundle, routés par config/routes/account.yaml. Les gabarits restent
+# ceux du bundle, le profil celui du projet (admin/account/profile.html.twig), le courriel aussi
+# (security/reset_password_email.html.twig). Un fichier à part, comme admin_role_permissions.yaml.
+admin:
+    account:
+        enabled: true
+        user_class: App\Entity\User
+        registration:
+            # `APP_REGISTRATION_ENABLED=0` ferme l'inscription : la route répond 404.
+            open: '%env(bool:APP_REGISTRATION_ENABLED)%'
+        reset_password:
+            email:
+                from: '%env(MAILER_FROM)%'
+        profile:
+            show_attribute: !php/const App\Security\PermissionCodes::USER_READ
+        spaces:
+            admin:
+                routes:
+                    # La fiche du compte, où revient le profil après l'enregistrement s'il peut la lire.
+                    profile_show: admin_user_show

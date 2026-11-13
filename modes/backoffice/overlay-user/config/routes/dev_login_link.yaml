@@ -11,5 +11,5 @@
 when@dev:
     dev_login_link_check:
         path: /login-link/check
-        controller: App\Controller\Dev\LoginLinkController
+        controller: Jul6Art\AuthBundle\Account\Dev\LoginLinkController
         methods: [GET]

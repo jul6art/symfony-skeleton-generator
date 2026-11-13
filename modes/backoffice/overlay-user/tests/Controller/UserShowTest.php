@@ -110,6 +110,27 @@ final class UserShowTest extends WebTestCase
         self::assertResponseRedirects('/admin/account/profile');
     }
 
+    /**
+     * Un prénom vidé (le `required` du navigateur contourné) : une erreur de formulaire, 422 — jamais `null` écrit
+     * dans `setFirstName(string)`, le 500 qu'avaient les copies du contrôleur avant admin-bundle 1.42.
+     */
+    public function testAnEmptiedNameIsAFormErrorNotAServerError(): void
+    {
+        $client = self::createClient();
+        $client->disableReboot();
+        $this->createSchema();
+
+        $client->loginUser($this->createUser(UserRoles::ROLE_USER));
+        $crawler = $client->request('GET', '/admin/account/profile');
+
+        $client->submit($crawler->filter('form')->form([
+            'profile_form[firstName]' => '',
+            'profile_form[lastName]' => 'Hopper',
+        ]));
+
+        self::assertResponseStatusCodeSame(422);
+    }
+
     private function createSchema(): void
     {
         $entityManager = static::getContainer()->get(EntityManagerInterface::class);

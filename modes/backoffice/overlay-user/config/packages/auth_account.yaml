@@ -1,0 +1,17 @@
+# Les commandes de compte d'auth-bundle (≥ 2.8) — seulement avec la gestion des comptes.
+auth:
+    account:
+        user_class: App\Entity\User
+        # `app:user:create` : le premier compte d'un serveur, le mot de passe demandé en saisie masquée.
+        create_user:
+            enabled: true
+            admin_role: !php/const App\Security\UserRoles::ROLE_SUPER_ADMIN
+
+when@dev:
+    auth:
+        account:
+            # `app:dev:login-link` et la cible de son lien (config/routes/dev_login_link.yaml) : en développement
+            # seulement, quoi que dise la configuration.
+            dev_login_link:
+                enabled: true
+                firewall: main

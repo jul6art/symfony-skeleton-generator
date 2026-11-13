@@ -1,0 +1,40 @@
+# Connexion, mot de passe oublié, inscription et profil : les contrôleurs viennent d'admin-bundle (≥ 1.42, ADR-0001
+# du bundle), qui ne déclare aucune route. Les gabarits, le menu de compte et le courriel de réinitialisation nomment
+# celles-ci : un projet peut changer les chemins, pas les noms.
+admin_security_login:
+    path: /login
+    controller: Jul6Art\AdminBundle\Controller\Security\LoginController::login
+    methods: [GET, POST]
+
+# Interceptée par la clé `logout` du pare-feu, en POST seulement : l'action n'est jamais exécutée.
+admin_security_logout:
+    path: /logout
+    controller: Jul6Art\AdminBundle\Controller\Security\LoginController::logout
+    methods: [POST]
+
+# Fermée par `APP_REGISTRATION_ENABLED=0` : la route répond 404.
+admin_security_register:
+    path: /register
+    controller: Jul6Art\AdminBundle\Controller\Security\RegistrationController
+    methods: [GET, POST]
+
+admin_reset_password_request:
+    path: /reset-password
+    controller: Jul6Art\AdminBundle\Controller\Security\ResetPasswordController::request
+    methods: [GET, POST]
+
+admin_reset_password_check_email:
+    path: /reset-password/check-email
+    controller: Jul6Art\AdminBundle\Controller\Security\ResetPasswordController::checkEmail
+    methods: [GET]
+
+admin_reset_password_reset:
+    path: /reset-password/reset/{token}
+    controller: Jul6Art\AdminBundle\Controller\Security\ResetPasswordController::reset
+    defaults: { token: ~ }
+    methods: [GET, POST]
+
+admin_account_profile_edit:
+    path: /admin/account/profile
+    controller: Jul6Art\AdminBundle\Controller\Security\AccountProfileController::edit
+    methods: [GET, POST]
