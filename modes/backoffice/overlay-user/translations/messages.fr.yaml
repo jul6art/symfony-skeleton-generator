@@ -86,6 +86,7 @@ user.import.error.binary_spreadsheet: C'est un classeur, pas un fichier texte. E
 user.import.error.invalid_mime: Ce type de fichier n'est pas reconnu.
 user.import.error.mapping_required: Faites correspondre au moins une colonne avant de lancer l'import.
 permission.flash.saved: Permissions enregistrées.
+permission.flash.reset: Permissions par défaut rétablies.
 user.profile.flash.saved: Profil enregistré.
 user.profile.flash.upload_failed: La photo n'a pas pu être enregistrée.
 

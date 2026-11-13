@@ -1,0 +1,11 @@
+# La grille des permissions : le contrôleur vient d'admin-bundle (≥ 1.40), qui ne déclare aucune route.
+# Le gabarit et le menu nomment ces routes.
+admin_role_permission_index:
+    path: /admin/role-permissions
+    controller: Jul6Art\AdminBundle\Controller\RolePermissionController::index
+    methods: [GET]
+
+admin_role_permission_save:
+    path: /admin/role-permissions
+    controller: Jul6Art\AdminBundle\Controller\RolePermissionController::save
+    methods: [POST]

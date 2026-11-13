@@ -1,0 +1,12 @@
+# La grille des permissions (admin-bundle ≥ 1.40 ; ADR-0001 d'acl-bundle, phase 2b) — seulement avec la gestion
+# des comptes : le contrôleur est au bundle, routé par config/routes/role_permission.yaml ; le gabarit reste au
+# projet (admin/role_permission/index.html.twig). Un fichier à part, comme acl_storage.yaml : `admin.yaml` est
+# celui de tous les backoffices.
+admin:
+    role_permissions:
+        enabled: true
+        roles:
+            - !php/const App\Security\UserRoles::ROLE_ADMIN
+            - !php/const App\Security\UserRoles::ROLE_USER
+        read: !php/const App\Security\PermissionCodes::PERMISSION_READ
+        update: !php/const App\Security\PermissionCodes::PERMISSION_UPDATE

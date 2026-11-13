@@ -87,6 +87,7 @@ user.import.error.binary_spreadsheet: This is a spreadsheet workbook, not a text
 user.import.error.invalid_mime: This file type is not recognised.
 user.import.error.mapping_required: Map at least one column before running the import.
 permission.flash.saved: Permissions saved.
+permission.flash.reset: Default permissions restored.
 user.profile.flash.saved: Profile saved.
 user.profile.flash.upload_failed: The picture could not be saved.
 
