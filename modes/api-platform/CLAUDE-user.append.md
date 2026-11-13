@@ -45,7 +45,8 @@
   `object == user` écrite dans l'expression : la règle est dans le voter.
 - Le mot de passe n'appartient à aucun groupe de sérialisation : il ne peut pas
   sortir. Pas d'inscription publique : les comptes se créent en console
-  (`make user-create ARGS="moi@exemple.com --admin"`).
+  (`make user-create ARGS="moi@exemple.com --admin"` : la commande d'auth-bundle,
+  `auth.account.create_user`, qui demande le mot de passe en saisie masquée).
 - Les clés vivent dans `config/jwt/` (non versionnées) : `make jwt-keypair` les
   régénère, la passphrase est dans `.env`.
 - La documentation `/api/docs` est ouverte : la fermer dans `access_control` si

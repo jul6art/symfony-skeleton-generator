@@ -31,8 +31,9 @@
 - Les clés vivent dans `config/jwt/` (non versionnées) :
   `make jwt-keypair` les régénère, la passphrase est dans `.env`.
 - Pas d'inscription publique : les comptes se créent en console
-  (`make user-create ARGS="moi@exemple.com --admin"`). Ajouter un endpoint
-  d'inscription est une décision explicite, pas un défaut.
+  (`make user-create ARGS="moi@exemple.com --admin"` : la commande d'auth-bundle,
+  `auth.account.create_user`, qui demande le mot de passe en saisie masquée).
+  Ajouter un endpoint d'inscription est une décision explicite, pas un défaut.
 - `GET /api/me` renvoie le compte porté par le jeton — sonde pratique côté
   client.
 

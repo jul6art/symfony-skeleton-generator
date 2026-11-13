@@ -35,7 +35,8 @@ rather than reinventing their pieces:
 - **`jul6art/auth-bundle`** — the `User` entity, its repository (a password
   upgrader), its manager and its factory. No project ever declares its own
   `App\Entity\User`; validation and serialization rules for that vendor entity
-  live in `config/validator/` and `config/serializer/`.
+  live in `config/validator/` and `config/serializer/`. Its `app:user:create`
+  command creates the first administrator in every mode (`auth.account`).
 
 With accounts, the `web` and `admin` modes add **`jul6art/admin-bundle`** for
 its sign-in, sign-up and forgotten-password screens only (`admin.account`):
