@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
-use App\Acl\DoctrinePermissionStore;
-use App\Repository\RolePermissionRepository;
+use Jul6Art\AclBundle\Doctrine\DoctrinePermissionStore;
 use App\Security\DefaultRolePermissions;
 use App\Security\PermissionCodes;
 use App\Security\UserRoles;
@@ -33,7 +32,6 @@ final class RolePermissionController extends AbstractController
     private const array EDITABLE_ROLES = [UserRoles::ROLE_ADMIN, UserRoles::ROLE_USER];
 
     public function __construct(
-        private readonly RolePermissionRepository $rolePermissions,
         private readonly DoctrinePermissionStore $store,
         private readonly EntityManagerInterface $entityManager,
     ) {
@@ -46,7 +44,7 @@ final class RolePermissionController extends AbstractController
         return $this->render('admin/role_permission/index.html.twig', [
             'roles' => self::EDITABLE_ROLES,
             'grouped' => PermissionCodes::grouped(),
-            'granted' => $this->grantedMatrix(),
+            'granted' => $this->store->grantedMatrix(self::EDITABLE_ROLES),
             'defaults' => DefaultRolePermissions::map(),
         ]);
     }
@@ -81,16 +79,4 @@ final class RolePermissionController extends AbstractController
         return $this->redirectToRoute('admin_role_permission_index');
     }
 
-    /**
-     * @return array<string, list<string>>
-     */
-    private function grantedMatrix(): array
-    {
-        $matrix = [];
-        foreach (self::EDITABLE_ROLES as $role) {
-            $matrix[$role] = $this->rolePermissions->findGrantedForRoles([$role]);
-        }
-
-        return $matrix;
-    }
 }

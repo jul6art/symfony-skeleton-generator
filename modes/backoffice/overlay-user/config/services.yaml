@@ -26,15 +26,6 @@ services:
         arguments:
             $mailerFrom: '%env(MAILER_FROM)%'
 
-    # ── Les contrats de l'acl-bundle, branchés sur le stockage de CE projet ─────────────────────
-    #
-    # ⚠️ Les alias sont OBLIGATOIRES, pas décoratifs. Les passes de compilation du bundle testent
-    # `$container->has(<Interface>)` : sans alias, elles concluent « pas de stockage » et le moteur
-    # ne laisse passer qu'un super-admin — silencieusement, dans une suite verte. C'est le sens de
-    # défaillance voulu du bundle, et c'est `AclWiringTest::testThePermissionStorageIsWired()` qui
-    # le rend visible ici.
-    Jul6Art\AclBundle\Contract\PermissionSetProviderInterface: '@App\Acl\DoctrinePermissionSetProvider'
-    Jul6Art\AclBundle\Contract\PermissionStoreInterface: '@App\Acl\DoctrinePermissionStore'
 
     # ── Un seul dialecte CSV pour le produit : `excelFr`, à l'écriture ET à la lecture ───────────
     #

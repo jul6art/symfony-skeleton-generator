@@ -4,67 +4,21 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use App\Repository\UserPermissionOverrideRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Jul6Art\AclBundle\Doctrine\AbstractUserPermissionOverride;
 use Jul6Art\CoreBundle\Entity\Traits\IdTrait;
 
 /**
- * Une décision par personne, qui l'emporte sur ce que ses rôles disent.
+ * Une décision par personne, qui l'emporte sur ce que ses rôles disent — dans les deux sens.
  *
- * Dans les deux sens : `granted = true` accorde à quelqu'un ce que son rôle n'a pas,
- * `granted = false` le lui retire alors que son rôle l'a. C'est le second cas qui justifie la
- * table — sans lui, retirer une permission à une personne obligerait à lui inventer un rôle.
+ * Les colonnes viennent d'`acl-bundle` (≥ 1.2, son ADR-0001, audit Fable 5.2, T20 lot 2) : le compte
+ * (`user_id`, résolu vers `App\Entity\User`), `permission`, `granted`. Cette classe ne porte que ce qui est au
+ * projet : la table, son unicité, l'identifiant.
  */
-#[ORM\Entity(repositoryClass: UserPermissionOverrideRepository::class)]
+#[ORM\Entity]
 #[ORM\Table(name: 'user_permission_override')]
 #[ORM\UniqueConstraint(name: 'uniq_user_permission', columns: ['user_id', 'permission'])]
-class UserPermissionOverride
+class UserPermissionOverride extends AbstractUserPermissionOverride
 {
     use IdTrait;
-
-    #[ORM\ManyToOne(targetEntity: User::class)]
-    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
-    private ?User $user = null;
-
-    #[ORM\Column(length: 120)]
-    private string $permission = '';
-
-    #[ORM\Column]
-    private bool $granted = true;
-
-    public function getUser(): ?User
-    {
-        return $this->user;
-    }
-
-    public function setUser(?User $user): static
-    {
-        $this->user = $user;
-
-        return $this;
-    }
-
-    public function getPermission(): string
-    {
-        return $this->permission;
-    }
-
-    public function setPermission(string $permission): static
-    {
-        $this->permission = $permission;
-
-        return $this;
-    }
-
-    public function isGranted(): bool
-    {
-        return $this->granted;
-    }
-
-    public function setGranted(bool $granted): static
-    {
-        $this->granted = $granted;
-
-        return $this;
-    }
 }

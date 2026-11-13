@@ -84,7 +84,7 @@ final class AclWiringTest extends KernelTestCase
         $schemaTool->dropSchema($metadata);
         $schemaTool->createSchema($metadata);
 
-        $store = static::getContainer()->get(\App\Acl\DoctrinePermissionStore::class);
+        $store = static::getContainer()->get(\Jul6Art\AclBundle\Doctrine\DoctrinePermissionStore::class);
         $store->grantToRole(UserRoles::ROLE_ADMIN, PermissionCodes::USER_READ, null);
         $entityManager->flush();
 
@@ -101,7 +101,7 @@ final class AclWiringTest extends KernelTestCase
 
         self::assertTrue(
             $decision->isGranted($user, PermissionCodes::USER_READ),
-            'Le moteur ne lit pas le stockage du projet : vérifier les alias des contrats dans services.yaml.',
+            'Le moteur ne lit pas le stockage : vérifier acl.storage (config/packages/acl_storage.yaml).',
         );
         self::assertFalse(
             $decision->isGranted($user, PermissionCodes::USER_DELETE),

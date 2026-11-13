@@ -1,0 +1,14 @@
+# Le stockage des permissions (acl-bundle ≥ 1.2, son ADR-0001) — seulement avec la gestion des comptes :
+# il écrit `App\Entity\User` et les deux entités minces de `src/Entity`. Un fichier à part, comme
+# core_locale.yaml : `acl.yaml` est celui de tous les backoffices, avec ou sans comptes.
+acl:
+    # Le stockage des permissions (acl-bundle ≥ 1.2, son ADR-0001, audit Fable 5.2, T20 lot 2) : le magasin,
+    # le fournisseur que le moteur lit (le bundle aliase lui-même les deux contrats) et la graine
+    # (`acl:permissions:seed`, alias `app:permissions:seed`, qui n'écrit que ce que personne n'a décidé).
+    # Les entités minces de `src/Entity` gardent la table et ses unicités : le schéma ne bouge pas.
+    storage:
+        enabled: true
+        user_class: App\Entity\User
+        role_permission_class: App\Entity\RolePermission
+        user_permission_override_class: App\Entity\UserPermissionOverride
+        catalog: App\Security\PermissionCatalog

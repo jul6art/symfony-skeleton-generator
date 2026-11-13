@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Controller;
 
-use App\Acl\DoctrinePermissionStore;
+use Jul6Art\AclBundle\Doctrine\DoctrinePermissionStore;
 use App\Entity\DatatablePreference;
 use App\Entity\User;
 use App\Security\DefaultRolePermissions;

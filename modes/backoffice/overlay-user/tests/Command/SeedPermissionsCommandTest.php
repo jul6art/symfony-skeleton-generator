@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Command;
 
-use App\Acl\DoctrinePermissionStore;
+use Jul6Art\AclBundle\Doctrine\DoctrinePermissionStore;
 use App\Security\DefaultRolePermissions;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
@@ -44,7 +44,7 @@ final class SeedPermissionsCommandTest extends KernelTestCase
 
         $seed->execute([]);
 
-        self::assertStringContainsString('0 permission(s) ajoutée(s)', $seed->getDisplay());
+        self::assertStringContainsString('0 default permission(s) written', $seed->getDisplay());
         self::assertFalse($store->isGrantedForRoles([$role], $permission, null), 'La graine a rouvert un droit refusé.');
     }
 }
