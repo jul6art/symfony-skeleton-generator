@@ -85,6 +85,7 @@ user:
       missing_fields: Un prénom et un nom sont requis.
       invalid_email: L'adresse e-mail de cette ligne n'est pas exploitable.
       unknown_role: Le rôle de cette ligne n'est pas un de ceux que cette application attribue.
+      role_forbidden: Seul un super-administrateur peut créer un compte super-administrateur.
 profile:
   section:
     identity: Identité

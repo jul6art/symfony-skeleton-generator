@@ -11,6 +11,7 @@ use Jul6Art\CoreBundle\Util\Strings;
 use Jul6Art\DataflowBundle\Import\RowMapperInterface;
 use Override;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 use function in_array;
 
@@ -36,6 +37,12 @@ use function in_array;
  * refusée : accepter n'importe quelle chaîne en silence créerait des comptes avec un rôle inconnu
  * de tout voter.
  *
+ * ⚠️ **`ROLE_SUPER_ADMIN` ne s'importe que par un super-administrateur**, comme le formulaire de
+ * compte ne l'offre qu'à lui (2026-10-25). Sans ce contrôle, un administrateur — qui détient la
+ * création de comptes par défaut — importait un super-administrateur à une adresse qu'il contrôle,
+ * puis l'activait par « mot de passe oublié » : une élévation de privilège, que trading-bot avait
+ * corrigée le 2026-10-17 et que cette copie gardait (corrigée le 2026-11-13).
+ *
  * ## Ce que ce mapper ne fait pas
  *
  * Il ne lit pas le fichier, ne mappe pas les colonnes, ne détecte pas les doublons et ne compte pas
@@ -54,6 +61,7 @@ final readonly class UserRowMapper implements RowMapperInterface
 
     public function __construct(
         private UserPasswordHasherInterface $hasher,
+        private AuthorizationCheckerInterface $authorization,
     ) {
     }
 
@@ -89,6 +97,10 @@ final readonly class UserRowMapper implements RowMapperInterface
 
         if ([] !== $roles && !in_array($role, array_values(UserRoles::assignable()), true)) {
             throw new DomainException('user.import.error.unknown_role');
+        }
+
+        if (UserRoles::ROLE_SUPER_ADMIN === $role && !$this->authorization->isGranted(UserRoles::ROLE_SUPER_ADMIN)) {
+            throw new DomainException('user.import.error.role_forbidden');
         }
 
         $user = new User()

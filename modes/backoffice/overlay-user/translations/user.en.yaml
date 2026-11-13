@@ -85,6 +85,7 @@ user:
       missing_fields: A first and last name are required.
       invalid_email: This row's e-mail address is not usable.
       unknown_role: This row's role is not one this application assigns.
+      role_forbidden: Only a super administrator can create a super administrator account.
 profile:
   section:
     identity: Identity

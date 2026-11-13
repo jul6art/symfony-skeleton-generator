@@ -158,6 +158,34 @@ final class UserImportTest extends WebTestCase
     }
 
     /**
+     * Un administrateur détient la création de comptes, pas celle d'un super-administrateur : il ne peut
+     * pas en importer un à une adresse qu'il contrôle, puis l'activer par « mot de passe oublié ». Un
+     * super-administrateur, lui, le peut — comme dans le formulaire de compte (2026-11-13).
+     */
+    public function testOnlyASuperAdminCanImportASuperAdmin(): void
+    {
+        $client = self::createClient();
+        $client->disableReboot();
+        $this->createSchema();
+        $users = self::getContainer()->get(UserRepository::class);
+        self::assertInstanceOf(UserRepository::class, $users);
+        $csv = "firstName;lastName;email;role\nMallory;Root;mallory@example.test;ROLE_SUPER_ADMIN\n";
+
+        $client->loginUser($this->createUser(UserRoles::ROLE_ADMIN));
+        $client->submit($this->upload($client, $csv)->filter('form')->form());
+        self::assertResponseIsSuccessful();
+        self::assertNull($users->findOneByEmail('mallory@example.test'), 'Un administrateur ne crée pas de super-administrateur.');
+        self::assertStringNotContainsString('user.import.error.role_forbidden', (string) $client->getResponse()->getContent());
+
+        $client->loginUser($this->createUser(UserRoles::ROLE_SUPER_ADMIN));
+        $client->submit($this->upload($client, $csv)->filter('form')->form());
+        self::assertResponseIsSuccessful();
+        $imported = $users->findOneByEmail('mallory@example.test');
+        self::assertInstanceOf(User::class, $imported, 'Un super-administrateur importe un super-administrateur.');
+        self::assertContains(UserRoles::ROLE_SUPER_ADMIN, $imported->getRoles());
+    }
+
+    /**
      * @return Crawler la page de correspondance, colonnes déjà pré-associées
      */
     private function upload(KernelBrowser $client, string $csv): Crawler
