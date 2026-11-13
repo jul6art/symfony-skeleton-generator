@@ -1,4 +1,6 @@
 security:
+  account:
+    cannot_sign_in: "Ce compte ne peut pas se connecter. Contactez un administrateur."
   login:
     title: Connexion
     subtitle: Accédez à votre espace

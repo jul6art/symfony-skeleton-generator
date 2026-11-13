@@ -18,6 +18,11 @@ services:
     # boot — « Cannot autowire … you should configure its value explicitly » — donc jamais dans un
     # simple `php -l`.
 
+    # Le vérificateur de compte de TOUS les pare-feux : un compte désactivé ne s'authentifie nulle part.
+    # ⚠️ Un alias et non un `user_checker:` par pare-feu : un pare-feu ajouté demain en hérite sans
+    # qu'on y pense. Voir `App\Security\UserChecker`.
+    security.user_checker: '@App\Security\UserChecker'
+
     # ── Un seul dialecte CSV pour le produit : `excelFr`, à l'écriture ET à la lecture ───────────
     #
     # ⚠️ Le bundle enregistre `CsvWriter` et `CsvReader` sur le dialecte nu de `CsvDialect` (RFC 4180 :

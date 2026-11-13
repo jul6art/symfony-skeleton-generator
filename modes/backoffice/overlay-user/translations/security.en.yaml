@@ -1,4 +1,6 @@
 security:
+  account:
+    cannot_sign_in: "This account cannot sign in. Please contact an administrator."
   login:
     title: Sign in
     subtitle: Access your workspace
