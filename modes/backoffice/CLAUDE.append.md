@@ -24,7 +24,7 @@ ce dépôt porte ce qui lui appartient — ses entités, son catalogue de permis
 | Un choix d'entité adossé à une table qui grossit (clients, sites, comptes…) | `jul6art/ui-bundle` | `AutocompleteEntityType` : la page ne porte que la valeur courante, le `query_builder` reste la borne de ce qui est accepté |
 | Le moteur de permissions, `#[CheckPermission]`, le voter | `jul6art/acl-bundle` | |
 | Mercure : publication, jetons, canaux | `jul6art/push-bundle` | |
-| Import/export CSV et XLSX, en flux ; les écrans d'import | `jul6art/dataflow-bundle` (≥ 1.16) | `TabularResponseFactory`, `CsvWriter`, `ImportRunner` ; les écrans d'import (`dataflow.import`, une définition par import) — l'import de comptes est celui d'admin-bundle (`admin.user_import`) |
+| Import/export CSV et XLSX, en flux ; les écrans d'import | `jul6art/dataflow-bundle` (≥ 1.16.4) | `TabularResponseFactory`, `CsvWriter`, `ImportRunner` ; les écrans d'import (`dataflow.import`, une définition par import) — l'import de comptes est celui d'admin-bundle (`admin.user_import`) |
 | Repository, voter, contrôleur de base, traits d'entité, purge | `jul6art/core-bundle` | |
 
 **Avant d'écrire une classe, vérifiez qu'un de ces bundles ne la fournit pas déjà.** Réimplémenter

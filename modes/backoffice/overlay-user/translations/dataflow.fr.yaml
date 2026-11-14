@@ -27,8 +27,8 @@ dataflow:
       view: 'Voir la liste'
       import_more: 'Importer un autre fichier'
     preview:
-      title: 'Les %count% premières lignes, lues avec cette correspondance'
-      impact: '%total% lignes : %creations% à créer, %updates% à mettre à jour.'
+      title: 'La première ligne, lue avec cette correspondance|Les %count% premières lignes, lues avec cette correspondance'
+      impact: '%total% ligne : %creations% à créer, %updates% à mettre à jour.|%total% lignes : %creations% à créer, %updates% à mettre à jour.'
       updates_warning: 'Les enregistrements existants seront remplacés par les valeurs du fichier.'
     error:
       upload_failed: 'Le fichier n''a pas pu être déposé. Réessayez.'
