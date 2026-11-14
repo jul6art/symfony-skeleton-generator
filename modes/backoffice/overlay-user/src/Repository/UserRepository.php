@@ -43,9 +43,8 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     /**
      * Écrit un compte, en le persistant s'il est neuf.
      *
-     * ⚠️ Les écrans écrivent par ICI, jamais par l'entity manager : un contrôleur n'écrit pas en base (audit
-     * Fable 5.2, T21), et la garde PHPStan de `phpstan.dist.neon` refuse `EntityManagerInterface` dans un
-     * contrôleur.
+     * ⚠️ Les écrans écrivent par ICI, jamais par l'entity manager : un contrôleur n'écrit pas en base, et la
+     * garde PHPStan de `phpstan.dist.neon` refuse `EntityManagerInterface` dans un contrôleur.
      */
     public function save(User $user): void
     {

@@ -21,8 +21,8 @@ use Symfony\Component\Security\Core\User\UserInterface;
  * défaut (`InMemoryUserChecker`) n'inspecte que les `InMemoryUser`. Un compte inscrit en attente
  * d'activation (« un administrateur activera votre compte ») ou désactivé par un administrateur se
  * connectait par le formulaire, le lien de connexion et le cookie « se souvenir de moi » — vu dans
- * Chrome sur un projet généré le 2026-11-13 (audit Fable 5.2, T14, que les applications avaient
- * reçu le 2026-11-11 et le squelette pas).
+ * Chrome sur un projet généré le 2026-11-13 (les applications avaient reçu ce vérificateur le
+ * 2026-11-11, le squelette pas).
  *
  * ⚠️ Le moteur de permissions n'est pas le filet qu'il semble : il laisse passer le
  * super-administrateur avant toute autre règle, et se pose permission par permission. Seule

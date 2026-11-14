@@ -11,7 +11,7 @@ use Jul6Art\CoreBundle\Entity\Traits\IdTrait;
 /**
  * Une permission accordée — ou explicitement refusée — à un rôle.
  *
- * Les colonnes et leur sens viennent d'`acl-bundle` (≥ 1.2, son ADR-0001, audit Fable 5.2, T20 lot 2) :
+ * Les colonnes et leur sens viennent d'`acl-bundle` (≥ 1.2, son ADR-0001) :
  * `role_code`, `permission`, `granted` — une ligne à `false`, c'est « décidé, et refusé », et la graine ne la
  * rouvre jamais. Cette classe ne porte que ce qui est au projet : la table, son unicité, son index,
  * l'identifiant.

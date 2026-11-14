@@ -11,7 +11,7 @@ use Jul6Art\CoreBundle\Entity\Traits\IdTrait;
 /**
  * Une décision par personne, qui l'emporte sur ce que ses rôles disent — dans les deux sens.
  *
- * Les colonnes viennent d'`acl-bundle` (≥ 1.2, son ADR-0001, audit Fable 5.2, T20 lot 2) : le compte
+ * Les colonnes viennent d'`acl-bundle` (≥ 1.2, son ADR-0001) : le compte
  * (`user_id`, résolu vers `App\Entity\User`), `permission`, `granted`. Cette classe ne porte que ce qui est au
  * projet : la table, son unicité, l'identifiant.
  */

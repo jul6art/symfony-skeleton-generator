@@ -1,6 +1,6 @@
 parameters:
     level: 8
-    # ⚠️ Un contrôleur n'écrit pas en base (audit Fable 5.2, T21) : la persistance va dans un service ou un dépôt
+    # ⚠️ Un contrôleur n'écrit pas en base : la persistance va dans un service ou un dépôt
     # (`UserRepository::save()` dans le mode backoffice). Un projet généré naît sans exception ; une application
     # qui en a hérité les fige dans une liste qui ne peut que diminuer (`phpstan-controllers-baseline.neon`).
     # Seuls les contrôleurs CRUD d'EasyAdmin (`*CrudController.php`, sa convention) y échappent : `persistEntity()` et
@@ -10,7 +10,7 @@ parameters:
     disallowedClasses:
         -
             class: 'Doctrine\ORM\EntityManagerInterface'
-            message: "un contrôleur n'écrit pas en base : la persistance va dans un service ou un dépôt (audit Fable 5.2, T21)"
+            message: "un contrôleur n'écrit pas en base : la persistance va dans un service ou un dépôt"
             allowExceptIn:
                 - src/*Controller.php
             allowIn:
