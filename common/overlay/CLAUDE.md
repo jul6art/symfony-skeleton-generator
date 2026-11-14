@@ -296,6 +296,9 @@ Règles qui en découlent :
   un service ou un dépôt (`UserRepository::save()`). PHPStan le refuse dans `src/*Controller.php`
   (`disallowedClasses` de `phpstan.dist.neon`) ; seuls les contrôleurs CRUD d'EasyAdmin (`*CrudController.php`)
   y échappent, leur signature l'impose.
+- ⚠️ **Une classe ne dépasse pas 500 lignes**, docbloc compris (l'en-tête du fichier ne compte pas) : au-delà,
+  elle fait plusieurs choses, et se découpe en classes à elles. PHPStan le refuse (`devtools.classLength`,
+  DevTools ≥ 3.8) ; entités, fixtures, tests et migrations ne sont pas mesurés.
 
 ## Definition of done
 
