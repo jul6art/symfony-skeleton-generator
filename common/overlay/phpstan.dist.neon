@@ -5,7 +5,7 @@ parameters:
     # qui en a hérité les fige dans une liste qui ne peut que diminuer (`phpstan-controllers-baseline.neon`).
     # Seuls les contrôleurs CRUD d'EasyAdmin (`*CrudController.php`, sa convention) y échappent : `persistEntity()` et
     # ses sœurs reçoivent l'entity manager par LEUR signature. Par chemin et non par héritage : `allowInInstanceOf`
-    # laisse passer le paramètre, pas l'import ni les types (essayé sur le mode admin généré, 2026-11-14).
+    # n'en couvrait rien, ni l'import ni les paramètres (essayé sur le mode admin généré, 2026-11-14).
     filesRootDir: %rootDir%/../../..
     disallowedClasses:
         -
