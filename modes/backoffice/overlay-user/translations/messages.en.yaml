@@ -81,11 +81,6 @@ user.flash.deleted: User deleted.
 # example (`jul6art/dataflow-bundle`); the three thrown INSIDE the row mapper live in `user.en.yaml`
 # instead — they are rendered by the bundle's own report partial, which resolves its domain from
 # the key's first segment rather than through a flash.
-user.import.error.upload_failed: The file could not be uploaded.
-user.import.error.file_too_large: The file exceeds the size allowed.
-user.import.error.binary_spreadsheet: This is a spreadsheet workbook, not a text file. Save it as CSV and try again.
-user.import.error.invalid_mime: This file type is not recognised.
-user.import.error.mapping_required: Map at least one column before running the import.
 permission.flash.saved: Permissions saved.
 permission.flash.reset: Default permissions restored.
 user.profile.flash.saved: Profile saved.

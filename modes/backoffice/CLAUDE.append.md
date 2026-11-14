@@ -24,7 +24,7 @@ ce dépôt porte ce qui lui appartient — ses entités, son catalogue de permis
 | Un choix d'entité adossé à une table qui grossit (clients, sites, comptes…) | `jul6art/ui-bundle` | `AutocompleteEntityType` : la page ne porte que la valeur courante, le `query_builder` reste la borne de ce qui est accepté |
 | Le moteur de permissions, `#[CheckPermission]`, le voter | `jul6art/acl-bundle` | |
 | Mercure : publication, jetons, canaux | `jul6art/push-bundle` | |
-| Import/export CSV et XLSX, en flux | `jul6art/dataflow-bundle` | `TabularResponseFactory`, `CsvWriter`, `ImportRunner`, `HeaderInspector` — cf. `src/Import/UserRowMapper.php` et `src/Controller/Admin/UserImportController.php` pour l'exemple livré |
+| Import/export CSV et XLSX, en flux ; les écrans d'import | `jul6art/dataflow-bundle` (≥ 1.16) | `TabularResponseFactory`, `CsvWriter`, `ImportRunner` ; les écrans d'import (`dataflow.import`, une définition par import) — l'import de comptes est celui d'admin-bundle (`admin.user_import`) |
 | Repository, voter, contrôleur de base, traits d'entité, purge | `jul6art/core-bundle` | |
 
 **Avant d'écrire une classe, vérifiez qu'un de ces bundles ne la fournit pas déjà.** Réimplémenter
@@ -52,9 +52,9 @@ ignoré côté serveur ; `_csrf` oublié → les actions répondent 419 ; une cl
 ### Exporter ou importer un tableau
 
 `jul6art/dataflow-bundle` porte le moteur — écrivains en flux, lecteur CSV, correspondance de
-colonnes, résolution de doublons PAR LOT — et ce dépôt l'exemplifie sur les comptes
-(`UserController::export()` + `UserCsvExporter`, `UserImportController` + `UserImportService`,
-`UserRowMapper`, `UserDuplicateResolver`). Le motif tient en trois pièces, quelle que soit
+colonnes, résolution de doublons PAR LOT — et les écrans d'import (≥ 1.16). Ce dépôt l'exemplifie sur
+les comptes : l'export (`UserController::export()` + `UserCsvExporter`) et l'import, qui est la
+définition `user` d'admin-bundle (`config/packages/admin_user_import.yaml`). Le motif, quelle que soit
 l'entité :
 
 **Un export**, en une méthode :
@@ -77,24 +77,26 @@ revient déjà en chaîne au format `Y-m-d H:i:s`, pas en objet — l'appeler `-
 `TypeError` à la première ligne. Cf. `UserCsvExporter` pour les trois cas de figure, tranchés par
 une commande de débogage plutôt que supposés.
 
-**Un import**, en deux routes — téléversement puis correspondance, jamais une seule requête :
+**Un import** n'a ni contrôleur ni gabarit dans `src/` : les écrans sont ceux de dataflow-bundle
+(dépôt, correspondance, rapport, et le modèle à télécharger s'il en offre un).
 
-1. Le fichier est déplacé dans un répertoire temporaire ; un jeton ALÉATOIRE, seul visible du
-   navigateur, associe ce chemin à la session. Exposer le chemin réel au client permettrait une
-   traversée (`/tmp/../etc/passwd`).
-2. La correspondance vient du bundle (`@Dataflow/import/_mapper.html.twig`) ; le gabarit du projet
-   ne pose que le formulaire autour — action, jeton CSRF, bouton.
-3. `App\Import\<Entité>RowMapper` porte les champs obligatoires et les refus métier
-   (`\DomainException`, une clé de traduction) ; `App\Import\<Entité>DuplicateResolver` porte ce qui
-   fait que deux lignes désignent la même chose, résolu en UNE requête pour tout le lot.
+1. Une **définition** : une classe qui étend `Jul6Art\DataflowBundle\Import\Web\AbstractImportDefinition`,
+   marquée `#[AsImportDefinition('mon_entite')]` — ses champs et ceux qu'un lancement exige, son lecteur
+   (le dialecte, choisi à voix haute), ce que l'acteur doit détenir (`access()`, vérifié sur CHAQUE
+   écran), ses mots (`<prefix>.new.title`, `<prefix>.field.<champ>`…), ses routes et son retour.
+2. Trois **routes** dans `config/routes/`, vers `ImportController::upload|mapping|run`, la clé de
+   l'import dans le défaut `_import` (cf. `config/routes/user_import.yaml`).
+3. `App\Import\<Entité>RowMapper` porte les champs obligatoires et les refus métier (`\DomainException`,
+   une clé de traduction) ; `App\Import\<Entité>DuplicateResolver`, ce qui fait que deux lignes désignent
+   la même chose, résolu en UNE requête pour tout le lot. La définition les passe à `ImportRunner`.
 
-⚠️ **Une politique de mot de passe n'a rien à faire dans un fichier.** `UserRowMapper` illustre la
-règle : un compte importé reçoit un hachage ALÉATOIRE que personne ne connaît, jamais une valeur
-lue dans une colonne — il s'active par « mot de passe oublié », le flux que ce mode livre déjà.
+⚠️ **Le bundle garde le fichier pour vous** : seul un nom aléatoire voyage en session, un nom forgé ne
+désigne rien, un refus se dit sur son écran (422) avec la correspondance soumise conservée.
 
-⚠️ **La garde de permission se répète sur CHAQUE méthode**, comme partout ailleurs dans ce mode :
-`RouteAccessDecisionTest` (règle n°1) le vérifie par réflexion, méthode par méthode, jamais par
-classe.
+⚠️ **Une politique de mot de passe n'a rien à faire dans un fichier.** L'import de comptes d'admin-bundle
+illustre la règle : un compte importé reçoit un hachage ALÉATOIRE que personne ne connaît, jamais une
+valeur lue dans une colonne — il s'active par « mot de passe oublié », le flux que ce mode livre déjà.
+Et seul un super-administrateur importe un super-administrateur.
 
 ### Les préférences par compte : colonnes, ordre, vues enregistrées
 

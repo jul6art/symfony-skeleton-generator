@@ -52,6 +52,9 @@ final class UserImportTest extends WebTestCase
         $client->request('GET', '/admin/users/import/new');
         self::assertResponseStatusCodeSame(403);
 
+        $client->request('GET', '/admin/users/import/mapping');
+        self::assertResponseStatusCodeSame(403);
+
         $client->request('POST', '/admin/users/import/execute');
         self::assertResponseStatusCodeSame(403);
     }
@@ -73,7 +76,7 @@ final class UserImportTest extends WebTestCase
         $crawler = $this->upload($client, $csv);
 
         // ⚠️ Les en-têtes du fichier correspondent EXACTEMENT aux champs du mapper
-        // (`UserRowMapper::FIELDS`) : le bundle les a donc déjà associés tout seul, et le
+        // (les champs de l'import) : le bundle les a donc déjà associés tout seul, et le
         // formulaire de correspondance porte les `<option>` déjà sélectionnées. On soumet ce que
         // l'écran propose, pas une correspondance devinée à côté.
         $client->submit($crawler->filter('form')->form());
@@ -108,7 +111,7 @@ final class UserImportTest extends WebTestCase
         $client->loginUser($this->createUser(UserRoles::ROLE_ADMIN));
 
         // ⚠️ La casse diffère à dessein : une adresse est insensible à la casse dans son domaine,
-        // et `UserDuplicateResolver` doit les reconnaître comme LE MÊME compte malgré ça.
+        // et le résolveur d'admin-bundle doit les reconnaître comme LE MÊME compte malgré ça.
         $csv = "firstName;lastName;email;role\nGrace;Hopper;dup@example.test;\nGrace;Hopper;Dup@example.test;\n";
         $crawler = $this->upload($client, $csv);
         $client->submit($crawler->filter('form')->form());
@@ -202,9 +205,12 @@ final class UserImportTest extends WebTestCase
 
         $client->submit($crawler->filter('form')->form(), ['file' => $file]);
 
+        // Trois écrans : le dépôt redirige vers la correspondance.
+        self::assertResponseRedirects('/admin/users/import/mapping', 303, 'Le dépôt mène à la correspondance.');
+        $mapping = $client->followRedirect();
         self::assertResponseIsSuccessful('L\'écran de correspondance doit s\'afficher après le téléversement.');
 
-        return $client->getCrawler();
+        return $mapping;
     }
 
     private function createSchema(): void

@@ -1,0 +1,19 @@
+# L'import de comptes : les écrans de dataflow-bundle (≥ 1.16), la définition `user` d'admin-bundle (≥ 1.44). Les
+# gabarits et la liste des comptes nomment ces routes : un projet peut changer les chemins, pas les noms.
+admin_user_import_new:
+    path: /admin/users/import/new
+    controller: Jul6Art\DataflowBundle\Import\Web\ImportController::upload
+    methods: [GET, POST]
+    defaults: { _import: user }
+
+admin_user_import_mapping:
+    path: /admin/users/import/mapping
+    controller: Jul6Art\DataflowBundle\Import\Web\ImportController::mapping
+    methods: [GET]
+    defaults: { _import: user }
+
+admin_user_import_execute:
+    path: /admin/users/import/execute
+    controller: Jul6Art\DataflowBundle\Import\Web\ImportController::run
+    methods: [POST]
+    defaults: { _import: user }

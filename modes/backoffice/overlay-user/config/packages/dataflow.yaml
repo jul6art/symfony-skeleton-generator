@@ -1,0 +1,6 @@
+# Les écrans d'import de dataflow-bundle (≥ 1.16, ADR-0001 du bundle) : dépôt, correspondance, rapport — seulement avec
+# la gestion des comptes, dont l'import est celui d'admin-bundle (admin_user_import.yaml), routé par
+# config/routes/user_import.yaml ; les écrans remplissent le bloc `content` d'admin/layout.html.twig.
+dataflow:
+    import:
+        enabled: true

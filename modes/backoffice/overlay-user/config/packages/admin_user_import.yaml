@@ -1,0 +1,11 @@
+# L'import de comptes (admin-bundle ≥ 1.44, sur les écrans de dataflow-bundle) — seulement avec la gestion des comptes :
+# un mot de passe aléatoire (le compte s'ouvre par « mot de passe oublié »), un rôle de la liste seulement, et celui de
+# super-administrateur par un super-administrateur seulement. Un fichier à part, comme admin_account.yaml.
+admin:
+    user_import:
+        enabled: true
+        user_class: App\Entity\User
+        roles:
+            - !php/const App\Security\UserRoles::ROLE_ADMIN
+            - !php/const App\Security\UserRoles::ROLE_SUPER_ADMIN
+        permission: !php/const App\Security\PermissionCodes::USER_CREATE

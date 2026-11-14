@@ -7,7 +7,38 @@
 # mode, et le catalogue du bundle la couvre déjà.
 dataflow:
   import:
+    screen:
+      file: 'Fichier'
+      choose: 'Choisissez un fichier'
+      or_drop: 'ou glissez-le ici'
+      accept: 'CSV, avec une ligne d''en-têtes'
+      hint: 'Colonnes reconnues : %fields%.'
+      template: 'Télécharger le modèle'
+      upload: 'Déposer'
+      cancel: 'Annuler'
+      back: 'Retour'
+      mapping: 'Colonnes'
+      run: 'Lancer l''import'
+      run_counted: 'Importer : %creations% à créer, %updates% à mettre à jour'
+      other_file: 'Un autre fichier'
+      batch_failed: 'L''import s''est arrêté à l''enregistrement %record% : un lot n''a pas pu être écrit.'
+      rolled_back: 'Rien n''a été gardé : ce qui avait été écrit a été annulé.'
+      partially_committed: 'Les lots précédents ont été écrits et gardés.'
+      view: 'Voir la liste'
+      import_more: 'Importer un autre fichier'
+    preview:
+      title: 'Les %count% premières lignes, lues avec cette correspondance'
+      impact: '%total% lignes : %creations% à créer, %updates% à mettre à jour.'
+      updates_warning: 'Les enregistrements existants seront remplacés par les valeurs du fichier.'
     error:
+      upload_failed: 'Le fichier n''a pas pu être déposé. Réessayez.'
+      file_too_large: 'Le fichier est trop lourd.'
+      invalid_mime: 'Ce fichier n''est pas un fichier CSV.'
+      invalid_csrf: 'Le formulaire a expiré. Réessayez.'
+      file_expired: 'Le fichier déposé n''est plus disponible. Déposez-le à nouveau.'
+      mapping_required: 'Associez au moins une colonne à un champ.'
+      mapping_duplicate: 'Deux colonnes sont associées au même champ : n''en gardez qu''une.'
+      mapping_missing: 'Ces champs ont besoin d''une colonne : %fields%.'
       batch_failed: 'L''import s''est arrêté : un lot n''a pas pu être écrit.'
       binary_spreadsheet: C'est un classeur, pas un fichier texte. Enregistrez-le en CSV et réessayez.
       duplicate: Cet enregistrement existe déjà.
