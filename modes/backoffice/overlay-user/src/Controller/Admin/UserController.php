@@ -7,11 +7,11 @@ namespace App\Controller\Admin;
 use App\DataTable\UserDataTableConfigProvider;
 use App\Entity\User;
 use App\Form\UserType;
+use App\Repository\UserRepository;
 use App\Security\PermissionCodes;
 use App\Security\UserRoles;
 use App\Security\Voter\UserAccountVoter;
 use App\Service\UserCsvExporter;
-use Doctrine\ORM\EntityManagerInterface;
 use Jul6Art\CoreBundle\Controller\BulkActionRunner;
 use Jul6Art\CoreBundle\Util\Strings;
 use Jul6Art\DataflowBundle\Io\Http\TabularResponseFactory;
@@ -45,7 +45,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class UserController extends AbstractController
 {
     public function __construct(
-        private readonly EntityManagerInterface $entityManager,
+        private readonly UserRepository $users,
         private readonly UserDataTableConfigProvider $dataTable,
         private readonly UserCsvExporter $exporter,
         private readonly TabularResponseFactory $responses,
@@ -99,8 +99,7 @@ final class UserController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $user->setPassword($hasher->hashPassword($user, (string) $user->getPlainPassword()));
             $user->eraseCredentials();
-            $this->entityManager->persist($user);
-            $this->entityManager->flush();
+            $this->users->save($user);
 
             $this->addFlash('success', 'user.flash.created');
 
@@ -138,7 +137,7 @@ final class UserController extends AbstractController
                 $user->setPassword($hasher->hashPassword($user, $user->getPlainPassword()));
             }
             $user->eraseCredentials();
-            $this->entityManager->flush();
+            $this->users->save($user);
 
             $this->addFlash('success', 'user.flash.updated');
 
@@ -186,7 +185,7 @@ final class UserController extends AbstractController
         // échoue sur une contrainte, ce qui est incompréhensible côté écran.
         $user->softDelete();
         $user->setEmail(Strings::markDeleted($user->getEmail()));
-        $this->entityManager->flush();
+        $this->users->save($user);
 
         $this->addFlash('success', 'user.flash.deleted');
 
@@ -238,7 +237,7 @@ final class UserController extends AbstractController
         // cette ligne, la route répond 302, le flash annonce le succès, et rien n'est écrit.
         // Découvert par le test de la suppression de masse, le 2026-08-24 : `bulk-activate` et
         // `bulk-deactivate` étaient dans le même cas depuis le premier jour.
-        $this->entityManager->flush();
+        $this->users->flush();
 
         $this->addFlash('success', 'user.flash.deleted');
 
@@ -254,7 +253,7 @@ final class UserController extends AbstractController
         }
 
         $user->setIsActive($active);
-        $this->entityManager->flush();
+        $this->users->save($user);
 
         $this->addFlash('success', $active ? 'user.flash.activated' : 'user.flash.deactivated');
 
@@ -279,7 +278,7 @@ final class UserController extends AbstractController
 
         // Voir `bulkDelete()` : le runner ne flushe pas, et un flush unique ici coûte une écriture
         // pour toute la sélection au lieu d'une par ligne.
-        $this->entityManager->flush();
+        $this->users->flush();
 
         // La clé, pas une phrase : le partial des toasts la passe au traducteur. Un contrôleur qui
         // pose du texte tout fait marche — et casse le jour où l'application gagne une langue.

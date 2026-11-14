@@ -6,7 +6,7 @@ namespace App\Controller\Admin;
 
 use App\Entity\User;
 use App\Form\ChangePasswordFormType;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -30,7 +30,7 @@ final class AccountPasswordController extends AbstractController
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function edit(
         Request $request,
-        EntityManagerInterface $entityManager,
+        UserRepository $users,
         UserPasswordHasherInterface $hasher,
         #[CurrentUser]
         User $user,
@@ -42,7 +42,7 @@ final class AccountPasswordController extends AbstractController
             /** @var array{plainPassword?: string} $data */
             $data = $form->getData();
             $user->setPassword($hasher->hashPassword($user, (string) ($data['plainPassword'] ?? '')));
-            $entityManager->flush();
+            $users->save($user);
 
             $this->addFlash('success', 'security.change_password.flash.changed');
 
