@@ -292,6 +292,10 @@ Règles qui en découlent :
   domaines métier**, et `deptrac` garde alors les dépendances entre modules. ⚠️ Ne pas mélanger les deux
   rangements à la racine de `src/` : un dossier métier à côté de `Controller/` est le signe que le seuil
   est franchi — ce passage s'écrit dans un ADR, il ne se fait pas au fil de l'eau.
+- ⚠️ **Un contrôleur n'écrit pas en base** : il ne reçoit jamais `EntityManagerInterface`, la persistance va dans
+  un service ou un dépôt (`UserRepository::save()`). PHPStan le refuse dans `src/*Controller.php`
+  (`disallowedClasses` de `phpstan.dist.neon`) ; seuls les contrôleurs CRUD d'EasyAdmin (`*CrudController.php`)
+  y échappent, leur signature l'impose.
 
 ## Definition of done
 
