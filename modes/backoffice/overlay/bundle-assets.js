@@ -47,8 +47,12 @@ const FRONT_BUNDLES = ['core-bundle', 'datatable-bundle', 'admin-bundle'];
  * `Custom*Type`. Sans lui ici, Tailwind ne les voit pas et les purge ; le symptôme n'est pas une
  * erreur, c'est une icône NOIRE au lieu de grise sur chaque champ à add-on (vu le 2026-08-24 sur
  * /register, /reset-password et /admin/account/password).
+ *
+ * ⚠️ `dataflow-bundle` non plus, et pour la même raison : ses écrans d'import (≥ 1.16) et ses partiels
+ * (`_mapper`, `_report`) écrivent leurs classes ; sans lui, l'encadré d'un fichier refusé perdait sa bordure rouge
+ * (vu le 2026-11-14).
  */
-const TEMPLATE_BUNDLES = [...FRONT_BUNDLES, 'ui-bundle'];
+const TEMPLATE_BUNDLES = [...FRONT_BUNDLES, 'ui-bundle', 'dataflow-bundle'];
 
 function bundleAliases() {
     return Object.fromEntries(FRONT_BUNDLES.map((pkg) => [`@jul6art/${pkg}`, bundleAssets(pkg)]));
