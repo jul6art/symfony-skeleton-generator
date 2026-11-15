@@ -1,0 +1,64 @@
+# La recette Flex de symfony/monolog-bundle, sauf en production : des fichiers dans var/log (rotation
+# quotidienne, 7 jours), jamais php://stderr. Sous PHP-FPM sans `catch_workers_output`, stderr ne va nulle
+# part : le 2026-11-15, toute erreur de production de sept applications était perdue.
+
+monolog:
+    channels: # To see all channels, run bin/console debug:autowiring logger
+        - deprecation # Deprecations are logged in the dedicated "deprecation" channel when it exists
+
+when@dev:
+    monolog:
+        handlers:
+            main:
+                type: stream
+                path: "%kernel.logs_dir%/%kernel.environment%.log"
+                level: debug
+                channels: ["!event"]
+            console:
+                type: console
+                process_psr_3_messages: false
+                channels: ["!event", "!doctrine", "!console"]
+
+when@test:
+    monolog:
+        handlers:
+            main:
+                type: fingers_crossed
+                action_level: error
+                handler: nested
+                excluded_http_codes: [404, 405]
+                channels: ["!event"]
+            nested:
+                type: stream
+                path: "%kernel.logs_dir%/%kernel.environment%.log"
+                level: debug
+
+when@prod:
+    monolog:
+        handlers:
+            main:
+                type: fingers_crossed
+                action_level: error
+                handler: nested
+                excluded_http_codes: [404, 405]
+                channels: ["!deprecation"]
+                buffer_size: 50 # How many messages should be saved? Prevent memory leaks
+            # ⚠️ Des fichiers dans var/log, jamais php://stderr : sous PHP-FPM sans `catch_workers_output`,
+            # stderr ne va nulle part et toute erreur de production était perdue (constaté le 2026-11-15 sur
+            # cegeta). Rotation quotidienne, comme superp et devinlive.
+            nested:
+                type: rotating_file
+                path: "%kernel.logs_dir%/%kernel.environment%.log"
+                max_files: 7
+                level: debug
+                formatter: monolog.formatter.json
+            console:
+                type: console
+                process_psr_3_messages: false
+                channels: ["!event", "!doctrine"]
+            deprecation:
+                type: rotating_file
+                channels: [deprecation]
+                path: "%kernel.logs_dir%/deprecations.log"
+                max_files: 7
+                formatter: monolog.formatter.json
