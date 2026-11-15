@@ -158,6 +158,14 @@ rien, et rien ne le signale. C'est la raison pour laquelle `roles` est un `readO
   arriver. Un abonnement qui ne passe pas par le bus ouvre `openLiveFeed()`
   (`services/live-feed.js`), jamais un `EventSource` nu : un refus du hub (cookie expiré) le ferme
   pour de bon.
+- **Une écriture DQL ou SQL en masse ne publie rien.** `#[BroadcastableEntity]` n'écoute que les
+  flush : un `UPDATE … WHERE id IN (…)`, un `DELETE` DQL, un `CASE WHEN` de réordonnancement
+  contournent l'unité de travail, et tout écran qui suit l'entité reste périmé. Après l'instruction,
+  annoncer ce qu'elle a changé : `EntityChangePublisher::announce($entites, 'updated')` (lues avant
+  l'instruction quand elle les déplace ou les supprime), ou `announceBulk($unDuLot, $nombre)` quand
+  elle ne peut pas les charger (réconciliation en SQL, purge) — push-bundle ≥ 3.6. Un worker
+  Messenger publie après chaque message depuis la 3.5 ; avant, ses publications attendaient son
+  arrêt.
 - **`admin.base_template` désigne `templates/base.html.twig`.** Sans cette clé, une page
   d'administration étend la base du bundle et s'affiche **sans aucune feuille de style** — rien ne
   le signale.
