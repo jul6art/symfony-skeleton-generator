@@ -149,6 +149,15 @@ rien, et rien ne le signale. C'est la raison pour laquelle `roles` est un `readO
 
 ### Les pièges de ce mode, appris ailleurs
 
+- **Un abonné Mercure décide sur l'état, jamais sur l'auteur.** `actorId` dit QUI a agi, pas OÙ : le
+  même compte dans un autre onglet ou sur un autre appareil signe pareil, et un contrôleur qui ignore
+  « ses propres gestes » laisse ces écrans périmés. Relire la page et ne remplacer que ce qui a
+  changé, ou comparer le `at` d'une publication (push-bundle ≥ 3.4, à la milliseconde) à l'instant
+  où la requête de la page a commencé. Et s'abonner aussi à `mercureBus.onResync()`
+  (datatable-bundle ≥ 3.4) : après une coupure, ce qui a été publié entre-temps peut ne jamais
+  arriver. Un abonnement qui ne passe pas par le bus ouvre `openLiveFeed()`
+  (`services/live-feed.js`), jamais un `EventSource` nu : un refus du hub (cookie expiré) le ferme
+  pour de bon.
 - **`admin.base_template` désigne `templates/base.html.twig`.** Sans cette clé, une page
   d'administration étend la base du bundle et s'affiche **sans aucune feuille de style** — rien ne
   le signale.
