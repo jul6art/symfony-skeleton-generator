@@ -130,6 +130,8 @@ final class UserCrudController extends AbstractCrudController
         }
 
         $user->setPassword($this->passwordHasher->hashPassword($user, $plainPassword));
-        $user->eraseCredentials();
+        // Cleared here: auth-bundle's User marks eraseCredentials() #[\Deprecated] (Symfony 7.3), so calling
+        // it would trigger the deprecation.
+        $user->setPlainPassword(null);
     }
 }
