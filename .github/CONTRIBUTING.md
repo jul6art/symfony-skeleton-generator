@@ -65,7 +65,7 @@ cd symfony-skeleton-generator
 git checkout -b fix/short-description
 ```
 
-Requirements on your machine: PHP ≥ 8.5, the [Symfony CLI](https://symfony.com/download)
+Requirements on your machine: PHP ≥ 8.6, the [Symfony CLI](https://symfony.com/download)
 (the generator calls `symfony new` and `symfony composer`, since Composer is not
 assumed to be global), Git, and — only if you touch the `backoffice` mode —
 Node and npm.
