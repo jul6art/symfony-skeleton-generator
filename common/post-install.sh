@@ -39,3 +39,17 @@ TRUSTED_HOSTS=
 ###< trusted proxies and hosts ###
 ENV
 fi
+
+# ORM 3.8 : SchemaTool passe par l'API d'éditeur de schéma de DBAL, la seule qui reste en ORM 4.0. Sans
+# l'option, chaque création de schéma (les tests, `doctrine:schema:*`) lève une dépréciation, et
+# `make qa` est rouge. La recette de doctrine-bundle ne l'écrit pas : on l'ajoute sous `orm:`.
+if [ -f config/packages/doctrine.yaml ] && ! grep -q 'use_schema_editor_api' config/packages/doctrine.yaml; then
+    LINE="        # ORM 3.8 : SchemaTool par l'API d'éditeur de schéma de DBAL, la seule qui reste en ORM 4.0.
+        use_schema_editor_api: true
+" perl -0pi -e 's/(\n    orm:\n)/$1$ENV{LINE}/' config/packages/doctrine.yaml
+    if grep -q 'use_schema_editor_api: true' config/packages/doctrine.yaml; then
+        printf '    doctrine.yaml : API d’éditeur de schéma de DBAL (ORM 3.8)\n'
+    else
+        printf '    ⚠️  doctrine.yaml : pas de bloc « orm: » où poser use_schema_editor_api\n'
+    fi
+fi
