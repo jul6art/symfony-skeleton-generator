@@ -15,6 +15,7 @@ use App\Repository\UserRepository;
 use App\Security\BackofficeLocales;
 use App\Security\PermissionCodes;
 use App\Security\UserRoles;
+use Deprecated;
 use Doctrine\ORM\Mapping as ORM;
 use Jul6Art\AclBundle\Contract\AclTenantInterface;
 use Jul6Art\AclBundle\Contract\AclUserInterface;
@@ -271,9 +272,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, AclUser
     }
 
     /**
-     * `UserInterface::eraseCredentials()` a quitté l'interface en Symfony 7.3 — d'où l'absence de
-     * `#[\Override]`, qui serait une erreur fatale au chargement de la classe.
+     * `UserInterface::eraseCredentials()` est dépréciée depuis Symfony 7.3, qui ne l'appelle plus quand
+     * elle porte `#[\Deprecated]` : elle ne reste que pour l'interface. Le mot de passe en clair, jamais
+     * persisté, est effacé là où il est haché (`Admin\UserController`). Pas de `#[\Override]`.
      */
+    #[Deprecated(message: 'since Symfony 7.3: the plain password is cleared where it is hashed')]
     public function eraseCredentials(): void
     {
         $this->plainPassword = null;

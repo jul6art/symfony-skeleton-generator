@@ -98,7 +98,7 @@ final class UserController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $user->setPassword($hasher->hashPassword($user, (string) $user->getPlainPassword()));
-            $user->eraseCredentials();
+            $user->setPlainPassword(null);
             $this->users->save($user);
 
             $this->addFlash('success', 'user.flash.created');
@@ -136,7 +136,7 @@ final class UserController extends AbstractController
             if (null !== $user->getPlainPassword() && '' !== $user->getPlainPassword()) {
                 $user->setPassword($hasher->hashPassword($user, $user->getPlainPassword()));
             }
-            $user->eraseCredentials();
+            $user->setPlainPassword(null);
             $this->users->save($user);
 
             $this->addFlash('success', 'user.flash.updated');
