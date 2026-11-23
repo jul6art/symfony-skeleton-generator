@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-$finder = (new PhpCsFixer\Finder())
+$finder = new PhpCsFixer\Finder()
     ->in([__DIR__.'/src', __DIR__.'/tests'])
     ->append([__FILE__]);
 
-return (new PhpCsFixer\Config())
+return new PhpCsFixer\Config()
     ->setRiskyAllowed(true)
     // PHP CS Fixer only knows PHP's syntax up to 8.5 and refuses to run on 8.6 otherwise: drop this line once a release
     // supports 8.6 — and until then, write no syntax 8.6 brings.
@@ -16,7 +16,7 @@ return (new PhpCsFixer\Config())
     ->setRules([
         '@Symfony' => true,
         '@Symfony:risky' => true,
-        '@PHP82Migration' => true,
+        '@PHP8x5Migration' => true,
         'declare_strict_types' => true,
         'global_namespace_import' => [
             'import_classes' => true,
