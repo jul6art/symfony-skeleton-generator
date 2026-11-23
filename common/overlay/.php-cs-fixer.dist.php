@@ -17,6 +17,7 @@ return new PhpCsFixer\Config()
         '@Symfony' => true,
         '@Symfony:risky' => true,
         '@PHP8x5Migration' => true,
+        '@PHP8x5Migration:risky' => true,
         'declare_strict_types' => true,
         'global_namespace_import' => [
             'import_classes' => true,
