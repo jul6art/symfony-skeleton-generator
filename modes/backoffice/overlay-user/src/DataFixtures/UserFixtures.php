@@ -6,10 +6,10 @@ namespace App\DataFixtures;
 
 use App\Entity\User;
 use App\Security\UserRoles;
-use DateTimeImmutable;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectManager;
+use Jul6Art\CoreBundle\Util\Clock;
 use Override;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
@@ -113,7 +113,7 @@ final class UserFixtures extends Fixture
         }
 
         $connection = $manager->getConnection();
-        $reference = new DateTimeImmutable('-18 months');
+        $reference = Clock::now('-18 months');
 
         foreach ($manager->getRepository(User::class)->findAll() as $offset => $user) {
             $connection->executeStatement(
