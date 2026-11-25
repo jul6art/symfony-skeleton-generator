@@ -11,7 +11,7 @@ phpstan/extension-installer
 phpstan/phpstan-symfony
 phpstan/phpstan-doctrine
 spaze/phpstan-disallowed-calls:^4.15  # la garde des contrôleurs : EntityManagerInterface refusé dans un contrôleur (phpstan.dist.neon)
-jul6art/devtools:^3.9               # la carte des workflows, les hooks, le serveur MCP de Claude Code et la garde de taille des classes
+jul6art/devtools:^3.10              # la carte des workflows, les hooks, le serveur MCP de Claude Code, la garde de taille des classes et la règle de l'horloge
 mcp/sdk:^0.9                        # le serveur MCP de DevTools (bin/console devtools:mcp:serve)
 
 # Suggestions :

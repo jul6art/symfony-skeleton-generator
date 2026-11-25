@@ -3,6 +3,9 @@ includes:
     # ADR-0054. Un projet généré naît sans exception ; une application qui en a hérité les fige dans
     # `phpstan-class-length-baseline.neon`, une liste qui ne peut que diminuer.
     - vendor/jul6art/devtools/resources/phpstan/class-length.neon
+    # L'heure se lit par l'horloge du core-bundle (`Jul6Art\CoreBundle\Util\Clock`, `clock_now()` en Twig) : toute
+    # autre lecture (`new \DateTimeImmutable()`, `time()`, `sleep()`…) est refusée, DevTools ≥ 3.10, son ADR-0055.
+    - vendor/jul6art/devtools/resources/phpstan/clock.neon
 
 parameters:
     level: 8
