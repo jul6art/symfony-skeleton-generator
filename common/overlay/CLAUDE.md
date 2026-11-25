@@ -296,6 +296,12 @@ Règles qui en découlent :
   un service ou un dépôt (`UserRepository::save()`). PHPStan le refuse dans `src/*Controller.php`
   (`disallowedClasses` de `phpstan.dist.neon`) ; seuls les contrôleurs CRUD d'EasyAdmin (`*CrudController.php`)
   y échappent, leur signature l'impose.
+- ⚠️ **L'heure se lit par l'horloge du core-bundle** : `Jul6Art\CoreBundle\Util\Clock::now()` (mêmes arguments que
+  `new \DateTimeImmutable()`), `Clock::timestamp()`, `Clock::sleep()`, et `clock_now()` en Twig — jamais
+  `new \DateTimeImmutable()`, `time()`, `date()` ni `'now'|date`, qu'un test ne peut pas figer. Un service peut recevoir
+  `Psr\Clock\ClockInterface`. PHPStan refuse toute autre lecture (`devtools.clock`, DevTools ≥ 3.10). Un test qui
+  dépend de l'heure la fige (`Jul6Art\CoreBundle\Test\ClockTestTrait` : `freezeClock()`, `advanceClock()`) au lieu
+  d'attendre, et construit ses dates avec `Clock::now()`.
 - ⚠️ **Une classe ne dépasse pas 500 lignes**, docbloc compris (l'en-tête du fichier ne compte pas) : au-delà,
   elle fait plusieurs choses, et se découpe en classes à elles. PHPStan le refuse (`devtools.classLength`,
   DevTools ≥ 3.8) ; entités, fixtures, tests et migrations ne sont pas mesurés.
