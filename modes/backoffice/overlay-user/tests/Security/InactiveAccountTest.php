@@ -34,7 +34,7 @@ final class InactiveAccountTest extends WebTestCase
         $this->client = self::createClient();
         $this->client->disableReboot();
         // Une adresse par test : la limite d'essais de connexion compte par adresse.
-        $this->client->setServerParameter('REMOTE_ADDR', sprintf('2001:db8::%x:%x', random_int(0, 0xFFFF), random_int(0, 0xFFFF)));
+        $this->client->setServerParameter('REMOTE_ADDR', sprintf('2001:db8:%x:%x::1', random_int(0, 0xFFFF), random_int(0, 0xFFFF)));
         $this->entityManager = self::getContainer()->get(EntityManagerInterface::class);
         $schemaTool = new SchemaTool($this->entityManager);
         $metadata = $this->entityManager->getMetadataFactory()->getAllMetadata();
