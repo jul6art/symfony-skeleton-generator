@@ -26,7 +26,9 @@ use function uniqid;
  *
  * ⚠️ Une adresse, un compte et un secret neufs par test : le limiteur de connexion, celui des codes
  * et le cache anti-rejeu vivent sur le disque, partagés par les processus de paratest, et survivent
- * d'un passage à l'autre.
+ * d'un passage à l'autre. L'adresse est tirée dans un /64 neuf : depuis Symfony 7.4.24, le limiteur
+ * de connexion compte un client IPv6 par son réseau /64, et des adresses tirées dans les derniers
+ * hextets tombaient toutes dans `2001:db8::/64`, un seul budget pour tous les tests.
  */
 #[CoversNothing]
 final class TwoFactorTest extends WebTestCase
@@ -41,7 +43,7 @@ final class TwoFactorTest extends WebTestCase
     {
         $this->client = static::createClient();
         $this->client->disableReboot();
-        $this->client->setServerParameter('REMOTE_ADDR', sprintf('2001:db8::%x:%x', random_int(0, 0xFFFF), random_int(0, 0xFFFF)));
+        $this->client->setServerParameter('REMOTE_ADDR', sprintf('2001:db8:%x:%x::1', random_int(0, 0xFFFF), random_int(0, 0xFFFF)));
         $this->entityManager = static::getContainer()->get(EntityManagerInterface::class);
         $schemaTool = new SchemaTool($this->entityManager);
         $metadata = $this->entityManager->getMetadataFactory()->getAllMetadata();
